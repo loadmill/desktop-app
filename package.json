@@ -62,7 +62,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@loadmill/agent": "^0.1.73",
+    "@loadmill/agent": "^0.1.76",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.13",
     "electron-log": "^4.4.8",
