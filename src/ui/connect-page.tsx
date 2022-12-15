@@ -24,7 +24,7 @@ export const ConnectPage: React.FC<ConnectPageProps> = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     window.api.startAgent(token);
-    // setToken('');
+    window.api.setPotentialToken(token);
     setPage('console');
   };
 
