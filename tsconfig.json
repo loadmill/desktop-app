@@ -1,21 +1,22 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "module": "commonjs",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "noImplicitAny": true,
-    "sourceMap": true,
     "baseUrl": ".",
-    "outDir": "dist",
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "outDir": "dist",
     "paths": {
       "*": [
         "node_modules/*"
       ]
     },
-    "jsx": "react",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "esnext",
     "typeRoots": [
       "./node_modules/@types",
       "./src/types"

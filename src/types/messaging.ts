@@ -1,4 +1,5 @@
 import {
+  GET_TOKEN,
   INIT_AGENT_LOG,
   IS_AGENT_CONNECTED,
   START_AGENT,
@@ -20,6 +21,7 @@ export interface ProcessMessageAgent extends ProcessMessage {
 export interface ProcessMessageMain extends ProcessMessage {
   data: {
     isConnected?: boolean;
+    token?: string;
   };
 }
 
@@ -28,10 +30,12 @@ export interface ProcessMessageRenderer extends ProcessMessage {
     isConnected?: boolean;
     lines?: string[];
     text?: string;
+    token?: string;
   };
 }
 
 export type ProcessMessageTypes =
+  typeof GET_TOKEN |
   typeof INIT_AGENT_LOG |
   typeof IS_AGENT_CONNECTED |
   typeof START_AGENT |

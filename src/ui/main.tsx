@@ -1,6 +1,7 @@
 import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
 
 import {
+  GET_TOKEN,
   INIT_AGENT_LOG,
   IS_AGENT_CONNECTED,
   MESSAGE,
@@ -37,6 +38,12 @@ export const Main: React.FC<MainProps> = (): JSX.Element => {
     setIsConnected(!!data?.isConnected);
   };
 
+  const onGetTokenMsg = (data: ProcessMessageRenderer['data']) => {
+    if (data?.token) {
+      setToken(data.token);
+    }
+  };
+
   const onInitAgentLogMsg = (data: ProcessMessageRenderer['data']) => {
     if (data?.lines) {
       setLog(data.lines);
@@ -47,6 +54,9 @@ export const Main: React.FC<MainProps> = (): JSX.Element => {
     if (isFromPreload(event)) {
       const { data: { type, data } } = event;
       switch (type) {
+        case GET_TOKEN:
+          onGetTokenMsg(data);
+          break;
         case STDOUT:
         case STDERR:
           onAgentStdoutMsg(data);
@@ -70,9 +80,10 @@ export const Main: React.FC<MainProps> = (): JSX.Element => {
 
   useEffect(() => {
     setTimeout(() => {
+      window.api.getToken();
       window.api.isAgentConnected();
       window.api.initAgentLog();
-    }, 250);
+    }, 0);
     window.addEventListener(MESSAGE, onMessage);
 
     return () => {
