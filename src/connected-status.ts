@@ -1,21 +1,16 @@
-import { IS_AGENT_CONNECTED } from './constants';
-import { send as sendToRenderer } from './main-to-renderer';
-import { updateValidToken } from './token';
-import { ProcessMessageRenderer } from './types/messaging';
+import { MainMessage } from './types/messaging';
 import { checkForUpdates } from './updates';
 import { textToNonEmptyLines } from './utils';
 
 let _isConnected = false;
 
-export const refreshConnectedStatus = (data: ProcessMessageRenderer['data']): void => {
+export const isAgentConnected = (): boolean => _isConnected;
+
+export const refreshConnectedStatus = (data: MainMessage['data']): void => {
   updateConnectedStatus(data);
-  sendToRenderer({
-    data: { isConnected: _isConnected },
-    type: IS_AGENT_CONNECTED,
-  });
 };
 
-const updateConnectedStatus = ({ isConnected, text }: ProcessMessageRenderer['data']): void => {
+const updateConnectedStatus = ({ isConnected, text }: MainMessage['data']): void => {
   if (text) {
     handleText(text);
   }
@@ -28,7 +23,6 @@ const handleText = (text: string) => {
   const lines = textToNonEmptyLines(text);
   if (lines.some(l => l.includes('[INFO] Successfully connected to Loadmill'))) {
     _isConnected = true;
-    updateValidToken();
   }
   if (lines.some(l => l.includes('[INFO] Shutting down gracefully')) ||
     lines.some(l => l.includes('[ERROR] Disconnected from Loadmill'))) {

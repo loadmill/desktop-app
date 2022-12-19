@@ -1,21 +1,15 @@
-import { app, autoUpdater, dialog, ipcMain } from 'electron';
+import { autoUpdater, dialog } from 'electron';
 
-import { CHECK_FOR_UPDATES, UPDATE_DOWNLOADED, UPDATE_NOT_AVAILABLE } from './constants';
+import { UPDATE_DOWNLOADED, UPDATE_NOT_AVAILABLE } from './constants';
 import log from './log';
 
 let shouldShowUpToDatePopup = false;
 
 export const checkForUpdates = (): void => {
   log.info('User request: Check for updates...');
-  if (app.isPackaged) {
-    autoUpdater.checkForUpdates();
-  }
-};
-
-ipcMain.on(CHECK_FOR_UPDATES, (_event) => {
   shouldShowUpToDatePopup = true;
-  checkForUpdates();
-});
+  autoUpdater.checkForUpdates();
+};
 
 const showUpdateAndRestartDialog = (
   event: Electron.Event,
@@ -44,10 +38,11 @@ const showUpdateAndRestartDialog = (
     });
 };
 
-export const overrideOnUpdateDownloadedListener = (): void => {
-  if (app.isPackaged) {
-    autoUpdater.on(UPDATE_DOWNLOADED, showUpdateAndRestartDialog);
-  }
+export const overrideOnUpdateDownloadedListener = (onUpdateDownloaded: () => void): void => {
+  autoUpdater.on(UPDATE_DOWNLOADED, (...args) => {
+    onUpdateDownloaded();
+    showUpdateAndRestartDialog(...args);
+  });
 };
 
 const showNoUpdatesDialog = async (): Promise<void> => {
@@ -67,7 +62,5 @@ const showNoUpdatesDialog = async (): Promise<void> => {
 };
 
 export const overrideOnUpdateNotAvailableListener = (): void => {
-  if (app.isPackaged) {
-    autoUpdater.on(UPDATE_NOT_AVAILABLE, showNoUpdatesDialog);
-  }
+  autoUpdater.on(UPDATE_NOT_AVAILABLE, showNoUpdatesDialog);
 };

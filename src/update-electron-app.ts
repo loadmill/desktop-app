@@ -5,12 +5,13 @@ import {
   overrideOnUpdateNotAvailableListener
 } from './updates';
 
-updater({
-  logger: require('electron-log'),
-  notifyUser: false,
-  repo: 'loadmill/desktop-app',
-  updateInterval: '5 minutes',
-});
-
-overrideOnUpdateDownloadedListener();
-overrideOnUpdateNotAvailableListener();
+export const initUpdater = (onUpdateDownloaded: () => void): void => {
+  updater({
+    logger: require('electron-log'),
+    notifyUser: false,
+    repo: 'loadmill/desktop-app',
+    updateInterval: '5 minutes',
+  });
+  overrideOnUpdateDownloadedListener(onUpdateDownloaded);
+  overrideOnUpdateNotAvailableListener();
+};

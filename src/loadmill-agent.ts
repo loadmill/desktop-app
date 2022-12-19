@@ -5,11 +5,11 @@ import {
   START_AGENT,
   STOP_AGENT
 } from './constants';
-import { ProcessMessageAgent, ProcessMessageMain } from './types/messaging';
+import { AgentMessage, MainMessage } from './types/messaging';
 
 let stop: (() => void) | null = null;
 
-process.on('message', ({ type, data }: ProcessMessageAgent) => {
+process.on('message', ({ type, data }: AgentMessage) => {
   switch (type) {
     case START_AGENT:
       startAgent(data);
@@ -23,7 +23,7 @@ process.on('message', ({ type, data }: ProcessMessageAgent) => {
   }
 });
 
-const startAgent = (data: ProcessMessageAgent['data']) => {
+const startAgent = (data: AgentMessage['data']) => {
   if (data && data.token) {
     stop = start({
       token: data.token
@@ -45,6 +45,6 @@ const sendIsConnected = () => {
   });
 };
 
-const sendToMainProcess = (msg: ProcessMessageMain) => {
+const sendToMainProcess = (msg: MainMessage) => {
   process.send(msg);
 };

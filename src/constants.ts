@@ -1,32 +1,39 @@
 export const
   ACTIVATE = 'activate',
-  API = 'api',
-  CHECK_FOR_UPDATES = 'check_for_updates',
-  CONNECTED = 'connected',
+  BEFORE_QUIT = 'before-quit',
+  CLOSE = 'close',
   DATA = 'data',
+  DID_NAVIGATE = 'did-navigate',
+  DID_NAVIGATE_IN_PAGE = 'did-navigate-in-page',
   DISCONNECTED = 'disconnected',
-  GET_TOKEN = 'getToken',
-  INIT_AGENT_LOG = 'initAgentLog',
+  GENERATE_TOKEN = 'generateToken',
+  GENERATE_TOKEN_LOADMILL_VIEW = 'generateTokenLoadmillView',
+  GO_BACK = 'goBack',
+  GO_FORWARD = 'goForward',
   IS_AGENT_CONNECTED = 'isAgentConnected',
+  LOADMILL_DESKTOP = 'loadmillDesktop',
+  LOADMILL_VIEW_ID = 'loadmillViewId',
+  MAIN_WINDOW_ID = 'mainWindowId',
   MESSAGE = 'message',
-  POTENTIAL_TOKEN = 'potentialToken',
+  NAVIGATION = 'navigation',
+  NEW_TOKEN = 'newToken',
   READY = 'ready',
-  SAVE_TOKEN = 'saveToken',
-  SET_POTENTIAL_TOKEN = 'setPotentialToken',
+  REFRESH_PAGE = 'refreshPage',
+  RESIZE = 'resize',
+  SAVED_TOKEN = 'savedToken',
+  SAVED_TOKEN_LOADMILL_VIEW = 'savedTokenLoadmillView',
+  SET_IS_USER_SIGNED_IN = 'setIsUserSignedIn',
   START_AGENT = 'startAgent',
-  STDERR = 'stderr',
-  STDOUT = 'stdout',
   STOP_AGENT = 'stopAgent',
+  TOGGLE_MAXIMIZE_WINDOW = 'toggleMaximizeWindow',
+  TOKEN = 'token',
   UPDATE_DOWNLOADED = 'update-downloaded',
   UPDATE_NOT_AVAILABLE = 'update-not-available',
-  VALID_TOKEN = 'validToken',
   WINDOW_ALL_CLOSED = 'window-all-closed';
 
 export const PLATFORM: { [platform: string]: NodeJS.Platform; } = {
   DARWIN: 'darwin',
 };
 
-export const LINK_TO_LOADMILL_APP = 'https://app.loadmill.com';
-export const LINK_TO_LOADMILL_SECURITY = LINK_TO_LOADMILL_APP + '/app/user/settings/security';
-export const LINK_TO_LOADMILL_AGENT_DOCS = 'https://docs.loadmill.com/integrations/testing-localhost-application';
+export const LINK_TO_LOADMILL_APP = process.env.LOADMILL_WEB_APP_ORIGIN || 'https://app.loadmill.com';
 export const LOADMILL_AGENT = 'loadmill-agent';

@@ -60,7 +60,15 @@ module.exports = {
               'js': './src/renderer.ts',
               'name': 'main_window',
               'preload': {
-                'js': './src/preload.ts'
+                'js': './src/preload-window.ts'
+              }
+            },
+            {
+              'html': './src/loadmill-view/index.html',
+              'js': './src/loadmill-view/renderer.ts',
+              'name': 'loadmill_view',
+              'preload': {
+                'js': './src/loadmill-view/preload.ts'
               }
             }
           ]

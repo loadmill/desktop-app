@@ -1,124 +1,110 @@
-import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
-import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
-import ReadMoreOutlinedIcon from '@mui/icons-material/ReadMoreOutlined';
-import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import React, { SyntheticEvent } from 'react';
 
-export const StopIconButton: React.FC<StopIconButtonProps> = ({
-  isDisabled,
-  onStopClicked,
-}): JSX.Element => {
-  return (
-    <>
-      <Tooltip
-        placement='bottom'
-        title='Stop Agent'
-      >
-        <span>
-          <IconButton
-            disabled={ isDisabled }
-            onClick={ onStopClicked }
-          >
-            <StopCircleOutlinedIcon
-              color={ isDisabled ? 'disabled' : 'primary' }
-              fontSize='large'
-            />
-          </IconButton>
-        </span>
-      </Tooltip>
-    </>
-  );
+type Icons = 'back' | 'forward' | 'refresh';
+
+const getIconFromName = (iconType: Icons): JSX.Element => {
+  switch (iconType) {
+    case 'back':
+      return <ArrowBackIcon fontSize='small' />;
+    case 'forward':
+      return <ArrowForwardIcon fontSize='small' />;
+    case 'refresh':
+      return <RefreshIcon fontSize='small' />;
+
+  }
 };
 
-export type StopIconButtonProps = {
-  isDisabled?: boolean;
-  onStopClicked: (e: SyntheticEvent) => void;
-};
+const ActionIconButton: React.FC<ActionsIconButtonsProps> = ({
+  disabled,
+  iconType,
+  onActionClicked,
+  title,
+}): JSX.Element => (
+  <>
+    <Tooltip
+      title={ title }
+    >
+      <span>
+        <IconButton
+          disabled={ disabled }
+          onClick={ onActionClicked }
+          style={ { cursor: 'default' } }
+        >
+          {getIconFromName(iconType)}
+        </IconButton>
+      </span>
+    </Tooltip>
+  </>
+);
 
-export const ScrollToBottomIconButton: React.FC<ScrollToBottomIconProps> = ({
-  onScrollToBottomClicked
-}): JSX.Element => {
-  return (
-    <>
-      <Tooltip
-        placement='bottom'
-        title='Scroll to bottom'
-      >
-        <span>
-          <IconButton onClick={ onScrollToBottomClicked }>
-            <ArrowCircleDownIcon
-              color='primary'
-              fontSize='large'
-            />
-          </IconButton>
-        </span>
-      </Tooltip>
-    </>
-  );
-};
-
-export type ScrollToBottomIconProps = {
-  onScrollToBottomClicked: (e: SyntheticEvent) => void;
-};
-
-export const GoToConsoleIconButton: React.FC<GoToConsoleIconButtonProps> = ({
-  isDisabled,
-  onGoToConsoleClicked
-}): JSX.Element => {
-  return (
-    <>
-      <Tooltip
-        placement='bottom'
-        title='See Logs'
-      >
-        <span>
-          <IconButton
-            disabled={ isDisabled }
-            onClick={ onGoToConsoleClicked }
-          >
-            <ReadMoreOutlinedIcon
-              color={ isDisabled ? 'disabled' : 'primary' }
-              fontSize='large'
-            />
-
-          </IconButton>
-        </span>
-      </Tooltip>
-    </>
-  );
-};
-
-export type GoToConsoleIconButtonProps = {
-  isDisabled: boolean,
-  onGoToConsoleClicked: (e: SyntheticEvent) => void
+export type ActionsIconButtonsProps = {
+  disabled?: boolean;
+  iconType: Icons;
+  onActionClicked?: (...args: unknown[]) => void;
+  title?: string;
 };
 
 export const GoBackIconButton: React.FC<GoBackIconButtonProps> = ({
+  disabled,
   onGoBackClicked,
 }): JSX.Element => {
   return (
     <>
-      <Tooltip
-        placement='bottom'
-        title='Back'
-      >
-        <span>
-          <IconButton
-            onClick={ onGoBackClicked }
-          >
-            <ArrowCircleLeftOutlinedIcon
-              color='primary'
-              fontSize='large'
-            />
-          </IconButton>
-        </span>
-      </Tooltip>
+      <ActionIconButton
+        disabled={ disabled }
+        iconType='back'
+        onActionClicked={ onGoBackClicked }
+        title='Go back'
+      />
     </>
   );
 };
 
 export type GoBackIconButtonProps = {
+  disabled?: boolean;
   onGoBackClicked: (e: SyntheticEvent) => void;
+};
+
+export const GoForwardIconButton: React.FC<GoForwardIconButtonProps> = ({
+  disabled,
+  onGoForwardClicked,
+}): JSX.Element => {
+  return (
+    <>
+      <ActionIconButton
+        disabled={ disabled }
+        iconType='forward'
+        onActionClicked={ onGoForwardClicked }
+        title='Go Forward'
+      />
+    </>
+  );
+};
+
+export type GoForwardIconButtonProps = {
+  disabled?: boolean;
+  onGoForwardClicked: (e: SyntheticEvent) => void
+};
+
+export const RefreshIconButton: React.FC<RefreshIconButtonProps> = ({
+  onRefreshClicked,
+}): JSX.Element => {
+  return (
+    <>
+      <ActionIconButton
+        iconType='refresh'
+        onActionClicked={ onRefreshClicked }
+        title='Refresh'
+      />
+    </>
+  );
+};
+
+export type RefreshIconButtonProps = {
+  onRefreshClicked: (e: SyntheticEvent) => void;
 };

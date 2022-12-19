@@ -4,7 +4,7 @@
 import { BrowserWindow } from 'electron';
 
 import log from './log';
-import { ProcessMessageRenderer } from './types/messaging';
+import { RendererMessage } from './types/messaging';
 
 const MainToRender = {
   mainWindow: null as BrowserWindow,
@@ -14,10 +14,10 @@ export const init = (mainWindow: BrowserWindow): void => {
   MainToRender.mainWindow = mainWindow;
 };
 
-export const send = ({ type, data }: ProcessMessageRenderer): void => {
+export const sendToRenderer = ({ type, data }: RendererMessage): void => {
   try {
-    log.debug('Sending to renderer', { data, type });
     if (MainToRender.mainWindow?.webContents) {
+      log.debug('Sending to renderer', { data, type });
       MainToRender.mainWindow.webContents.send(type, data);
     } else {
       log.warn('Cannot send from Main process to Renderer Process. Reason: No mainWindow on MainToRender object.', {

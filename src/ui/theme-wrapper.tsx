@@ -1,11 +1,14 @@
-import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 
-import { Main } from './main';
+import { LoadmillWebAppView } from './loadmill-web-app-view';
+import { TitleBar } from './title-bar';
 
 const darkTheme = createTheme({
   palette: {
+    action: {
+      active: '#bdd2e7',
+    },
     background: {
       default: '#101e2c',
       paper: '#101e2c',
@@ -22,8 +25,12 @@ const darkTheme = createTheme({
 
 export const ThemeWrapper: React.FC<ThemeWrapperProps> = (): JSX.Element => (
   <ThemeProvider theme={ darkTheme }>
-    <CssBaseline />
-    <Main />
+    <div
+      className='app-container'
+    >
+      <TitleBar />
+      <LoadmillWebAppView />
+    </div>
   </ThemeProvider>
 );
 
