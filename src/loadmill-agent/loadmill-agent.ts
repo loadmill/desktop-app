@@ -1,11 +1,11 @@
 import { start } from '@loadmill/agent';
 
+import { AgentMessage, MainMessage } from '../types/messaging';
 import {
   IS_AGENT_CONNECTED,
   START_AGENT,
   STOP_AGENT
-} from './constants';
-import { AgentMessage, MainMessage } from './types/messaging';
+} from '../universal/constants';
 
 let stop: (() => void) | null = null;
 

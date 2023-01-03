@@ -3,8 +3,8 @@
  */
 import { BrowserWindow } from 'electron';
 
-import log from './log';
-import { RendererMessage } from './types/messaging';
+import log from '../log';
+import { RendererMessage } from '../types/messaging';
 
 const MainToRender = {
   mainWindow: null as BrowserWindow,

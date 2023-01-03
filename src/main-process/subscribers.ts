@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 
-import { MainMessage } from './types/messaging';
+import { MainMessage } from '../types/messaging';
 
 export const subscribeToMainMessage = (
   { data, type }: MainMessage,

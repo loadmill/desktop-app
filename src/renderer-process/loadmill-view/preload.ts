@@ -1,13 +1,13 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
+import { sendToMain } from '../../inter-process-communication/renderer-to-main';
 import {
   GENERATE_TOKEN,
   LOADMILL_DESKTOP,
   NEW_TOKEN,
   SAVED_TOKEN,
   SET_IS_USER_SIGNED_IN,
-} from '../constants';
-import { sendToMain } from '../renderer-to-main';
+} from '../../universal/constants';
 
 export const WINDOW_API = {
   [NEW_TOKEN]: (token: string): void => sendToMain(NEW_TOKEN, { token }),

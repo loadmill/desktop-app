@@ -1,6 +1,7 @@
-import { MainMessage } from './types/messaging';
+import { MainMessage } from '../types/messaging';
+import { textToNonEmptyLines } from '../universal/utils';
+
 import { checkForUpdates } from './updates';
-import { textToNonEmptyLines } from './utils';
 
 let _isConnected = false;
 
@@ -17,6 +18,7 @@ const updateConnectedStatus = ({ isConnected, text }: MainMessage['data']): void
   if (isConnected != null) {
     _isConnected = isConnected;
   }
+
 };
 
 const handleText = (text: string) => {

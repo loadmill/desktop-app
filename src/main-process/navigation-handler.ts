@@ -1,8 +1,8 @@
 import { BrowserView, ipcMain } from 'electron';
 
-import { DID_NAVIGATE_IN_PAGE, GO_BACK, GO_FORWARD, NAVIGATION, REFRESH_PAGE } from './constants';
-import { sendToRenderer } from './main-to-renderer';
-import { Navigation } from './types/navigation';
+import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
+import { Navigation } from '../types/navigation';
+import { DID_NAVIGATE_IN_PAGE, GO_BACK, GO_FORWARD, NAVIGATION, REFRESH_PAGE } from '../universal/constants';
 
 export const subscribeToNavigationEvents = (webView: BrowserView): void => {
   ipcMain.on(REFRESH_PAGE, (_event: Electron.IpcMainEvent) => {

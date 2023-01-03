@@ -56,19 +56,19 @@ module.exports = {
           'config': './webpack.renderer.config.js',
           'entryPoints': [
             {
-              'html': './src/index.html',
-              'js': './src/renderer.ts',
+              'html': './src/renderer-process/main-window/index.html',
+              'js': './src/renderer-process/main-window/renderer.ts',
               'name': 'main_window',
               'preload': {
-                'js': './src/preload-window.ts'
+                'js': './src/renderer-process/main-window/preload.ts'
               }
             },
             {
-              'html': './src/loadmill-view/index.html',
-              'js': './src/loadmill-view/renderer.ts',
+              'html': './src/renderer-process/loadmill-view/index.html',
+              'js': './src/renderer-process/loadmill-view/renderer.ts',
               'name': 'loadmill_view',
               'preload': {
-                'js': './src/loadmill-view/preload.ts'
+                'js': './src/renderer-process/loadmill-view/preload.ts'
               }
             }
           ]

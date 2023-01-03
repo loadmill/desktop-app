@@ -5,9 +5,9 @@ import React, {
   useState
 } from 'react';
 
-import { MESSAGE, NAVIGATION } from '../constants';
-import { isFromPreload } from '../inter-process-communication';
-import { RendererMessage } from '../types/messaging';
+import { isFromPreload } from '../../../inter-process-communication';
+import { RendererMessage } from '../../../types/messaging';
+import { MESSAGE, NAVIGATION } from '../../../universal/constants';
 
 import { GoBackIconButton, GoForwardIconButton, RefreshIconButton } from './actions-icon-buttons';
 

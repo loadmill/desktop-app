@@ -1,7 +1,7 @@
 import { autoUpdater, dialog } from 'electron';
 
-import { UPDATE_DOWNLOADED, UPDATE_NOT_AVAILABLE } from './constants';
-import log from './log';
+import log from '../log';
+import { UPDATE_DOWNLOADED, UPDATE_NOT_AVAILABLE } from '../universal/constants';
 
 let shouldShowUpToDatePopup = false;
 

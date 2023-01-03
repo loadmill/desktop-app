@@ -13,7 +13,7 @@ import {
   START_AGENT,
   STOP_AGENT,
   TOGGLE_MAXIMIZE_WINDOW
-} from '../constants';
+} from '../universal/constants';
 
 import { Navigation } from './navigation';
 

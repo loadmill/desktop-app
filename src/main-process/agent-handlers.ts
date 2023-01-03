@@ -3,11 +3,9 @@ import { ChildProcessWithoutNullStreams, fork } from 'child_process';
 import '@loadmill/agent/dist/cli';
 import { app, ipcMain } from 'electron';
 
-import { appendToAgentLog } from './agent-log-file';
-import {
-  isAgentConnected,
-  refreshConnectedStatus
-} from './connected-status';
+import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
+import log from '../log';
+import { AgentMessage, MainMessage } from '../types/messaging';
 import {
   DATA,
   GENERATE_TOKEN,
@@ -19,11 +17,14 @@ import {
   START_AGENT,
   STOP_AGENT,
   TOKEN
-} from './constants';
-import log from './log';
-import { sendToRenderer } from './main-to-renderer';
+} from '../universal/constants';
+
+import { appendToAgentLog } from './agent-log-file';
+import {
+  isAgentConnected,
+  refreshConnectedStatus
+} from './connected-status';
 import { get, set } from './store';
-import { AgentMessage, MainMessage } from './types/messaging';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
 let agent: ChildProcessWithoutNullStreams | null;

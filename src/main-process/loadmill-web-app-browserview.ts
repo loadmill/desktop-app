@@ -4,12 +4,13 @@ import {
   BrowserWindow,
 } from 'electron';
 
+import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import {
   LINK_TO_LOADMILL_APP,
   LOADMILL_VIEW_ID,
   RESIZE,
-} from './constants';
-import { sendToRenderer } from './main-to-renderer';
+} from '../universal/constants';
+
 import { subscribeToNavigationEvents } from './navigation-handler';
 
 declare const LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY: string; // webpack hack 😒

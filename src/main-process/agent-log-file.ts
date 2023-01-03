@@ -2,8 +2,8 @@ import { appendFile, readFileSync } from 'fs';
 
 import { app } from 'electron';
 
-import log from './log';
-import { textToNonEmptyLines } from './utils';
+import log from '../log';
+import { textToNonEmptyLines } from '../universal/utils';
 
 const AGENT_LOG_FILENAME = 'agent.log';
 const FULL_AGENT_LOG_PATH = `${app.getPath('userData') }/${AGENT_LOG_FILENAME}`;

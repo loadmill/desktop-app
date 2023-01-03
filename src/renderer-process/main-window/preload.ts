@@ -1,5 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
+import { sendToMain } from '../../inter-process-communication/renderer-to-main';
+import { RendererMessage } from '../../types/messaging';
 import {
   GENERATE_TOKEN,
   GO_BACK,
@@ -10,9 +12,7 @@ import {
   REFRESH_PAGE,
   SAVED_TOKEN,
   TOGGLE_MAXIMIZE_WINDOW,
-} from './constants';
-import { sendToMain } from './renderer-to-main';
-import { RendererMessage } from './types/messaging';
+} from '../../universal/constants';
 
 export const WINDOW_API = {
   [GO_BACK]: (): void => sendToMain(GO_BACK),

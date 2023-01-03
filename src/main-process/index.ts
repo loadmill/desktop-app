@@ -4,7 +4,10 @@ import {
   shell
 } from 'electron';
 
-import { subscribeToAgentEventsFromRenderer } from './agent-handlers';
+import {
+  init as initMainToRenderer, sendToRenderer
+} from '../inter-process-communication/main-to-renderer';
+import log from '../log';
 import {
   ACTIVATE,
   BEFORE_QUIT,
@@ -13,12 +16,10 @@ import {
   PLATFORM,
   READY,
   WINDOW_ALL_CLOSED
-} from './constants';
+} from '../universal/constants';
+
+import { subscribeToAgentEventsFromRenderer } from './agent-handlers';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
-import log from './log';
-import {
-  init as initMainToRenderer, sendToRenderer
-} from './main-to-renderer';
 import './menu';
 import {
   subscribeToToggleMaximizeWindow
