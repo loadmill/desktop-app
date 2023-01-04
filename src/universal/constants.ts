@@ -35,5 +35,5 @@ export const PLATFORM: { [platform: string]: NodeJS.Platform; } = {
   DARWIN: 'darwin',
 };
 
-export const LINK_TO_LOADMILL_APP = process.env.LOADMILL_WEB_APP_ORIGIN || 'https://app.loadmill.com';
+export const LOADMILL_WEB_APP_ORIGIN = process.env.LOADMILL_WEB_APP_ORIGIN || 'https://app.loadmill.com';
 export const LOADMILL_AGENT = 'loadmill-agent';

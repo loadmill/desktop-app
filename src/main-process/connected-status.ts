@@ -13,7 +13,7 @@ export const refreshConnectedStatus = (data: MainMessage['data']): void => {
 
 const updateConnectedStatus = ({ isConnected, text }: MainMessage['data']): void => {
   if (text) {
-    handleText(text);
+    updateConnectedStatusByText(text);
   }
   if (isConnected != null) {
     _isConnected = isConnected;
@@ -21,7 +21,7 @@ const updateConnectedStatus = ({ isConnected, text }: MainMessage['data']): void
 
 };
 
-const handleText = (text: string) => {
+const updateConnectedStatusByText = (text: string) => {
   const lines = textToNonEmptyLines(text);
   if (lines.some(l => l.includes('[INFO] Successfully connected to Loadmill'))) {
     _isConnected = true;

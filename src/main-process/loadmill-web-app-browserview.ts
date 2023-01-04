@@ -1,16 +1,16 @@
 import {
-  app,
   BrowserView,
   BrowserWindow,
 } from 'electron';
 
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import {
-  LINK_TO_LOADMILL_APP,
   LOADMILL_VIEW_ID,
+  LOADMILL_WEB_APP_ORIGIN,
   RESIZE,
 } from '../universal/constants';
 
+import { setWebContents } from './cookies';
 import { subscribeToNavigationEvents } from './navigation-handler';
 
 declare const LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY: string; // webpack hack 😒
@@ -40,11 +40,9 @@ export const createLoadmillWebView = (
   mainWindow.on(RESIZE, handleWindowResize);
   subscribeToNavigationEvents(loadmillWebView);
 
-  loadmillWebView.webContents.loadURL(LINK_TO_LOADMILL_APP);
+  loadmillWebView.webContents.loadURL(LOADMILL_WEB_APP_ORIGIN);
 
-  if (!app.isPackaged) {
-    // loadmillWebView.webContents.openDevTools();
-  }
+  setWebContents(loadmillWebView.webContents);
 
   return loadmillWebView;
 };
