@@ -6,12 +6,13 @@ import {
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import {
   LOADMILL_VIEW_ID,
-  LOADMILL_WEB_APP_ORIGIN,
   RESIZE,
 } from '../universal/constants';
 
+import { LOADMILL_WEB_APP_ORIGIN } from './constants';
 import { setWebContents } from './cookies';
 import { subscribeToNavigationEvents } from './navigation-handler';
+import { setOpenLinksInBrowser } from './open-links';
 
 declare const LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY: string; // webpack hack 😒
 
@@ -26,7 +27,7 @@ export const createLoadmillWebView = (
     },
   });
   mainWindow.setBrowserView(loadmillWebView);
-
+  setOpenLinksInBrowser(loadmillWebView.webContents);
   sendToRenderer({
     data: { loadmillViewId: loadmillWebView.webContents.id },
     type: LOADMILL_VIEW_ID,

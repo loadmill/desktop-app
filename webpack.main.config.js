@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   entry: {
     index: './src/main-process/index.ts',
-    'loadmill-agent': './src/loadmill-agent/loadmill-agent.ts',
+    'loadmill-agent': './src/agent-process/loadmill-agent.ts',
   },
   externals: {
     vm2: 'vm2',

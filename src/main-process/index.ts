@@ -1,11 +1,11 @@
 import {
   app,
   BrowserWindow,
-  shell
 } from 'electron';
 
 import {
-  init as initMainToRenderer, sendToRenderer
+  init as initMainToRenderer,
+  sendToRenderer,
 } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
 import {
@@ -15,15 +15,14 @@ import {
   MAIN_WINDOW_ID,
   PLATFORM,
   READY,
-  WINDOW_ALL_CLOSED
+  WINDOW_ALL_CLOSED,
 } from '../universal/constants';
 
 import { subscribeToAgentEventsFromRenderer } from './agent-handlers';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
 import './menu';
-import {
-  subscribeToToggleMaximizeWindow
-} from './screen-size';
+import { setOpenLinksInBrowser } from './open-links';
+import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initStore } from './store';
 import { initUpdater } from './update-electron-app';
 
@@ -64,18 +63,11 @@ const createWindow = () => {
     data: { mainWindowId: mainWindow.webContents.id },
     type: MAIN_WINDOW_ID,
   });
-  setOpenLinksInBrowser(mainWindow);
+  setOpenLinksInBrowser(mainWindow.webContents);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   subscribeToToggleMaximizeWindow(mainWindow);
   // mainWindow.webContents.openDevTools();
   createLoadmillWebView(mainWindow);
-};
-
-const setOpenLinksInBrowser = (mainWindow: BrowserWindow) => {
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
-    return { action: 'deny' };
-  });
 };
 
 app.on(BEFORE_QUIT, () => {

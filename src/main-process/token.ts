@@ -1,8 +1,9 @@
 import fetch from 'node-fetch';
 
 import log from '../log';
-import { LOADMILL_WEB_APP_ORIGIN, TOKEN } from '../universal/constants';
+import { TOKEN } from '../universal/constants';
 
+import { LOADMILL_WEB_APP_ORIGIN } from './constants';
 import { getCookie } from './cookies';
 import { set } from './store';
 

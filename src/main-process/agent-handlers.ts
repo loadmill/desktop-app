@@ -20,6 +20,10 @@ import {
   isAgentConnected,
   refreshConnectedStatus
 } from './connected-status';
+import {
+  LOADMILL_AGENT_SERVER_URL,
+  NODE_TLS_REJECT_UNAUTHORIZED
+} from './constants';
 import { get } from './store';
 import { createAndSaveToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
@@ -54,13 +58,13 @@ const initAgent = () => {
 
 const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   log.info('Creating agent process with env vars', {
-    LOADMILL_AGENT_SERVER_URL: process.env.LOADMILL_AGENT_SERVER_URL,
-    NODE_TLS_REJECT_UNAUTHORIZED: process.env.NODE_TLS_REJECT_UNAUTHORIZED,
+    LOADMILL_AGENT_SERVER_URL,
+    NODE_TLS_REJECT_UNAUTHORIZED,
   });
   return fork(app.getAppPath() + '/.webpack/main/' + LOADMILL_AGENT, {
     env: {
-      LOADMILL_AGENT_SERVER_URL: process.env.LOADMILL_AGENT_SERVER_URL,
-      NODE_TLS_REJECT_UNAUTHORIZED: process.env.NODE_TLS_REJECT_UNAUTHORIZED,
+      LOADMILL_AGENT_SERVER_URL,
+      NODE_TLS_REJECT_UNAUTHORIZED,
     },
     stdio: 'pipe',
   });

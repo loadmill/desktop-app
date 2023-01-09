@@ -1,6 +1,6 @@
 import { WebContents } from 'electron';
 
-import { LOADMILL_WEB_APP_ORIGIN } from '../universal/constants';
+import { LOADMILL_WEB_APP_ORIGIN } from './constants';
 
 let _webContents: WebContents;
 
