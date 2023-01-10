@@ -1,7 +1,7 @@
 {
   "name": "desktop-app",
   "productName": "Loadmill",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "The Loadmill desktop app",
   "author": {
     "name": "Gilad Gur Andelman",
@@ -62,13 +62,14 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@loadmill/agent": "^0.1.76",
+    "@loadmill/agent": "^0.1.78",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.13",
     "electron-log": "^4.4.8",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "file-loader": "^6.2.0",
+    "node-fetch": "^3.3.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "update-electron-app": "^2.0.1"

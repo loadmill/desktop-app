@@ -109,7 +109,11 @@ module.exports = {
     'object-curly-spacing': ['error', 'always'],
     'prefer-const': ['error', { destructuring: 'all', },],
     'quotes': ['error', 'single'],
-    'react/boolean-prop-naming': ['error', { 'validateNested': true }],
+    'react-hooks/exhaustive-deps': 'off',
+    'react/boolean-prop-naming': ['error', {
+      'rule': 'disabled|^(is|has|can)[A-Z]([A-Za-z0-9]?)+',
+      'validateNested': true,
+    }],
     'react/destructuring-assignment': 'error',
     'react/display-name': 'off',
     'react/jsx-closing-bracket-location': 2,

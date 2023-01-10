@@ -1,15 +1,14 @@
-export { };
+export {};
 
 declare global {
   interface Window {
-    api: {
-      checkForUpdates: (msg?: string) => void;
-      getToken: (msg?: string) => void;
-      initAgentLog: (msg?: string) => void;
-      isAgentConnected: (msg?: string) => void;
-      setPotentialToken: (msg?: string) => void;
-      startAgent: (msg: string) => void;
-      stopAgent: (msg?: string) => void;
+    loadmillDesktop: {
+      goBack: () => void;
+      goForward: () => void;
+      newToken: (token: string) => void;
+      refreshPage: () => void;
+      setIsUserSignedIn: (isSignedIn: boolean) => void;
+      toggleMaximizeWindow: () => void;
     }
   }
 }
