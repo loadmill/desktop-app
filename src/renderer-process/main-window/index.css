@@ -25,3 +25,12 @@ body, html {
   gap: 6px;
   margin-left: 90px;
 }
+
+.undraggable {
+  -webkit-app-region: no-drag;
+}
+
+.find-on-page {
+  margin-left: 24px;
+  width: min(25%, 380px);
+}

@@ -1,4 +1,5 @@
 import {
+  FIND_NEXT,
   GENERATE_TOKEN,
   GO_BACK,
   GO_FORWARD,
@@ -6,10 +7,10 @@ import {
   LOADMILL_VIEW_ID,
   MAIN_WINDOW_ID,
   NAVIGATION,
-  NEW_TOKEN,
   REFRESH_PAGE,
   SAVED_TOKEN,
   SET_IS_USER_SIGNED_IN,
+  SHOW_FIND_ON_PAGE,
   START_AGENT,
   STOP_AGENT,
   TOGGLE_MAXIMIZE_WINDOW
@@ -37,6 +38,7 @@ export abstract class MainMessage implements IPCMessage {
     isConnected?: boolean;
     isSignedIn?: boolean;
     text?: string;
+    toFind?: string;
     token?: string;
   };
   type: MainMessageTypes;
@@ -47,6 +49,7 @@ export abstract class RendererMessage implements IPCMessage {
     loadmillViewId?: number;
     mainWindowId?: number;
     nav?: Navigation;
+    shouldShowFind?: boolean;
     token?: string;
   };
   type: RendererMessageTypes;
@@ -58,10 +61,10 @@ export type AgentMessageTypes =
   typeof STOP_AGENT;
 
 export type MainMessageTypes =
+  typeof FIND_NEXT |
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof IS_AGENT_CONNECTED |
-  typeof NEW_TOKEN |
   typeof REFRESH_PAGE |
   typeof SET_IS_USER_SIGNED_IN |
   typeof TOGGLE_MAXIMIZE_WINDOW;
@@ -71,4 +74,5 @@ export type RendererMessageTypes =
   typeof LOADMILL_VIEW_ID |
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
-  typeof SAVED_TOKEN;
+  typeof SAVED_TOKEN |
+  typeof SHOW_FIND_ON_PAGE;

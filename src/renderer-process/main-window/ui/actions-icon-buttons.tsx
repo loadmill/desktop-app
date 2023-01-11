@@ -25,7 +25,7 @@ const ActionIconButton: React.FC<ActionsIconButtonsProps> = ({
   onActionClicked,
   title,
 }): JSX.Element => (
-  <>
+  <div className={ !disabled ? 'undraggable' : '' }>
     <Tooltip
       title={ title }
     >
@@ -39,7 +39,7 @@ const ActionIconButton: React.FC<ActionsIconButtonsProps> = ({
         </IconButton>
       </span>
     </Tooltip>
-  </>
+  </div>
 );
 
 export type ActionsIconButtonsProps = {
