@@ -1,17 +1,16 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 import { sendToMain } from '../../inter-process-communication/renderer-to-main';
+import { ApiForLoadmillBrowserView } from '../../types/api';
 import {
   GENERATE_TOKEN,
   LOADMILL_DESKTOP,
-  NEW_TOKEN,
   SAVED_TOKEN,
   SET_IS_USER_SIGNED_IN,
 } from '../../universal/constants';
 
-export const WINDOW_API = {
-  [NEW_TOKEN]: (token: string): void => sendToMain(NEW_TOKEN, { token }),
-  [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean): void => sendToMain(SET_IS_USER_SIGNED_IN, { isSignedIn }),
+export const WINDOW_API: ApiForLoadmillBrowserView = {
+  [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => sendToMain(SET_IS_USER_SIGNED_IN, { isSignedIn }),
 };
 
 const isFromMainProcess = ({ senderId }: Electron.IpcRendererEvent) => {

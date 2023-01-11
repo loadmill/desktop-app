@@ -13,9 +13,11 @@ process.on('message', ({ type, data }: AgentMessage) => {
   switch (type) {
     case START_AGENT:
       startAgent(data);
+      sendIsConnected();
       break;
     case STOP_AGENT:
       stopAgent();
+      sendIsConnected();
       break;
     case IS_AGENT_CONNECTED:
       sendIsConnected();

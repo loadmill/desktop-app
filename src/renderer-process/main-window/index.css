@@ -18,10 +18,23 @@ body, html {
   align-items: center;
   display: flex;
   height: 50px;
+  justify-content: space-between;
 }
 
 .title-bar-actn-btns {
   display: flex;
   gap: 6px;
   margin-left: 90px;
+}
+
+.undraggable {
+  -webkit-app-region: no-drag;
+}
+
+.find-on-page {
+  width: min(25%, 380px);
+}
+
+.stop-start-agent {
+  margin-right: 16px;
 }
