@@ -18,6 +18,7 @@ body, html {
   align-items: center;
   display: flex;
   height: 50px;
+  justify-content: space-between;
 }
 
 .title-bar-actn-btns {
@@ -31,6 +32,9 @@ body, html {
 }
 
 .find-on-page {
-  margin-left: 24px;
   width: min(25%, 380px);
+}
+
+.stop-start-agent {
+  margin-right: 16px;
 }

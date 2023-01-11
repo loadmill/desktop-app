@@ -4,6 +4,8 @@ import {
   GO_FORWARD,
   REFRESH_PAGE,
   SET_IS_USER_SIGNED_IN,
+  START_AGENT,
+  STOP_AGENT,
   TOGGLE_MAXIMIZE_WINDOW
 } from '../universal/constants';
 
@@ -20,6 +22,8 @@ export type ApiForMainWindow = {
   [GO_BACK]: () => void;
   [GO_FORWARD]: () => void;
   [REFRESH_PAGE]: () => void;
+  [START_AGENT]: () => void;
+  [STOP_AGENT]: () => void;
   [TOGGLE_MAXIMIZE_WINDOW]: () => void;
 };
 

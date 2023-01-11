@@ -3,6 +3,7 @@ import { ChildProcessWithoutNullStreams, fork } from 'child_process';
 import '@loadmill/agent/dist/cli';
 import { app, ipcMain } from 'electron';
 
+import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
 import { AgentMessage, MainMessage } from '../types/messaging';
 import {
@@ -73,13 +74,25 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
 const addOnAgentExitEvent = () => {
   agent.on('exit', (code) => {
     log.info('Agent process exited with code:', code);
+    sendToRenderer({
+      data: {
+        isAgentConnected: isAgentConnected(),
+      },
+      type: IS_AGENT_CONNECTED,
+    });
   });
 };
 
 const addOnAgentIsConnectedEvent = (): void => {
   agent.on('message', ({ data, type }: MainMessage) => {
     if (type === IS_AGENT_CONNECTED) {
-      log.info({ data, type: IS_AGENT_CONNECTED });
+      log.info('Agent message received', { data, type } );
+      sendToRenderer({
+        data: {
+          isAgentConnected: data.isConnected,
+        },
+        type: IS_AGENT_CONNECTED,
+      });
     }
   });
 };
@@ -118,6 +131,8 @@ const sendToAgentProcess = (msg: AgentMessage) => {
 
 export const subscribeToAgentEventsFromRenderer = (): void => {
   subscribeToUserIsSignedInFromRenderer();
+  subscribeToStartAgentFromRenderer();
+  subscribeToStopAgentFromRenderer();
 };
 
 const subscribeToUserIsSignedInFromRenderer = () => {
@@ -160,6 +175,46 @@ const handleUserIsSignedOut = () => {
     log.info('Agent is connected, stopping agent...');
     stopAgent();
   }
+};
+
+const subscribeToStartAgentFromRenderer = () => {
+  ipcMain.on(START_AGENT, handleStartAgentEvent);
+};
+
+const handleStartAgentEvent = async (_event: Electron.IpcMainEvent) => {
+  log.info(`Got ${START_AGENT} event`);
+  if (!isUserSignedIn()) {
+    log.info('User is not signed in, could not connect the agent');
+    return;
+  }
+  if (isAgentConnected()) {
+    log.info('Agent is already connected');
+    return;
+  }
+  let token = get(TOKEN);
+  if (!token) {
+    log.info('Token does not exists, fetching new token from loadmill server');
+    await createAndSaveToken();
+    token = get(TOKEN);
+    if (!token) {
+      log.info('Token still does not exists, could not connect the agent');
+      return;
+    }
+  }
+  startAgent(token);
+};
+
+const subscribeToStopAgentFromRenderer = () => {
+  ipcMain.on(STOP_AGENT, handleStopAgentEvent);
+};
+
+const handleStopAgentEvent = (_event: Electron.IpcMainEvent) => {
+  log.info(`Got ${STOP_AGENT} event`);
+  if (!isAgentConnected()) {
+    log.info('Agent is already not connected');
+    return;
+  }
+  stopAgent();
 };
 
 const handleInvalidToken = (text: string) => {

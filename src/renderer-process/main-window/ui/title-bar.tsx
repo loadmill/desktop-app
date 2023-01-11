@@ -8,18 +8,20 @@ import React, {
 import { isFromPreload } from '../../../inter-process-communication';
 import { RendererMessage } from '../../../types/messaging';
 import {
+  IS_AGENT_CONNECTED,
   MESSAGE,
   NAVIGATION,
   SHOW_FIND_ON_PAGE,
 } from '../../../universal/constants';
 
-import { GoBackIconButton, GoForwardIconButton, RefreshIconButton } from './actions-icon-buttons';
+import { GoBackIconButton, GoForwardIconButton, RefreshIconButton, StartAgentIconButton, StopAgentIconButton } from './actions-icon-buttons';
 import { FindOnPage } from './find-on-page';
 
 export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
+  const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
 
   useEffect(() => {
     window.addEventListener(MESSAGE, onPreloadMessage);
@@ -38,6 +40,9 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         case SHOW_FIND_ON_PAGE:
           onShowFindMsg(data);
           break;
+        case IS_AGENT_CONNECTED:
+          onIsAgentConnectedMsg(data);
+          break;
         default:
           break;
       }
@@ -47,6 +52,10 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const onNavigationMsg = (data: RendererMessage['data']) => {
     setCanGoBack(!!data?.nav?.canGoBack);
     setCanGoForward(!!data?.nav?.canGoForward);
+  };
+
+  const onIsAgentConnectedMsg = (data: RendererMessage['data']) => {
+    setIsAgentConnected(!!data?.isAgentConnected);
   };
 
   const onShowFindMsg = (data: RendererMessage['data']) => {
@@ -89,9 +98,20 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
       />
       {
         shouldShowFind &&
-          <FindOnPage
-            setShouldShowFind={ setShouldShowFind }
+        <FindOnPage
+          setShouldShowFind={ setShouldShowFind }
+        />
+      }
+      {
+        isAgentConnected ? (
+          <StopAgentIconButton
+            onStopAgentClicked={ window.desktopApi.stopAgent }
           />
+        ) : (
+          <StartAgentIconButton
+            onStartAgentClicked={ window.desktopApi.startAgent }
+          />
+        )
       }
     </div>
   );
@@ -99,13 +119,13 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
 
 export type TitleBarProps = {};
 
-export const TitleBarActions: React.FC<TitleBarActionsProps> = ({
+export const TitleBarActions = ({
   canGoBack,
   canGoForward,
   onBackClick,
   onForwardClick,
   onRefreshClick,
-}): JSX.Element => {
+}: TitleBarActionsProps): JSX.Element => {
   return (
     <div
       className='title-bar-actn-btns'
