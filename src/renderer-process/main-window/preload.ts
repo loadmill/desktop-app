@@ -1,24 +1,28 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 import { sendToMain } from '../../inter-process-communication/renderer-to-main';
+import { ApiForMainWindow } from '../../types/api';
 import { RendererMessage } from '../../types/messaging';
 import {
+  DESKTOP_API,
+  FIND_NEXT,
   GENERATE_TOKEN,
   GO_BACK,
   GO_FORWARD,
-  LOADMILL_DESKTOP,
   LOADMILL_VIEW_ID,
   NAVIGATION,
   REFRESH_PAGE,
   SAVED_TOKEN,
+  SHOW_FIND_ON_PAGE,
   TOGGLE_MAXIMIZE_WINDOW,
 } from '../../universal/constants';
 
-export const WINDOW_API = {
-  [GO_BACK]: (): void => sendToMain(GO_BACK),
-  [GO_FORWARD]: (): void => sendToMain(GO_FORWARD),
-  [REFRESH_PAGE]: (): void => sendToMain(REFRESH_PAGE),
-  [TOGGLE_MAXIMIZE_WINDOW]: (): void => sendToMain(TOGGLE_MAXIMIZE_WINDOW),
+export const WINDOW_API: ApiForMainWindow = {
+  [FIND_NEXT]: (toFind: string) => sendToMain(FIND_NEXT, { toFind }),
+  [GO_BACK]: () => sendToMain(GO_BACK),
+  [GO_FORWARD]: () => sendToMain(GO_FORWARD),
+  [REFRESH_PAGE]: () => sendToMain(REFRESH_PAGE),
+  [TOGGLE_MAXIMIZE_WINDOW]: () => sendToMain(TOGGLE_MAXIMIZE_WINDOW),
 };
 
 let loadmillViewId = 3;
@@ -47,4 +51,8 @@ ipcRenderer.on(NAVIGATION, async (_event: Electron.IpcRendererEvent, data: Rende
   window.postMessage({ data, type: NAVIGATION });
 });
 
-contextBridge.exposeInMainWorld(LOADMILL_DESKTOP, WINDOW_API);
+ipcRenderer.on(SHOW_FIND_ON_PAGE, async (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+  window.postMessage({ data, type: SHOW_FIND_ON_PAGE });
+});
+
+contextBridge.exposeInMainWorld(DESKTOP_API, WINDOW_API);
