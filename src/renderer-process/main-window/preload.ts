@@ -9,11 +9,14 @@ import {
   GENERATE_TOKEN,
   GO_BACK,
   GO_FORWARD,
+  IS_AGENT_CONNECTED,
   LOADMILL_VIEW_ID,
   NAVIGATION,
   REFRESH_PAGE,
   SAVED_TOKEN,
   SHOW_FIND_ON_PAGE,
+  START_AGENT,
+  STOP_AGENT,
   TOGGLE_MAXIMIZE_WINDOW,
 } from '../../universal/constants';
 
@@ -22,6 +25,8 @@ export const WINDOW_API: ApiForMainWindow = {
   [GO_BACK]: () => sendToMain(GO_BACK),
   [GO_FORWARD]: () => sendToMain(GO_FORWARD),
   [REFRESH_PAGE]: () => sendToMain(REFRESH_PAGE),
+  [START_AGENT]: () => sendToMain(START_AGENT),
+  [STOP_AGENT]: () => sendToMain(STOP_AGENT),
   [TOGGLE_MAXIMIZE_WINDOW]: () => sendToMain(TOGGLE_MAXIMIZE_WINDOW),
 };
 
@@ -53,6 +58,10 @@ ipcRenderer.on(NAVIGATION, async (_event: Electron.IpcRendererEvent, data: Rende
 
 ipcRenderer.on(SHOW_FIND_ON_PAGE, async (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
   window.postMessage({ data, type: SHOW_FIND_ON_PAGE });
+});
+
+ipcRenderer.on(IS_AGENT_CONNECTED, async (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+  window.postMessage({ data, type: IS_AGENT_CONNECTED });
 });
 
 contextBridge.exposeInMainWorld(DESKTOP_API, WINDOW_API);
