@@ -46,6 +46,7 @@ export abstract class MainMessage implements IPCMessage {
 
 export abstract class RendererMessage implements IPCMessage {
   data?: {
+    isAgentConnected?: boolean;
     loadmillViewId?: number;
     mainWindowId?: number;
     nav?: Navigation;
@@ -67,10 +68,13 @@ export type MainMessageTypes =
   typeof IS_AGENT_CONNECTED |
   typeof REFRESH_PAGE |
   typeof SET_IS_USER_SIGNED_IN |
+  typeof START_AGENT |
+  typeof STOP_AGENT |
   typeof TOGGLE_MAXIMIZE_WINDOW;
 
 export type RendererMessageTypes =
   typeof GENERATE_TOKEN |
+  typeof IS_AGENT_CONNECTED |
   typeof LOADMILL_VIEW_ID |
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
