@@ -7,20 +7,26 @@ import React, {
 
 import { isFromPreload } from '../../../inter-process-communication';
 import { RendererMessage } from '../../../types/messaging';
-import { MESSAGE, NAVIGATION } from '../../../universal/constants';
+import {
+  MESSAGE,
+  NAVIGATION,
+  SHOW_FIND_ON_PAGE,
+} from '../../../universal/constants';
 
 import { GoBackIconButton, GoForwardIconButton, RefreshIconButton } from './actions-icon-buttons';
-
-const isDoubleClick = ({ detail }: MouseEvent<HTMLElement>) => detail === 2;
+import { FindOnPage } from './find-on-page';
 
 export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
+  const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
 
-  const onNavigationMsg = (data: RendererMessage['data']) => {
-    setCanGoBack(!!data?.nav?.canGoBack);
-    setCanGoForward(!!data?.nav?.canGoForward);
-  };
+  useEffect(() => {
+    window.addEventListener(MESSAGE, onPreloadMessage);
+    return () => {
+      window.removeEventListener(MESSAGE, onPreloadMessage);
+    };
+  }, []);
 
   const onPreloadMessage = (event: MessageEvent<RendererMessage>) => {
     if (isFromPreload(event)) {
@@ -29,39 +35,44 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         case NAVIGATION:
           onNavigationMsg(data);
           break;
+        case SHOW_FIND_ON_PAGE:
+          onShowFindMsg(data);
+          break;
         default:
           break;
       }
     }
   };
 
-  const onMessage = (event: MessageEvent<RendererMessage>) => {
-    onPreloadMessage(event);
+  const onNavigationMsg = (data: RendererMessage['data']) => {
+    setCanGoBack(!!data?.nav?.canGoBack);
+    setCanGoForward(!!data?.nav?.canGoForward);
   };
 
-  useEffect(() => {
-    window.addEventListener(MESSAGE, onMessage);
-    return () => {
-      window.removeEventListener(MESSAGE, onMessage);
-    };
-  }, []);
+  const onShowFindMsg = (data: RendererMessage['data']) => {
+    const incomingShouldShowFind = !!data?.shouldShowFind;
+    setShouldShowFind(incomingShouldShowFind);
+    if (!incomingShouldShowFind) {
+      window.desktopApi.findNext('');
+    }
+  };
 
   const onLeftMouseClick = (event: MouseEvent<HTMLElement>) => {
     if (isDoubleClick(event)) {
-      window.loadmillDesktop.toggleMaximizeWindow();
+      window.desktopApi.toggleMaximizeWindow();
     }
   };
 
   const onRefreshClick = (_event: SyntheticEvent) => {
-    window.loadmillDesktop.refreshPage();
+    window.desktopApi.refreshPage();
   };
 
   const onBackClick = (_event: SyntheticEvent) => {
-    window.loadmillDesktop.goBack();
+    window.desktopApi.goBack();
   };
 
   const onForwardClick = (_event: SyntheticEvent) => {
-    window.loadmillDesktop.goForward();
+    window.desktopApi.goForward();
   };
 
   return (
@@ -76,6 +87,12 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         onForwardClick={ onForwardClick }
         onRefreshClick={ onRefreshClick }
       />
+      {
+        shouldShowFind &&
+          <FindOnPage
+            setShouldShowFind={ setShouldShowFind }
+          />
+      }
     </div>
   );
 };
@@ -115,3 +132,5 @@ export type TitleBarActionsProps = {
   onForwardClick: (_event: SyntheticEvent) => void,
   onRefreshClick: (_event: SyntheticEvent) => void;
 };
+
+const isDoubleClick = ({ detail }: MouseEvent<HTMLElement>) => detail === 2;

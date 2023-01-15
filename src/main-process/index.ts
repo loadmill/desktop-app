@@ -19,6 +19,8 @@ import {
 } from '../universal/constants';
 
 import { subscribeToAgentEventsFromRenderer } from './agent-handlers';
+import { subscribeToFindOnPageEvents } from './find-on-page';
+import './keybindings';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
 import './menu';
 import { setOpenLinksInBrowser } from './open-links';
@@ -66,8 +68,8 @@ const createWindow = () => {
   setOpenLinksInBrowser(mainWindow.webContents);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   subscribeToToggleMaximizeWindow(mainWindow);
-  // mainWindow.webContents.openDevTools();
-  createLoadmillWebView(mainWindow);
+  const loadmillWebView = createLoadmillWebView(mainWindow);
+  subscribeToFindOnPageEvents(loadmillWebView.webContents);
 };
 
 app.on(BEFORE_QUIT, () => {
