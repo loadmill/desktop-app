@@ -28,6 +28,19 @@ module.exports = {
       },
     },
     {
+      files: ['accordion-summary.tsx', 'table-row-cell.tsx'],
+      rules: {
+        'sort-keys': 'off',
+      },
+    },
+    {
+      files: ['src/main-process/proxy/index.ts'],
+      rules: {
+        '@typescript-eslint/ban-ts-comment': 'off',
+        'no-restricted-globals': 'off',
+      },
+    },
+    {
       env: {
         mocha: true,
       },

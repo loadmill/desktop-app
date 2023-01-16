@@ -151,7 +151,7 @@ const handleSetIsUserSignedInEvent = async (_event: Electron.IpcMainEvent, { isS
 
 const handleUserIsSignedIn = async () => {
   log.info('Checking if token exists...');
-  const token = get(TOKEN);
+  const token = get(TOKEN) as string;
   if (token) {
     log.info('Token exists');
     if (!isAgentConnected()) {
@@ -161,7 +161,7 @@ const handleUserIsSignedIn = async () => {
   } else {
     log.info('Token does not exists, fetching new token from loadmill server');
     await createAndSaveToken();
-    const token = get(TOKEN);
+    const token = get(TOKEN) as string;
     if (token) {
       startAgent(token);
     } else {
@@ -191,11 +191,11 @@ const handleStartAgentEvent = async (_event: Electron.IpcMainEvent) => {
     log.info('Agent is already connected');
     return;
   }
-  let token = get(TOKEN);
+  let token = get(TOKEN) as string;
   if (!token) {
     log.info('Token does not exists, fetching new token from loadmill server');
     await createAndSaveToken();
-    token = get(TOKEN);
+    token = get(TOKEN) as string;
     if (!token) {
       log.info('Token still does not exists, could not connect the agent');
       return;

@@ -6,6 +6,7 @@ module.exports = {
     'loadmill-agent': './src/agent-process/loadmill-agent.ts',
   },
   externals: {
+    _http_common: '_http_common',
     vm2: 'vm2',
   },
   module: {

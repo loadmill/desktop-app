@@ -7,6 +7,7 @@ import {
   init as initMainToRenderer,
   sendToRenderer,
 } from '../inter-process-communication/main-to-renderer';
+import { initProxyToRenderer } from '../inter-process-communication/proxy-to-render';
 import log from '../log';
 import {
   ACTIVATE,
@@ -24,6 +25,8 @@ import './keybindings';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
 import './menu';
 import { setOpenLinksInBrowser } from './open-links';
+import { initProxyServer } from './proxy';
+import { createProxyWindow } from './proxy-window';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initStore } from './store';
 import { initUpdater } from './update-electron-app';
@@ -43,6 +46,7 @@ if (require('electron-squirrel-startup')) {
 
 const onReady = () => {
   initStore();
+  initProxyServer();
   subscribeToAgentEventsFromRenderer();
   createWindow();
 };
@@ -58,7 +62,7 @@ const createWindow = () => {
     },
   });
   initUpdater(unsubscribeToCloseEvent);
-  subscribeToCloseEvent();
+  subscribeToCloseEvent(mainWindow);
   mainWindow.maximize();
   initMainToRenderer(mainWindow);
   sendToRenderer({
@@ -70,6 +74,9 @@ const createWindow = () => {
   subscribeToToggleMaximizeWindow(mainWindow);
   const loadmillWebView = createLoadmillWebView(mainWindow);
   subscribeToFindOnPageEvents(loadmillWebView.webContents);
+  const proxyWindow = createProxyWindow();
+  initProxyToRenderer(proxyWindow);
+  subscribeToCloseEvent(proxyWindow);
 };
 
 app.on(BEFORE_QUIT, () => {
@@ -101,13 +108,13 @@ const unsubscribeToCloseEvent = () => {
   mainWindow.removeListener(CLOSE, () => {});
 };
 
-const subscribeToCloseEvent = () => {
-  if (mainWindow) {
-    mainWindow.on(CLOSE, (event: Electron.Event) => {
+const subscribeToCloseEvent = (window: BrowserWindow = mainWindow) => {
+  if (window) {
+    window.on(CLOSE, (event: Electron.Event) => {
       if (!forceQuit && process.platform === PLATFORM.DARWIN) {
         if (!forceQuit) {
           event.preventDefault();
-          mainWindow.hide();
+          window.hide();
         }
       }
     });

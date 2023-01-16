@@ -1,0 +1,66 @@
+body, html {
+  background-color: #101e2c;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  margin: auto;
+}
+
+.hidden {
+  display: none;
+}
+
+#root {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  /* height: 100vh; */
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.page-wrapper {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fit-content {
+  width: fit-content;
+}
+
+.entry-summary {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 10px;
+}
+
+.url {
+  overflow: auto;
+}
+
+.body-content {
+  overflow: auto;
+}
+
+.filters-list {
+  overflow: auto;
+  max-height: 200px;
+}
+
+.html-display {
+  color: #ffb482;
+}
+
+.json-display {
+  color: #6eb450;
+}
+
+.proxy-dashboard-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
