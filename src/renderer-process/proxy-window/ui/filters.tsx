@@ -30,7 +30,6 @@ export const Filters = ({
   };
 
   const onAdd = () => {
-    console.log('add filter', [...filters, newFilter]);
     window.desktopApi.setFilters(
       [...filters, newFilter]
     );

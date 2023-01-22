@@ -6,6 +6,7 @@ import { ProxyRendererMessage } from '../../types/messaging';
 import {
   DESKTOP_API,
   DOWNLOAD_CERTIFICATE,
+  DOWNLOADED_CERTIFICATE_SUCCESS,
   PROXY,
   REFRESH_FILTERS,
   SET_FILTERS,
@@ -17,6 +18,10 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [REFRESH_FILTERS]: (): void => sendToMain(REFRESH_FILTERS),
   [SET_FILTERS]: (filters: string[]): void => sendToMain(SET_FILTERS, { filters }),
 };
+
+ipcRenderer.on(DOWNLOADED_CERTIFICATE_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: DOWNLOADED_CERTIFICATE_SUCCESS });
+});
 
 ipcRenderer.on(PROXY, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: PROXY });

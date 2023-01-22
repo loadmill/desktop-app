@@ -3,7 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { isFromPreload } from '../../../inter-process-communication';
 import { ProxyRendererMessage } from '../../../types/messaging';
 import { ProxyEntry } from '../../../types/proxy-entry';
-import { MESSAGE, PROXY, UPDATED_FILTERS } from '../../../universal/constants';
+import {
+  DOWNLOADED_CERTIFICATE_SUCCESS,
+  MESSAGE,
+  PROXY,
+  UPDATED_FILTERS
+} from '../../../universal/constants';
 
 import { DownloadCertificate } from './download-certificate';
 import { dummyEntries } from './dummy-entries-delete-later';
@@ -14,6 +19,8 @@ export const ProxyDashboard = (): JSX.Element => {
   const [shouldShowEntries, setShouldShowEntries] = useState<boolean>(true);
   const [entries, setEntries] = useState<ProxyEntry[]>(dummyEntries);
   const [filters, setFilters] = useState<string[]>([]);
+  const [isDownloadInProgress, setIsDownloadInProgress] = React.useState(false);
+  const [showDownloadSuccessSnackBar, setShowDownloadSuccessSnackBar] = useState<boolean>(false);
 
   useEffect(() => {
     window.desktopApi.refreshFilters();
@@ -36,6 +43,9 @@ export const ProxyDashboard = (): JSX.Element => {
         case PROXY:
           onProxyMsg(data);
           break;
+        case DOWNLOADED_CERTIFICATE_SUCCESS:
+          onDownloadedCertificateSuccess(data);
+          break;
         default:
           break;
       }
@@ -44,7 +54,6 @@ export const ProxyDashboard = (): JSX.Element => {
 
   const onUpdatedFilters = (data: ProxyRendererMessage['data']) => {
     const { filters } = data;
-    console.log('got filters', filters);
     setFilters(filters);
   };
 
@@ -54,6 +63,11 @@ export const ProxyDashboard = (): JSX.Element => {
     setShouldShowEntries(true);
   };
 
+  const onDownloadedCertificateSuccess = (_data: ProxyRendererMessage['data']) => {
+    setIsDownloadInProgress(false);
+    setShowDownloadSuccessSnackBar(true);
+  };
+
   return (
     <div
       className='page-wrapper'
@@ -61,7 +75,12 @@ export const ProxyDashboard = (): JSX.Element => {
       <div
         className='proxy-dashboard-header'
       >
-        <DownloadCertificate/>
+        <DownloadCertificate
+          isInProgress={ isDownloadInProgress }
+          openSnackBar={ showDownloadSuccessSnackBar }
+          setIsInProgress={ setIsDownloadInProgress }
+          setOpenSnackBar={ setShowDownloadSuccessSnackBar }
+        />
         <Filters
           filters={ filters }
         />

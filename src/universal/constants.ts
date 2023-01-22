@@ -7,6 +7,7 @@ export const
   DID_NAVIGATE = 'did-navigate',
   DID_NAVIGATE_IN_PAGE = 'did-navigate-in-page',
   DISCONNECTED = 'disconnected',
+  DOWNLOADED_CERTIFICATE_SUCCESS = 'downloadedCertificateSuccess',
   DOWNLOAD_CERTIFICATE = 'downloadCertificate',
   FILTERS = 'filters',
   FIND_NEXT = 'findNext',

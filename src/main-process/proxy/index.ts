@@ -2,13 +2,12 @@ import { randomUUID } from 'crypto';
 import http from 'http';
 
 import async from 'async';
-import { ipcMain } from 'electron';
 import Proxy from 'http-mitm-proxy';
 
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import log from '../../log';
 import { Header, Request, Response } from '../../types/proxy-entry';
-import { DOWNLOAD_CERTIFICATE, PROXY } from '../../universal/constants';
+import { PROXY } from '../../universal/constants';
 
 import { shouldFilter, subscribeToFiltersFromRenderer } from './filters';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
@@ -107,15 +106,6 @@ export const initProxyServer = (): void => {
     port: proxyPort,
     sslCaDir: './public',
   }, () => log.info(`Proxy listening on port ${proxyPort}!`));
-
-  ipcMain.on(DOWNLOAD_CERTIFICATE, (_event) => {
-    downloadCertificate();
-  });
-};
-
-const downloadCertificate = () => {
-  log.info('downloadCertificate');
-  //todo: implement
 };
 
 const toRequest = (ctx: HttpMitmProxy.IContext): Request => {

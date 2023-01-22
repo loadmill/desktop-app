@@ -1,5 +1,6 @@
 import {
   DOWNLOAD_CERTIFICATE,
+  DOWNLOADED_CERTIFICATE_SUCCESS,
   FIND_NEXT,
   GENERATE_TOKEN,
   GO_BACK,
@@ -101,5 +102,6 @@ export type RendererMessageTypes =
   typeof SHOW_FIND_ON_PAGE;
 
 export type ProxyRendererMessageTypes =
+  typeof DOWNLOADED_CERTIFICATE_SUCCESS |
   typeof UPDATED_FILTERS |
   typeof PROXY;
