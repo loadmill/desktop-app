@@ -15,7 +15,6 @@ export const proxyEntryToHarEntry = (proxyEntry: ProxyEntry): HarEntry => {
     response: {
       content: {
         mimeType: response.body?.mimeType,
-        size: response.body?.text?.length,
         text: response.body?.text,
       },
       headers: response.headers,

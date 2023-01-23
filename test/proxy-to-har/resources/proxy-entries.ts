@@ -1,5 +1,6 @@
-import { HarEntry } from '../../../src/types/har';
+import { Har, HarEntry } from '../../../src/types/har';
 import { ProxyEntry } from '../../../src/types/proxy-entry';
+import { importJSONResource } from '../../helpers/file-to-object';
 
 export const proxyEntry: ProxyEntry = {
   id: '5f9f1b9b-9c9c-4b9c-9b9b-9c9c9b9c9b9c',
@@ -43,7 +44,6 @@ export const harEntry: HarEntry = {
   response: {
     content: {
       mimeType: 'text/plain',
-      size: 13,
       text: 'Hello, World!',
     },
     headers: [
@@ -53,4 +53,23 @@ export const harEntry: HarEntry = {
     status: 200,
   },
   startedDateTime: '2020-05-20T18:40:00.000Z',
+};
+
+export const proxyEntries: ProxyEntry[] = [
+  proxyEntry,
+];
+
+const packageVersion = importJSONResource<{ version: string; }>('../../package.json').version;
+
+export const harLog: Har = {
+  log: {
+    creator: {
+      name: 'loadmill-desktop-proxy',
+      version: packageVersion,
+    },
+    entries: [
+      harEntry,
+    ],
+    version: '1.2',
+  }
 };
