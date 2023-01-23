@@ -7,8 +7,8 @@ import log from '../../log';
 import { DOWNLOAD_CERTIFICATE, DOWNLOADED_CERTIFICATE_SUCCESS } from '../../universal/constants';
 
 export const subscribeToDownloadCertificate = (): void => {
-  ipcMain.on(DOWNLOAD_CERTIFICATE, async (_event) => {
-    await downloadCertificate();
+  ipcMain.on(DOWNLOAD_CERTIFICATE, (_event) => {
+    downloadCertificate();
   });
 };
 

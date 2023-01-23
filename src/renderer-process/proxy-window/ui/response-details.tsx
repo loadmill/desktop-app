@@ -2,7 +2,7 @@ import { AccordionDetails } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 
-import { Response } from '../../../types/proxy-entry';
+import { ProxyResponse } from '../../../types/proxy-entry';
 
 import { Accordion } from './accordion';
 import { AccordionSummary } from './accordion-summary';
@@ -45,5 +45,5 @@ export const ResponseDetails = ({
 };
 
 export type ResponseDetailsProps = {
-  response: Response;
+  response: ProxyResponse;
 };

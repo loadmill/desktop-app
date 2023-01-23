@@ -3,7 +3,8 @@ import isHtml from 'is-html';
 import prettyHTML from 'pretty';
 import React from 'react';
 
-import { Body } from '../../../types/proxy-entry';
+import { Body } from '../../../types/body';
+import { toPrettyJsonString } from '../../../universal/utils';
 
 import { CopyButton } from './copy-button';
 
@@ -53,10 +54,6 @@ const isHTML = (mimeType: string, text: string): boolean => {
   return isHtml(text) || mimeType.includes('text/html');
 };
 
-const prettyJson = (json: object): string => {
-  return JSON.stringify(json, null, 2);
-};
-
 type BodyContentTextProps = {
   className: string;
   prettyText: string;
@@ -66,7 +63,7 @@ const getBodyContentProps = ({ mimeType = '', text = '' }: Body): BodyContentTex
   if (isJSON(mimeType, text)) {
     return {
       className: 'json-display',
-      prettyText: prettyJson(JSON.parse(text)),
+      prettyText: toPrettyJsonString(JSON.parse(text)),
     };
   }
   if (isHTML(mimeType, text)) {

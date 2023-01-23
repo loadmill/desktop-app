@@ -1,4 +1,4 @@
-import { ProxyEntry } from '../../../types/proxy-entry';
+import { ProxyEntry } from '../../types/proxy-entry';
 
 export const dummyEntries: ProxyEntry[] = [
   {

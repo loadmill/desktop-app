@@ -7,14 +7,21 @@ import Proxy from 'http-mitm-proxy';
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import log from '../../log';
 import { Header } from '../../types/header';
-import { ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
+import { ProxyEntry, ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
 import { PROXY } from '../../universal/constants';
 
+import { dummyEntries } from './dummy-entries-delete-later';
+import { addEntry, initEntries } from './entries';
 import { shouldFilter, subscribeToFiltersFromRenderer } from './filters';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
+import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
+import { subscribeToSaveAsHar } from './save-as-har';
 
 export const initProxyServer = (): void => {
+  initEntries(dummyEntries);
+  subscribeToRefreshEntriesFromRenderer();
   subscribeToFiltersFromRenderer();
+  subscribeToSaveAsHar();
   const proxyPort = Number(process.env.PROXY_PORT || 1234);
 
   const proxy = Proxy();
@@ -82,15 +89,16 @@ export const initProxyServer = (): void => {
         const response = getResponse(ctx);
 
         setBody(response, responseBodyChunks);
-        // ctx.proxyToClientResponse.write(body); // should we write it back?
+        const entry: ProxyEntry = {
+          id: randomUUID(),
+          request,
+          response,
+          timestamp: Date.now(),
+        };
+        addEntry(entry);
         sendFromProxyToRenderer({
           data: {
-            proxy: {
-              id: randomUUID(),
-              request,
-              response,
-              timestamp: Date.now(),
-            },
+            proxy: entry,
           },
           type: PROXY,
         });

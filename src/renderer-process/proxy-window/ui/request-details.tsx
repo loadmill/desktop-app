@@ -2,7 +2,7 @@ import { AccordionDetails } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 
-import { Request } from '../../../types/proxy-entry';
+import { ProxyRequest } from '../../../types/proxy-entry';
 
 import { Accordion } from './accordion';
 import { AccordionSummary } from './accordion-summary';
@@ -46,5 +46,5 @@ export const RequestDetails = ({
 };
 
 export type RequestDetailsProps = {
-  request: Request;
+  request: ProxyRequest;
 };

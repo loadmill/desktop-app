@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 
-import { Body } from '../../../types/proxy-entry';
+import { Body } from '../../../types/body';
 
 import { Accordion } from './accordion';
 import { AccordionSummary } from './accordion-summary';

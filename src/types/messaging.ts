@@ -10,8 +10,11 @@ import {
   MAIN_WINDOW_ID,
   NAVIGATION,
   PROXY,
+  REFRESH_ENTRIES,
   REFRESH_FILTERS,
   REFRESH_PAGE,
+  SAVE_AS_HAR,
+  SAVED_AS_HAR_SUCCESS,
   SAVED_TOKEN,
   SET_FILTERS,
   SET_IS_USER_SIGNED_IN,
@@ -19,6 +22,7 @@ import {
   START_AGENT,
   STOP_AGENT,
   TOGGLE_MAXIMIZE_WINDOW,
+  UPDATED_ENTRIES,
   UPDATED_FILTERS
 } from '../universal/constants';
 
@@ -29,7 +33,7 @@ import { ProxyEntry } from './proxy-entry';
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry };
+  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] };
   type: string;
 }
 
@@ -68,6 +72,7 @@ export abstract class RendererMessage implements IPCMessage {
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
     filters?: string[];
+    proxies?: ProxyEntry[];
     proxy?: ProxyEntry;
   };
   type: ProxyRendererMessageTypes;
@@ -81,11 +86,13 @@ export type AgentMessageTypes =
 export type MainMessageTypes =
   typeof DOWNLOAD_CERTIFICATE |
   typeof FIND_NEXT |
-  typeof REFRESH_FILTERS |
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof IS_AGENT_CONNECTED |
+  typeof REFRESH_ENTRIES |
+  typeof REFRESH_FILTERS |
   typeof REFRESH_PAGE |
+  typeof SAVE_AS_HAR |
   typeof SET_FILTERS |
   typeof SET_IS_USER_SIGNED_IN |
   typeof START_AGENT |
@@ -103,5 +110,7 @@ export type RendererMessageTypes =
 
 export type ProxyRendererMessageTypes =
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
+  typeof SAVED_AS_HAR_SUCCESS |
+  typeof UPDATED_ENTRIES |
   typeof UPDATED_FILTERS |
   typeof PROXY;

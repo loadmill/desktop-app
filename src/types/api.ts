@@ -3,8 +3,10 @@ import {
   FIND_NEXT,
   GO_BACK,
   GO_FORWARD,
+  REFRESH_ENTRIES,
   REFRESH_FILTERS,
   REFRESH_PAGE,
+  SAVE_AS_HAR,
   SET_FILTERS,
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
@@ -36,6 +38,8 @@ export type ApiForLoadmillBrowserView = {
 
 export type ApiForLoadmillProxyWindow = {
   [DOWNLOAD_CERTIFICATE]: () => void;
+  [REFRESH_ENTRIES]: () => void;
   [REFRESH_FILTERS]: () => void;
+  [SAVE_AS_HAR]: () => void;
   [SET_FILTERS]: (filters: string[]) => void;
 };

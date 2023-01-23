@@ -12,7 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 
-import { Header } from '../../../types/proxy-entry';
+import { Header } from '../../../types/header';
 
 import { Accordion } from './accordion';
 import { AccordionSummary } from './accordion-summary';
