@@ -26,7 +26,7 @@ export type HarEntry = {
   startedDateTime: string;
 };
 
-type QueryString = {
+export type QueryString = {
   name: string;
   value: string;
 };

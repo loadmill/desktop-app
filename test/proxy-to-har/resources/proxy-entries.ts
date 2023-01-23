@@ -14,7 +14,7 @@ export const proxyEntry: ProxyEntry = {
       { name: 'Accept', value: '*/*' }
     ],
     method: 'GET',
-    url: 'https://example.com',
+    url: 'https://example.com?foo=bar&baz=qux&baz=quux&corge=',
   },
   response: {
     body: {
@@ -38,8 +38,8 @@ export const harEntry: HarEntry = {
       { name: 'Accept', value: '*/*' }
     ],
     method: 'GET',
-    queryString: [],
-    url: 'https://example.com',
+    queryString: [{ name: 'foo', value: 'bar' }, { name: 'baz', value: 'qux' }, { name: 'baz', value: 'quux' }, { name: 'corge', value: '' }],
+    url: 'https://example.com?foo=bar&baz=qux&baz=quux&corge=',
   },
   response: {
     content: {

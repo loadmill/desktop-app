@@ -1,4 +1,4 @@
-import { HarEntry } from '../types/har';
+import { HarEntry, QueryString } from '../types/har';
 import { ProxyEntry } from '../types/proxy-entry';
 
 export const proxyEntryToHarEntry = (proxyEntry: ProxyEntry): HarEntry => {
@@ -9,7 +9,7 @@ export const proxyEntryToHarEntry = (proxyEntry: ProxyEntry): HarEntry => {
     request: {
       headers: request.headers,
       method: request.method,
-      queryString: [],
+      queryString: urlPathToQueryString(request.url),
       url: request.url,
     },
     response: {
@@ -24,12 +24,12 @@ export const proxyEntryToHarEntry = (proxyEntry: ProxyEntry): HarEntry => {
   };
 };
 
-// const urlPathToQueryString = (url: string): HarEntry['request']['queryString'] => {
-//   const urlObject = new URL(url);
-//   const searchParams = urlObject.searchParams;
-//   const queryString: QueryString[] = [];
-//   for (const [name, value] of searchParams) {
-//     queryString.push({ name, value });
-//   }
-//   return queryString;
-// };
+const urlPathToQueryString = (url: string): QueryString[] => {
+  const urlObject = new URL(url);
+  const searchParams = urlObject.searchParams;
+  const queryString: QueryString[] = [];
+  for (const [name, value] of searchParams) {
+    queryString.push({ name, value });
+  }
+  return queryString;
+};
