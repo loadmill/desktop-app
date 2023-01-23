@@ -6,7 +6,8 @@ import Proxy from 'http-mitm-proxy';
 
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import log from '../../log';
-import { Header, Request, Response } from '../../types/proxy-entry';
+import { Header } from '../../types/header';
+import { ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
 import { PROXY } from '../../universal/constants';
 
 import { shouldFilter, subscribeToFiltersFromRenderer } from './filters';
@@ -59,7 +60,7 @@ export const initProxyServer = (): void => {
       return callback();
     }
 
-    const createRequest = (ctx: Proxy.IContext): Request => {
+    const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
       const request = toRequest(ctx);
 
       handleRequestBody(request, ctx);
@@ -69,7 +70,7 @@ export const initProxyServer = (): void => {
 
     const request = createRequest(ctx);
 
-    const handleResponse = (request: Request, ctx: Proxy.IContext) => {
+    const handleResponse = (request: ProxyRequest, ctx: Proxy.IContext) => {
       const responseBodyChunks: Uint8Array[] = [];
 
       ctx.onResponseData((_ctx, chunk, callback) => {
@@ -108,7 +109,7 @@ export const initProxyServer = (): void => {
   }, () => log.info(`Proxy listening on port ${proxyPort}!`));
 };
 
-const toRequest = (ctx: HttpMitmProxy.IContext): Request => {
+const toRequest = (ctx: HttpMitmProxy.IContext): ProxyRequest => {
   const { headers, method, url } = ctx.clientToProxyRequest;
   const { host } = headers;
 
@@ -116,16 +117,16 @@ const toRequest = (ctx: HttpMitmProxy.IContext): Request => {
     headers: toArrayHeaders(headers),
     method,
     url: host + url,
-  } as Request;
+  };
 };
 
-const getResponse = (ctx: HttpMitmProxy.IContext): Response => {
+const getResponse = (ctx: HttpMitmProxy.IContext): ProxyResponse => {
   const { headers, statusCode, statusMessage } = ctx.serverToProxyResponse;
   return {
     headers: toArrayHeaders(headers),
     status: statusCode,
     statusText: statusMessage,
-  } as unknown as Response;
+  };
 };
 
 const toArrayHeaders = (headers: http.IncomingHttpHeaders): Header[] => {
@@ -151,7 +152,7 @@ const stringOrArrayToString = (value: string | string[]): string =>
     value.join(',') :
     value;
 
-const handleRequestBody = (request: Request, ctx: Proxy.IContext): void => {
+const handleRequestBody = (request: ProxyRequest, ctx: Proxy.IContext): void => {
   const requestBodyChunks: Uint8Array[] = [];
 
   ctx.onRequestData(function (_ctx, chunk, callback) {
@@ -165,7 +166,7 @@ const handleRequestBody = (request: Request, ctx: Proxy.IContext): void => {
   });
 };
 
-const setBody = (rOr: Request | Response, chunks: Uint8Array[]) => {
+const setBody = (rOr: ProxyRequest | ProxyResponse, chunks: Uint8Array[]) => {
   rOr.body = {
     mimeType: getMimeType(rOr.headers),
     text: (Buffer.concat(chunks)).toString(),

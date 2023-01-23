@@ -2,8 +2,6 @@ import { Theme, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 
-import { Method } from '../../../types/proxy-entry';
-
 import { AccordionSummary } from './accordion-summary';
 
 export const EntrySummary = ({
@@ -35,7 +33,7 @@ export const EntrySummary = ({
 };
 
 export type EntrySummaryProps = {
-  method: Method;
+  method: string;
   status: number;
   url: string;
 };

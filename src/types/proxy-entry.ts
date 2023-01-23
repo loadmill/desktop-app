@@ -1,32 +1,27 @@
+import { Header } from './header';
+import { PostData, Request } from './request';
+import { Content, Response } from './response';
+
 export type ProxyEntry = {
   id: string;
-  request: Request;
-  response: Response;
+  request: ProxyRequest;
+  response: ProxyResponse;
+  /**
+   * Unix timestamp in milliseconds. e.g `1546300800000`.
+   */
   timestamp: number;
 };
 
-export type Request = {
-  body?: Body;
+export type ProxyRequest = Request & {
+  body?: PostData;
+};
+
+export type ProxyResponse = Response & {
+  body?: Content;
   headers: Header[];
-  method: Method;
-  url: string;
-};
-
-export type Body = {
-  mimeType?: string;
-  text?: string;
-};
-
-export type Header = {
-  name: string;
-  value: string;
-};
-
-export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
-
-export type Response = {
-  body?: Body;
-  headers: Header[];
+  /**
+   * HTTP status code. e.g `200`
+   */
   status: number;
   statusText?: string;
 };
