@@ -40,15 +40,15 @@ module.exports = {
         'no-restricted-globals': 'off',
       },
     },
-    // {
-    //   files: ['test/**/*/*.test.ts'],
-    //   rules: {
-    //     '@typescript-eslint/no-unused-vars': 'off',
-    //     'import/first': 'off',
-    //     'import/order': 'off',
-    //     'unused-imports/no-unused-imports': 'off',
-    //   },
-    // },
+    {
+      files: ['test/**/*/*.test.ts'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+        'import/first': 'off',
+        'import/order': 'off',
+        'unused-imports/no-unused-imports': 'off',
+      },
+    },
     {
       env: {
         mocha: true,

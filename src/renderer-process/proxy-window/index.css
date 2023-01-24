@@ -14,18 +14,19 @@ body {
 
 #root {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  /* height: 100vh; */
+  height: 100vh;
   overflow: hidden;
-  padding: 2rem;
+}
+
+#root > * {
+  min-height: 0;
 }
 
 .page-wrapper {
   display: grid;
   gap: 16px;
   grid-template-rows: auto minmax(0, 1fr);
-  height: 100vh;
-  overflow: hidden;
+  padding: 2rem;
 }
 
 .fit-content {
@@ -67,6 +68,4 @@ body {
 
 .entries-list {
   overflow: auto;
-  max-height: 100%;
 }
-
