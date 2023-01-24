@@ -7,22 +7,8 @@ import { EntryDetails } from './entry-details';
 import { EntrySummary } from './entry-summary';
 
 export const Entry = ({
-  entry,
-}: EntryProps): JSX.Element => (
-  <>
-    <CustomizedAccordions
-      entry={ entry }
-    />
-  </>
-);
-
-export type EntryProps = {
-  entry: ProxyEntry;
-};
-
-export default function CustomizedAccordions({
   entry
-}: CustomizedAccordionsProps): JSX.Element {
+}: EntryProps): JSX.Element => {
   return (
     <>
       <Accordion>
@@ -37,8 +23,8 @@ export default function CustomizedAccordions({
       </Accordion>
     </>
   );
-}
+};
 
-export type CustomizedAccordionsProps = {
+export type EntryProps = {
   entry: ProxyEntry;
 };

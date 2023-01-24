@@ -1,4 +1,5 @@
 import {
+  CLEAR_ALL_ENTRIES,
   DOWNLOAD_CERTIFICATE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
   FIND_NEXT,
@@ -6,6 +7,7 @@ import {
   GO_BACK,
   GO_FORWARD,
   IS_AGENT_CONNECTED,
+  IS_RECORDING,
   LOADMILL_VIEW_ID,
   MAIN_WINDOW_ID,
   NAVIGATION,
@@ -17,6 +19,7 @@ import {
   SAVED_AS_HAR_SUCCESS,
   SAVED_TOKEN,
   SET_FILTERS,
+  SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
@@ -48,6 +51,7 @@ export abstract class MainMessage implements IPCMessage {
   data?: {
     filters?: string[];
     isConnected?: boolean;
+    isRecording?: boolean;
     isSignedIn?: boolean;
     text?: string;
     toFind?: string;
@@ -72,6 +76,7 @@ export abstract class RendererMessage implements IPCMessage {
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
     filters?: string[];
+    isRecording?: boolean;
     proxies?: ProxyEntry[];
     proxy?: ProxyEntry;
   };
@@ -84,16 +89,19 @@ export type AgentMessageTypes =
   typeof STOP_AGENT;
 
 export type MainMessageTypes =
+  typeof CLEAR_ALL_ENTRIES |
   typeof DOWNLOAD_CERTIFICATE |
   typeof FIND_NEXT |
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof IS_AGENT_CONNECTED |
+  typeof IS_RECORDING |
   typeof REFRESH_ENTRIES |
   typeof REFRESH_FILTERS |
   typeof REFRESH_PAGE |
   typeof SAVE_AS_HAR |
   typeof SET_FILTERS |
+  typeof SET_IS_RECORDING |
   typeof SET_IS_USER_SIGNED_IN |
   typeof START_AGENT |
   typeof STOP_AGENT |
@@ -110,6 +118,7 @@ export type RendererMessageTypes =
 
 export type ProxyRendererMessageTypes =
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
+  typeof IS_RECORDING |
   typeof SAVED_AS_HAR_SUCCESS |
   typeof UPDATED_ENTRIES |
   typeof UPDATED_FILTERS |

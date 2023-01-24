@@ -5,6 +5,7 @@ import { ProxyRendererMessage } from '../../../types/messaging';
 import { ProxyEntry } from '../../../types/proxy-entry';
 import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
+  IS_RECORDING,
   MESSAGE,
   PROXY,
   SAVED_AS_HAR_SUCCESS,
@@ -12,22 +13,26 @@ import {
   UPDATED_FILTERS
 } from '../../../universal/constants';
 
+import { ClearAll } from './clear-all';
 import { DownloadCertificate } from './download-certificate';
 import { Entries } from './entries';
 import { Filters } from './filters';
+import { Recording } from './recording';
 import { SaveProxyAsHar } from './save-proxy-as-har';
 
 export const ProxyDashboard = (): JSX.Element => {
-  const [shouldShowEntries, setShouldShowEntries] = useState<boolean>(true);
+  const [shouldShowEntries, setShouldShowEntries] = useState<boolean>(false);
   const [entries, setEntries] = useState<ProxyEntry[]>([]);
   const [filters, setFilters] = useState<string[]>([]);
   const [isDownloadInProgress, setIsDownloadInProgress] = React.useState(false);
   const [showDownloadSuccessSnackBar, setShowDownloadSuccessSnackBar] = useState<boolean>(false);
   const [showSaveAsHarSuccessSnackBar, setShowSaveAsHarSuccessSnackBar] = useState<boolean>(false);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
 
   useEffect(() => {
     window.desktopApi.refreshEntries();
     window.desktopApi.refreshFilters();
+    window.desktopApi.isRecording();
   }, []);
 
   useEffect(() => {
@@ -55,6 +60,9 @@ export const ProxyDashboard = (): JSX.Element => {
           break;
         case SAVED_AS_HAR_SUCCESS:
           onSavedAsHarSuccess(data);
+          break;
+        case IS_RECORDING:
+          onIsRecording(data);
           break;
         default:
           break;
@@ -87,9 +95,15 @@ export const ProxyDashboard = (): JSX.Element => {
     setShowDownloadSuccessSnackBar(true);
   };
 
+  const onIsRecording = ({ isRecording }: ProxyRendererMessage['data']) => {
+    setIsRecording(isRecording);
+  };
+
   const saveEntriesAsHar = () => {
     window.desktopApi.saveAsHar();
   };
+
+  const isClearAllDisabled = !shouldShowEntries;
 
   return (
     <div
@@ -105,6 +119,14 @@ export const ProxyDashboard = (): JSX.Element => {
           setOpenSnackBar={ setShowDownloadSuccessSnackBar }
         />
         <div style={ { display: 'flex', gap: '8px' } }>
+          <Recording
+            isRecording={ isRecording }
+          />
+          <ClearAll
+            disabled={ isClearAllDisabled }
+          />
+        </div>
+        <div style={ { display: 'flex', gap: '8px' } }>
           <SaveProxyAsHar
             onSave={ saveEntriesAsHar }
             openSnackBar={ showSaveAsHarSuccessSnackBar }
@@ -115,11 +137,15 @@ export const ProxyDashboard = (): JSX.Element => {
           />
         </div>
       </div>
-      {shouldShowEntries && (
-        <Entries
-          entries={ entries }
-        />
-      )}
+      <div
+        className='entries-list'
+      >
+        {shouldShowEntries && (
+          <Entries
+            entries={ entries }
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -21,11 +21,11 @@ body {
 }
 
 .page-wrapper {
-  height: 100%;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 16px;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100vh;
+  overflow: hidden;
 }
 
 .fit-content {
@@ -64,3 +64,9 @@ body {
   display: flex;
   justify-content: space-between;
 }
+
+.entries-list {
+  overflow: auto;
+  max-height: 100%;
+}
+

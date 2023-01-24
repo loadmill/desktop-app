@@ -11,3 +11,7 @@ export const initEntries = (newEntries: ProxyEntry[]): void => {
 export const addEntry = (entry: ProxyEntry): void => {
   entries.push(entry);
 };
+
+export const clearEntries = (): void => {
+  entries.splice(0, entries.length);
+};

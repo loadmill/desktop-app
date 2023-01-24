@@ -10,18 +10,16 @@ import { Header } from '../../types/header';
 import { ProxyEntry, ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
 import { PROXY } from '../../universal/constants';
 
-import { dummyEntries } from './dummy-entries-delete-later';
-import { addEntry, initEntries } from './entries';
+import { subscribeToClearEntriesFromRenderer } from './clear-entries';
+import { addEntry } from './entries';
 import { shouldFilter, subscribeToFiltersFromRenderer } from './filters';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
+import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
 import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
 import { subscribeToSaveAsHar } from './save-as-har';
 
 export const initProxyServer = (): void => {
-  initEntries(dummyEntries);
-  subscribeToRefreshEntriesFromRenderer();
-  subscribeToFiltersFromRenderer();
-  subscribeToSaveAsHar();
+  subscribeToFilterEvents();
   const proxyPort = Number(process.env.PROXY_PORT || 1234);
 
   const proxy = Proxy();
@@ -63,6 +61,9 @@ export const initProxyServer = (): void => {
   };
 
   proxy.onRequest(function (ctx, callback) {
+    if (!getIsRecording()) {
+      return callback();
+    }
     if (shouldFilter(ctx)) {
       return callback();
     }
@@ -186,4 +187,12 @@ const getMimeType = (headers: Header[]): string | undefined => {
     header.name?.toLowerCase() === 'content-type'
   );
   return contentTypeHeader?.value;
+};
+
+const subscribeToFilterEvents = (): void => {
+  subscribeToRecordingStateEvents();
+  subscribeToRefreshEntriesFromRenderer();
+  subscribeToFiltersFromRenderer();
+  subscribeToSaveAsHar();
+  subscribeToClearEntriesFromRenderer();
 };

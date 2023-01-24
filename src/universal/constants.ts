@@ -1,6 +1,7 @@
 export const
   ACTIVATE = 'activate',
   BEFORE_QUIT = 'before-quit',
+  CLEAR_ALL_ENTRIES = 'clearAllEntries',
   CLOSE = 'close',
   DATA = 'data',
   DESKTOP_API = 'desktopApi',
@@ -15,6 +16,7 @@ export const
   GO_BACK = 'goBack',
   GO_FORWARD = 'goForward',
   IS_AGENT_CONNECTED = 'isAgentConnected',
+  IS_RECORDING = 'isRecording',
   LOADMILL_DESKTOP = 'loadmillDesktop',
   LOADMILL_VIEW_ID = 'loadmillViewId',
   MAIN_WINDOW_ID = 'mainWindowId',
@@ -30,6 +32,7 @@ export const
   SAVED_TOKEN = 'savedToken',
   SAVE_AS_HAR = 'saveAsHar',
   SET_FILTERS = 'setFilters',
+  SET_IS_RECORDING = 'setIsRecording',
   SET_IS_USER_SIGNED_IN = 'setIsUserSignedIn',
   SHOW_FIND_ON_PAGE = 'showFindOnPage',
   START_AGENT = 'startAgent',
