@@ -1,9 +1,9 @@
 import ClearIcon from '@mui/icons-material/Clear';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React from 'react';
+
+import { StyledList, StyledListItem } from './list-item';
 
 export const FiltersList = ({
   filters,
@@ -12,12 +12,16 @@ export const FiltersList = ({
     <div
       className='filters-list'
     >
-      <List dense>
+      <StyledList dense>
         {
           filters.map((filter) => (
-            <ListItem
+            <StyledListItem
+              className='show-when-hover-container'
+              disableGutters
+              divider
               secondaryAction={
                 <IconButton
+                  className='show-when-hover'
                   onClick={ () => {
                     alert('delete');
                   } }
@@ -29,10 +33,10 @@ export const FiltersList = ({
               <ListItemText
                 primary={ filter }
               />
-            </ListItem>
+            </StyledListItem>
           ))
         }
-      </List>
+      </StyledList>
     </div>
   );
 };

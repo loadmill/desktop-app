@@ -6,6 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
+import { useTheme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import React from 'react';
 
@@ -16,6 +17,8 @@ export const Filters = ({
 }: FiltersProps ): JSX.Element => {
   const [open, setOpen] = React.useState(false);
   const [newFilter, setNewFilter] = React.useState<string>('');
+
+  const theme = useTheme();
 
   const onOpenFiltersDialog = () => {
     setOpen(true);
@@ -52,7 +55,10 @@ export const Filters = ({
         Filters
       </Button>
       <Dialog
-        PaperProps={ { style: { minWidth: '50%' } } }
+        PaperProps={ { style: {
+          background: theme.palette.background.default,
+          minWidth: '50%',
+        } } }
         onClose={ onClose }
         open={ open }
       >
@@ -67,7 +73,9 @@ export const Filters = ({
             filters={ filters }
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          disableSpacing
+        >
           <Button onClick={ onClose }>Close</Button>
         </DialogActions>
       </Dialog>
