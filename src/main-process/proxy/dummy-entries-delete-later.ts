@@ -330,4 +330,514 @@ export const dummyEntries: ProxyEntry[] = [
     },
     timestamp: 1612000000000,
   },
+  {
+    id: '3',
+    request: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          name: 'John Doe'
+        }),
+      },
+      headers: [
+        {
+          name: 'Accept',
+          value: 'application/json'
+        },
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      method: 'GET',
+      url: 'https://facebook.com/users/1',
+    },
+    response: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          'address': {
+            'city': 'Anytown',
+            'state': 'CA',
+            'street': '123 Main St',
+            'zipCode': '98765'
+          },
+          'age': 35,
+          'certifications': [
+            'Certified ScrumMaster (CSM)',
+            'AWS Certified Developer - Associate'
+          ],
+          'education': [
+            {
+              'degree': 'Bachelor of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2008,
+              'school': 'University of California, Berkeley',
+            },
+            {
+              'degree': 'Master of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2012,
+              'school': 'Stanford University',
+            }
+          ],
+          'emailAddresses': [
+            'john.doe@example.com',
+            'johndoe@work.com'
+          ],
+          'firstName': 'John',
+          'friends': [
+            {
+              'firstName': 'Jane',
+              'lastName': 'Smith'
+            },
+            {
+              'firstName': 'Bob',
+              'lastName': 'Johnson'
+            }
+          ],
+          'interests': [
+            'hiking', 'photography', 'travel'
+          ],
+          'isEmployed': true,
+          'job': {
+            'company': 'Acme Corp',
+            'salary': 100000,
+            'title': 'Software Engineer',
+          },
+          'lastName': 'Doe',
+          'phoneNumbers': [
+            {
+              'number': '555-555-1234',
+              'type': 'home',
+            },
+            {
+              'number': '555-555-5678',
+              'type': 'work',
+            }
+          ],
+          'skills': [
+            'JavaScript', 'React', 'Node.js', 'Python'
+          ],
+        }
+        ),
+      },
+      headers: [
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      status: 401,
+    },
+    timestamp: 1612000000000,
+  },
+  {
+    id: '4',
+    request: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          name: 'John Doe'
+        }),
+      },
+      headers: [
+        {
+          name: 'Accept',
+          value: 'application/json'
+        },
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      method: 'GET',
+      url: 'https://facebook.com/users/1',
+    },
+    response: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          'address': {
+            'city': 'Anytown',
+            'state': 'CA',
+            'street': '123 Main St',
+            'zipCode': '98765'
+          },
+          'age': 35,
+          'certifications': [
+            'Certified ScrumMaster (CSM)',
+            'AWS Certified Developer - Associate'
+          ],
+          'education': [
+            {
+              'degree': 'Bachelor of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2008,
+              'school': 'University of California, Berkeley',
+            },
+            {
+              'degree': 'Master of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2012,
+              'school': 'Stanford University',
+            }
+          ],
+          'emailAddresses': [
+            'john.doe@example.com',
+            'johndoe@work.com'
+          ],
+          'firstName': 'John',
+          'friends': [
+            {
+              'firstName': 'Jane',
+              'lastName': 'Smith'
+            },
+            {
+              'firstName': 'Bob',
+              'lastName': 'Johnson'
+            }
+          ],
+          'interests': [
+            'hiking', 'photography', 'travel'
+          ],
+          'isEmployed': true,
+          'job': {
+            'company': 'Acme Corp',
+            'salary': 100000,
+            'title': 'Software Engineer',
+          },
+          'lastName': 'Doe',
+          'phoneNumbers': [
+            {
+              'number': '555-555-1234',
+              'type': 'home',
+            },
+            {
+              'number': '555-555-5678',
+              'type': 'work',
+            }
+          ],
+          'skills': [
+            'JavaScript', 'React', 'Node.js', 'Python'
+          ],
+        }
+        ),
+      },
+      headers: [
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      status: 401,
+    },
+    timestamp: 1612000000000,
+  },
+  {
+    id: '5',
+    request: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          name: 'John Doe'
+        }),
+      },
+      headers: [
+        {
+          name: 'Accept',
+          value: 'application/json'
+        },
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      method: 'GET',
+      url: 'https://facebook.com/users/1',
+    },
+    response: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          'address': {
+            'city': 'Anytown',
+            'state': 'CA',
+            'street': '123 Main St',
+            'zipCode': '98765'
+          },
+          'age': 35,
+          'certifications': [
+            'Certified ScrumMaster (CSM)',
+            'AWS Certified Developer - Associate'
+          ],
+          'education': [
+            {
+              'degree': 'Bachelor of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2008,
+              'school': 'University of California, Berkeley',
+            },
+            {
+              'degree': 'Master of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2012,
+              'school': 'Stanford University',
+            }
+          ],
+          'emailAddresses': [
+            'john.doe@example.com',
+            'johndoe@work.com'
+          ],
+          'firstName': 'John',
+          'friends': [
+            {
+              'firstName': 'Jane',
+              'lastName': 'Smith'
+            },
+            {
+              'firstName': 'Bob',
+              'lastName': 'Johnson'
+            }
+          ],
+          'interests': [
+            'hiking', 'photography', 'travel'
+          ],
+          'isEmployed': true,
+          'job': {
+            'company': 'Acme Corp',
+            'salary': 100000,
+            'title': 'Software Engineer',
+          },
+          'lastName': 'Doe',
+          'phoneNumbers': [
+            {
+              'number': '555-555-1234',
+              'type': 'home',
+            },
+            {
+              'number': '555-555-5678',
+              'type': 'work',
+            }
+          ],
+          'skills': [
+            'JavaScript', 'React', 'Node.js', 'Python'
+          ],
+        }
+        ),
+      },
+      headers: [
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      status: 401,
+    },
+    timestamp: 1612000000000,
+  },
+  {
+    id: '6',
+    request: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          name: 'John Doe'
+        }),
+      },
+      headers: [
+        {
+          name: 'Accept',
+          value: 'application/json'
+        },
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      method: 'GET',
+      url: 'https://facebook.com/users/1',
+    },
+    response: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          'address': {
+            'city': 'Anytown',
+            'state': 'CA',
+            'street': '123 Main St',
+            'zipCode': '98765'
+          },
+          'age': 35,
+          'certifications': [
+            'Certified ScrumMaster (CSM)',
+            'AWS Certified Developer - Associate'
+          ],
+          'education': [
+            {
+              'degree': 'Bachelor of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2008,
+              'school': 'University of California, Berkeley',
+            },
+            {
+              'degree': 'Master of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2012,
+              'school': 'Stanford University',
+            }
+          ],
+          'emailAddresses': [
+            'john.doe@example.com',
+            'johndoe@work.com'
+          ],
+          'firstName': 'John',
+          'friends': [
+            {
+              'firstName': 'Jane',
+              'lastName': 'Smith'
+            },
+            {
+              'firstName': 'Bob',
+              'lastName': 'Johnson'
+            }
+          ],
+          'interests': [
+            'hiking', 'photography', 'travel'
+          ],
+          'isEmployed': true,
+          'job': {
+            'company': 'Acme Corp',
+            'salary': 100000,
+            'title': 'Software Engineer',
+          },
+          'lastName': 'Doe',
+          'phoneNumbers': [
+            {
+              'number': '555-555-1234',
+              'type': 'home',
+            },
+            {
+              'number': '555-555-5678',
+              'type': 'work',
+            }
+          ],
+          'skills': [
+            'JavaScript', 'React', 'Node.js', 'Python'
+          ],
+        }
+        ),
+      },
+      headers: [
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      status: 401,
+    },
+    timestamp: 1612000000000,
+  },
+  {
+    id: '7',
+    request: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          name: 'John Doe'
+        }),
+      },
+      headers: [
+        {
+          name: 'Accept',
+          value: 'application/json'
+        },
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      method: 'GET',
+      url: 'https://facebook.com/users/1',
+    },
+    response: {
+      body: {
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          'address': {
+            'city': 'Anytown',
+            'state': 'CA',
+            'street': '123 Main St',
+            'zipCode': '98765'
+          },
+          'age': 35,
+          'certifications': [
+            'Certified ScrumMaster (CSM)',
+            'AWS Certified Developer - Associate'
+          ],
+          'education': [
+            {
+              'degree': 'Bachelor of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2008,
+              'school': 'University of California, Berkeley',
+            },
+            {
+              'degree': 'Master of Science',
+              'fieldOfStudy': 'Computer Science',
+              'graduationYear': 2012,
+              'school': 'Stanford University',
+            }
+          ],
+          'emailAddresses': [
+            'john.doe@example.com',
+            'johndoe@work.com'
+          ],
+          'firstName': 'John',
+          'friends': [
+            {
+              'firstName': 'Jane',
+              'lastName': 'Smith'
+            },
+            {
+              'firstName': 'Bob',
+              'lastName': 'Johnson'
+            }
+          ],
+          'interests': [
+            'hiking', 'photography', 'travel'
+          ],
+          'isEmployed': true,
+          'job': {
+            'company': 'Acme Corp',
+            'salary': 100000,
+            'title': 'Software Engineer',
+          },
+          'lastName': 'Doe',
+          'phoneNumbers': [
+            {
+              'number': '555-555-1234',
+              'type': 'home',
+            },
+            {
+              'number': '555-555-5678',
+              'type': 'work',
+            }
+          ],
+          'skills': [
+            'JavaScript', 'React', 'Node.js', 'Python'
+          ],
+        }
+        ),
+      },
+      headers: [
+        {
+          name: 'Content-Type',
+          value: 'application/json'
+        },
+      ],
+      status: 401,
+    },
+    timestamp: 1612000000000,
+  },
 ];

@@ -13,6 +13,7 @@ export const Entry = ({
     <>
       <Accordion>
         <EntrySummary
+          id={ entry.id }
           method={ entry.request.method }
           status={ entry.response.status }
           url={ entry.request.url }

@@ -1,5 +1,6 @@
 import {
   CLEAR_ALL_ENTRIES,
+  DELETE_ENTRY,
   DOWNLOAD_CERTIFICATE,
   FIND_NEXT,
   GO_BACK,
@@ -41,6 +42,7 @@ export type ApiForLoadmillBrowserView = {
 
 export type ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: () => void;
+  [DELETE_ENTRY]: (entryId: string) => void;
   [DOWNLOAD_CERTIFICATE]: () => void;
   [IS_RECORDING]: () => void;
   [REFRESH_ENTRIES]: () => void;

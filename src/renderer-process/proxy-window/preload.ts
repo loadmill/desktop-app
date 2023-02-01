@@ -5,6 +5,7 @@ import { ApiForLoadmillProxyWindow } from '../../types/api';
 import { ProxyRendererMessage } from '../../types/messaging';
 import {
   CLEAR_ALL_ENTRIES,
+  DELETE_ENTRY,
   DESKTOP_API,
   DOWNLOAD_CERTIFICATE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
@@ -22,6 +23,7 @@ import {
 
 export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: (): void => sendToMain(CLEAR_ALL_ENTRIES),
+  [DELETE_ENTRY]: (entryId: string): void => sendToMain(DELETE_ENTRY, { entryId }),
   [DOWNLOAD_CERTIFICATE]: (): void => sendToMain(DOWNLOAD_CERTIFICATE),
   [IS_RECORDING]: (): void => sendToMain(IS_RECORDING),
   [REFRESH_ENTRIES]: (): void => sendToMain(REFRESH_ENTRIES),

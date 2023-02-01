@@ -10,8 +10,9 @@ import { Header } from '../../types/header';
 import { ProxyEntry, ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
 import { PROXY } from '../../universal/constants';
 
-import { subscribeToClearEntriesFromRenderer } from './clear-entries';
-import { addEntry } from './entries';
+import { subscribeToClearEntriesFromRenderer, subscribeToDeleteEntryFromRenderer } from './clear-entries';
+import { dummyEntries } from './dummy-entries-delete-later';
+import { addEntry, initEntries } from './entries';
 import { shouldFilter, subscribeToFiltersFromRenderer } from './filters';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
 import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
@@ -19,6 +20,7 @@ import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
 import { subscribeToSaveAsHar } from './save-as-har';
 
 export const initProxyServer = (): void => {
+  initEntries(dummyEntries);
   subscribeToFilterEvents();
   const proxyPort = Number(process.env.PROXY_PORT || 1234);
 
@@ -68,44 +70,7 @@ export const initProxyServer = (): void => {
       return callback();
     }
 
-    const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
-      const request = toRequest(ctx);
-
-      handleRequestBody(request, ctx);
-
-      return request;
-    };
-
     const request = createRequest(ctx);
-
-    const handleResponse = (request: ProxyRequest, ctx: Proxy.IContext) => {
-      const responseBodyChunks: Uint8Array[] = [];
-
-      ctx.onResponseData((_ctx, chunk, callback) => {
-        responseBodyChunks.push(chunk);
-        return callback(null, chunk);
-      });
-
-      ctx.onResponseEnd((ctx, callback) => {
-        const response = getResponse(ctx);
-
-        setBody(response, responseBodyChunks);
-        const entry: ProxyEntry = {
-          id: randomUUID(),
-          request,
-          response,
-          timestamp: Date.now(),
-        };
-        addEntry(entry);
-        sendFromProxyToRenderer({
-          data: {
-            proxy: entry,
-          },
-          type: PROXY,
-        });
-        return callback();
-      });
-    };
 
     handleResponse(request, ctx);
 
@@ -118,23 +83,23 @@ export const initProxyServer = (): void => {
   }, () => log.info(`Proxy listening on port ${proxyPort}!`));
 };
 
+const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
+  const request = toRequest(ctx);
+  handleRequestBody(request, ctx);
+  return request;
+};
+
 const toRequest = (ctx: HttpMitmProxy.IContext): ProxyRequest => {
+  log.info('toRequest', ctx.clientToProxyRequest);
+  const protocol = 'http' + (ctx.isSSL ? 's' : '') + '://';
+
   const { headers, method, url } = ctx.clientToProxyRequest;
   const { host } = headers;
 
   return {
     headers: toArrayHeaders(headers),
     method,
-    url: host + url,
-  };
-};
-
-const getResponse = (ctx: HttpMitmProxy.IContext): ProxyResponse => {
-  const { headers, statusCode, statusMessage } = ctx.serverToProxyResponse;
-  return {
-    headers: toArrayHeaders(headers),
-    status: statusCode,
-    statusText: statusMessage,
+    url: protocol + host + url,
   };
 };
 
@@ -189,10 +154,49 @@ const getMimeType = (headers: Header[]): string | undefined => {
   return contentTypeHeader?.value;
 };
 
+const handleResponse = (request: ProxyRequest, ctx: Proxy.IContext) => {
+  const responseBodyChunks: Uint8Array[] = [];
+
+  ctx.onResponseData((_ctx, chunk, callback) => {
+    responseBodyChunks.push(chunk);
+    return callback(null, chunk);
+  });
+
+  ctx.onResponseEnd((ctx, callback) => {
+    const response = getResponse(ctx);
+
+    setBody(response, responseBodyChunks);
+    const entry: ProxyEntry = {
+      id: randomUUID(),
+      request,
+      response,
+      timestamp: Date.now(),
+    };
+    addEntry(entry);
+    sendFromProxyToRenderer({
+      data: {
+        proxy: entry,
+      },
+      type: PROXY,
+    });
+    return callback();
+  });
+};
+
+const getResponse = (ctx: HttpMitmProxy.IContext): ProxyResponse => {
+  const { headers, statusCode, statusMessage } = ctx.serverToProxyResponse;
+  return {
+    headers: toArrayHeaders(headers),
+    status: statusCode,
+    statusText: statusMessage,
+  };
+};
+
 const subscribeToFilterEvents = (): void => {
   subscribeToRecordingStateEvents();
   subscribeToRefreshEntriesFromRenderer();
   subscribeToFiltersFromRenderer();
   subscribeToSaveAsHar();
   subscribeToClearEntriesFromRenderer();
+  subscribeToDeleteEntryFromRenderer();
 };

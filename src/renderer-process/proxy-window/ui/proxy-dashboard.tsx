@@ -15,8 +15,8 @@ import {
 
 import { ClearAll } from './clear-all';
 import { DownloadCertificate } from './download-certificate';
-import { Entries } from './entries';
 import { Filters } from './filters';
+import { ProxyEntries } from './proxy-entries';
 import { Recording } from './recording';
 import { SaveProxyAsHar } from './save-proxy-as-har';
 
@@ -73,6 +73,9 @@ export const ProxyDashboard = (): JSX.Element => {
   const onUpdatedEntries = (data: ProxyRendererMessage['data']) => {
     const { proxies } = data;
     setEntries(proxies);
+    if (proxies.length > 0) {
+      setShouldShowEntries(true);
+    }
   };
 
   const onUpdatedFilters = (data: ProxyRendererMessage['data']) => {
@@ -138,10 +141,10 @@ export const ProxyDashboard = (): JSX.Element => {
         </div>
       </div>
       <div
-        className='entries-list'
+        className='proxy-entries-list'
       >
         {shouldShowEntries && (
-          <Entries
+          <ProxyEntries
             entries={ entries }
           />
         )}

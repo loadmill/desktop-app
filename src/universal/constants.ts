@@ -4,6 +4,7 @@ export const
   CLEAR_ALL_ENTRIES = 'clearAllEntries',
   CLOSE = 'close',
   DATA = 'data',
+  DELETE_ENTRY = 'deleteEntry',
   DESKTOP_API = 'desktopApi',
   DID_NAVIGATE = 'did-navigate',
   DID_NAVIGATE_IN_PAGE = 'did-navigate-in-page',

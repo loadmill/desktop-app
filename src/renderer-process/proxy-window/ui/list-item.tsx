@@ -16,6 +16,6 @@ export const StyledList = styled(List)(({ theme }) => ({
     padding: '8px',
   },
   '& .MuiList-root': {
-    background: 'theme.palette.background.paper',
+    background: theme.palette.background.paper,
   },
 }));
