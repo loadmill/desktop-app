@@ -7,7 +7,8 @@ import { ProxyDashboard } from './proxy-dashboard';
 const darkTheme = createTheme({
   palette: {
     action: {
-      selected: '#0c1824',
+      active: '#bdd2e7',
+      selected: '#305a84',
     },
     background: {
       default: '#101e2c',

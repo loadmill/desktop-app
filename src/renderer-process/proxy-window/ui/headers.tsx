@@ -41,7 +41,7 @@ export const HeadersList = ({
 }: HeadersProps): JSX.Element => {
   if (headers.length === 0) {
     return (
-      <Typography>
+      <Typography component='span'>
         No headers
       </Typography>
     );

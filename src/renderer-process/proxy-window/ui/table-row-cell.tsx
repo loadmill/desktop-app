@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
+import TableRow, { tableRowClasses } from '@mui/material/TableRow';
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -11,16 +11,16 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: 12,
     maxWidth: 70,
     overflow: 'scroll',
-    whiteSpace: 'nowrap',
+    // whiteSpace: 'nowrap',
   },
 }));
 
 export const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  [`&.${tableRowClasses.head}`]: {
+    backgroundColor: theme.palette.primary.main,
+  },
   // hide last border
   '&:last-child td, &:last-child th': {
     border: 0,
-  },
-  '&:hover': {
-    backgroundColor: theme.palette.background.default,
   },
 }));

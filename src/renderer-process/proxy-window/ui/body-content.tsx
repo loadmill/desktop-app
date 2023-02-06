@@ -21,6 +21,7 @@ export const BodyContent = ({
     >
       <CopyButton
         sx={ {
+          bgcolor: theme => theme.palette.background.paper,
           position: 'absolute',
           right: 4,
           top: 8,
@@ -29,7 +30,7 @@ export const BodyContent = ({
       />
       <Typography
         className={ 'body-content ' + className }
-        component="pre"
+        component='pre'
       >
         <code>{prettyText}</code>
       </Typography>
