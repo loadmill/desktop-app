@@ -1,8 +1,5 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import { alpha, Theme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -11,19 +8,21 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
 
 import { ProxyEntry } from '../../../types/proxy-entry';
 
+import { ClearSelectedEntries } from './clear-selected';
 import { EntryDetailsDrawer } from './entry-details-drawer';
+import { ExportProxyAsHar } from './export-proxy-as-har';
 import { StyledTableCell, StyledTableRow } from './table-row-cell';
 
 export const ProxyEntries = ({
   entries,
+  selectedEntriesActionsProps,
 }: ProxyEntriesProps): JSX.Element => {
-  const [selected, setSelected] = useState<readonly string[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
   const [activeEntry, setActiveEntry] = useState<ProxyEntry | undefined>(undefined);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +37,7 @@ export const ProxyEntries = ({
   const onSelectEntry = (event: React.SyntheticEvent, id: string) => {
     event.stopPropagation();
     const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly string[] = [];
+    let newSelected: string[] = [];
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
@@ -102,7 +101,11 @@ export const ProxyEntries = ({
           width: '100%',
         } }
       >
-        <EnhancedTableToolbar numSelected={ selected.length } />
+        <EnhancedTableToolbar
+          numSelected={ selected.length }
+          selectedEntries={ selected }
+          selectedEntriesActionsProps={ selectedEntriesActionsProps }
+        />
         <TableContainer
           sx={ {
             height: '100vh',
@@ -133,6 +136,7 @@ export const ProxyEntries = ({
                       index={ index }
                       isActiveEntry={ activeEntry?.id === id }
                       isItemSelected={ isSelected(id as string) }
+                      key={ id }
                       method={ method }
                       onActiveEntryChange={ onActiveEntryChange }
                       onKeyDown={ onKeyDown }
@@ -162,9 +166,23 @@ export const ProxyEntries = ({
 
 export type ProxyEntriesProps = {
   entries: ProxyEntry[];
+  selectedEntriesActionsProps?: {
+    export?: {
+      setShowExportAsHarSuccessSnackBar?: React.Dispatch<React.SetStateAction<boolean>>;
+      showExportAsHarSuccessSnackBar?: boolean;
+    };
+  };
 };
 
-const EnhancedTableToolbar = ({ numSelected }: EnhancedTableToolbarProps) => {
+const EnhancedTableToolbar = ({
+  numSelected,
+  selectedEntries,
+  selectedEntriesActionsProps,
+}: EnhancedTableToolbarProps) => {
+  const { export: {
+    setShowExportAsHarSuccessSnackBar,
+    showExportAsHarSuccessSnackBar,
+  } } = selectedEntriesActionsProps;
   return (
     <Toolbar
       sx={ {
@@ -196,26 +214,42 @@ const EnhancedTableToolbar = ({ numSelected }: EnhancedTableToolbarProps) => {
           Proxy Entries
         </Typography>
       )}
-      {numSelected > 0 ? (
-        <Tooltip title='Delete'>
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title='Filter list'>
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+
+      {numSelected > 0 && (
+        <div
+          style={ {
+            display: 'flex',
+            gap: '8px',
+          } }
+        >
+          <ClearSelectedEntries
+            selectedEntries={ selectedEntries }
+          />
+          <ExportProxyAsHar
+            onExport={ exportEntriesAsHar }
+            openSnackBar={ showExportAsHarSuccessSnackBar }
+            setOpenSnackBar={ setShowExportAsHarSuccessSnackBar }
+          />
+        </div>
       )}
     </Toolbar>
   );
 };
 
 type EnhancedTableToolbarProps = {
-  numSelected: number;
-}
+  numSelected?: number;
+  selectedEntries?: string[];
+  selectedEntriesActionsProps?: {
+    export?: {
+      setShowExportAsHarSuccessSnackBar?: React.Dispatch<React.SetStateAction<boolean>>;
+      showExportAsHarSuccessSnackBar?: boolean;
+    };
+  };
+};
+
+const exportEntriesAsHar = () => {
+  window.desktopApi.exportAsHar();
+};
 
 const EnhancedTableHead = ({ onSelectAllClick, numSelected, rowCount }: EnhancedTableHeadProps) => {
   return (
@@ -299,7 +333,6 @@ const ProxyEntryRow = ({
     <StyledTableRow
       aria-checked={ isItemSelected }
       hover
-      key={ id }
       onClick={ () => {
         onActiveEntryChange(id);
       } }

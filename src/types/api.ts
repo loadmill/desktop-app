@@ -2,6 +2,7 @@ import {
   CLEAR_ALL_ENTRIES,
   DELETE_ENTRY,
   DOWNLOAD_CERTIFICATE,
+  EXPORT_AS_HAR,
   FIND_NEXT,
   GET_IP_ADDRESS,
   GO_BACK,
@@ -10,7 +11,6 @@ import {
   REFRESH_ENTRIES,
   REFRESH_FILTERS,
   REFRESH_PAGE,
-  SAVE_AS_HAR,
   SET_FILTERS,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
@@ -45,11 +45,11 @@ export type ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: () => void;
   [DELETE_ENTRY]: (entryId: string) => void;
   [DOWNLOAD_CERTIFICATE]: () => void;
+  [EXPORT_AS_HAR]: () => void;
   [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
   [IS_RECORDING]: () => void;
   [REFRESH_ENTRIES]: () => void;
   [REFRESH_FILTERS]: () => void;
-  [SAVE_AS_HAR]: () => void;
   [SET_FILTERS]: (filters: string[]) => void;
   [SET_IS_RECORDING]: (isRecording: boolean) => void;
 };

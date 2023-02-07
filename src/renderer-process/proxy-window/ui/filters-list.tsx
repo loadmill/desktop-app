@@ -19,6 +19,7 @@ export const FiltersList = ({
               className='show-when-hover-container'
               disableGutters
               divider
+              key={ filter }
               secondaryAction={
                 <IconButton
                   className='show-when-hover'

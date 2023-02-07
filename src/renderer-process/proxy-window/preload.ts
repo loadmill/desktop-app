@@ -9,14 +9,14 @@ import {
   DESKTOP_API,
   DOWNLOAD_CERTIFICATE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
+  EXPORT_AS_HAR,
+  EXPORTED_AS_HAR_SUCCESS,
   GET_IP_ADDRESS,
   IP_ADDRESS,
   IS_RECORDING,
   PROXY,
   REFRESH_ENTRIES,
   REFRESH_FILTERS,
-  SAVE_AS_HAR,
-  SAVED_AS_HAR_SUCCESS,
   SET_FILTERS,
   SET_IS_RECORDING,
   UPDATED_ENTRIES,
@@ -27,11 +27,11 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: (): void => sendToMain(CLEAR_ALL_ENTRIES),
   [DELETE_ENTRY]: (entryId: string): void => sendToMain(DELETE_ENTRY, { entryId }),
   [DOWNLOAD_CERTIFICATE]: (): void => sendToMain(DOWNLOAD_CERTIFICATE),
+  [EXPORT_AS_HAR]: (): void => sendToMain(EXPORT_AS_HAR),
   [GET_IP_ADDRESS]: (ipvFamily?: 'IPv4' | 'IPv6'): void => sendToMain(GET_IP_ADDRESS, { ipvFamily }),
   [IS_RECORDING]: (): void => sendToMain(IS_RECORDING),
   [REFRESH_ENTRIES]: (): void => sendToMain(REFRESH_ENTRIES),
   [REFRESH_FILTERS]: (): void => sendToMain(REFRESH_FILTERS),
-  [SAVE_AS_HAR]: (): void => sendToMain(SAVE_AS_HAR),
   [SET_FILTERS]: (filters: string[]): void => sendToMain(SET_FILTERS, { filters }),
   [SET_IS_RECORDING]: (isRecording: boolean): void => sendToMain(SET_IS_RECORDING, { isRecording }),
 };
@@ -52,8 +52,8 @@ ipcRenderer.on(PROXY, (_event: Electron.IpcRendererEvent, data: ProxyRendererMes
   window.postMessage({ data, type: PROXY });
 });
 
-ipcRenderer.on(SAVED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
-  window.postMessage({ data, type: SAVED_AS_HAR_SUCCESS });
+ipcRenderer.on(EXPORTED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: EXPORTED_AS_HAR_SUCCESS });
 });
 
 ipcRenderer.on(UPDATED_ENTRIES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {

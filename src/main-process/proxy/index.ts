@@ -13,12 +13,12 @@ import { PROXY } from '../../universal/constants';
 import { subscribeToClearEntriesFromRenderer, subscribeToDeleteEntryFromRenderer } from './clear-entries';
 import { dummyEntries } from './dummy-entries-delete-later';
 import { addEntry, initEntries } from './entries';
+import { subscribeToExportAsHar } from './export-as-har';
 import { shouldFilter, subscribeToFiltersFromRenderer } from './filters';
 import { subscribeToGetIpAddressFromRenderer } from './ip-address';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
 import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
 import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
-import { subscribeToSaveAsHar } from './save-as-har';
 
 export const initProxyServer = (): void => {
   initEntries(dummyEntries);
@@ -197,7 +197,7 @@ const subscribeToFilterEvents = (): void => {
   subscribeToRecordingStateEvents();
   subscribeToRefreshEntriesFromRenderer();
   subscribeToFiltersFromRenderer();
-  subscribeToSaveAsHar();
+  subscribeToExportAsHar();
   subscribeToClearEntriesFromRenderer();
   subscribeToDeleteEntryFromRenderer();
   subscribeToGetIpAddressFromRenderer();

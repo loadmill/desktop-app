@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -50,6 +51,7 @@ export const Filters = ({
       <Button
         className='fit-content'
         onClick={ onOpenFiltersDialog }
+        startIcon={ <FilterListIcon /> }
         variant='outlined'
       >
         Filters

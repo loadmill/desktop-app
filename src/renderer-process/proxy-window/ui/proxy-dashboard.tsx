@@ -9,11 +9,11 @@ import { ProxyRendererMessage } from '../../../types/messaging';
 import { ProxyEntry } from '../../../types/proxy-entry';
 import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
+  EXPORTED_AS_HAR_SUCCESS,
   IP_ADDRESS,
   IS_RECORDING,
   MESSAGE,
   PROXY,
-  SAVED_AS_HAR_SUCCESS,
   UPDATED_ENTRIES,
   UPDATED_FILTERS
 } from '../../../universal/constants';
@@ -23,7 +23,6 @@ import { DownloadCertificate } from './download-certificate';
 import { Filters } from './filters';
 import { ProxyEntries } from './proxy-entries';
 import { Recording } from './recording';
-import { SaveProxyAsHar } from './save-proxy-as-har';
 
 export const ProxyDashboard = (): JSX.Element => {
   const [shouldShowEntries, setShouldShowEntries] = useState<boolean>(false);
@@ -31,7 +30,7 @@ export const ProxyDashboard = (): JSX.Element => {
   const [filters, setFilters] = useState<string[]>([]);
   const [isDownloadInProgress, setIsDownloadInProgress] = React.useState(false);
   const [showDownloadSuccessSnackBar, setShowDownloadSuccessSnackBar] = useState<boolean>(false);
-  const [showSaveAsHarSuccessSnackBar, setShowSaveAsHarSuccessSnackBar] = useState<boolean>(false);
+  const [showExportAsHarSuccessSnackBar, setShowExportAsHarSuccessSnackBar] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
 
@@ -65,8 +64,8 @@ export const ProxyDashboard = (): JSX.Element => {
         case PROXY:
           onProxyMsg(data);
           break;
-        case SAVED_AS_HAR_SUCCESS:
-          onSavedAsHarSuccess(data);
+        case EXPORTED_AS_HAR_SUCCESS:
+          onExportedAsHarSuccess(data);
           break;
         case UPDATED_ENTRIES:
           onUpdatedEntries(data);
@@ -98,8 +97,8 @@ export const ProxyDashboard = (): JSX.Element => {
     setShouldShowEntries(true);
   };
 
-  const onSavedAsHarSuccess = (_data: ProxyRendererMessage['data']) => {
-    setShowSaveAsHarSuccessSnackBar(true);
+  const onExportedAsHarSuccess = (_data: ProxyRendererMessage['data']) => {
+    setShowExportAsHarSuccessSnackBar(true);
   };
 
   const onUpdatedEntries = ({ proxies }: ProxyRendererMessage['data']) => {
@@ -111,10 +110,6 @@ export const ProxyDashboard = (): JSX.Element => {
 
   const onUpdatedFilters = ({ filters }: ProxyRendererMessage['data']) => {
     setFilters(filters);
-  };
-
-  const saveEntriesAsHar = () => {
-    window.desktopApi.saveAsHar();
   };
 
   const isClearAllDisabled = !shouldShowEntries;
@@ -144,9 +139,19 @@ export const ProxyDashboard = (): JSX.Element => {
           variant='outlined'
         >
           <Typography
+            style={ {
+              alignItems: 'baseline',
+              display: 'flex',
+              gap: '4px',
+            } }
             variant='body2'
           >
-            {`Listening on ${ipAddress}:1234`}
+            { 'Listening on' }
+            <Typography
+              variant='button'
+            >
+              { ipAddress + ':1234' }
+            </Typography>
           </Typography>
           <DownloadCertificate
             isInProgress={ isDownloadInProgress }
@@ -156,15 +161,11 @@ export const ProxyDashboard = (): JSX.Element => {
           />
         </Paper>
         <div style={ { display: 'flex', gap: '8px' } }>
-          <SaveProxyAsHar
-            onSave={ saveEntriesAsHar }
-            openSnackBar={ showSaveAsHarSuccessSnackBar }
-            setOpenSnackBar={ setShowSaveAsHarSuccessSnackBar }
-          />
           <Filters
             filters={ filters }
           />
           <Autocomplete
+            autoComplete
             disablePortal
             id='combo-box-demo'
             options={ top100Films }
@@ -176,7 +177,9 @@ export const ProxyDashboard = (): JSX.Element => {
                   size='small'
                 />
             }
-            sx={ { width: 300 } }
+            sx={ {
+              width: 300,
+            } }
           />
         </div>
       </div>
@@ -186,6 +189,12 @@ export const ProxyDashboard = (): JSX.Element => {
         {shouldShowEntries && (
           <ProxyEntries
             entries={ entries }
+            selectedEntriesActionsProps={ {
+              export: {
+                setShowExportAsHarSuccessSnackBar: setShowExportAsHarSuccessSnackBar,
+                showExportAsHarSuccessSnackBar: showExportAsHarSuccessSnackBar,
+              }
+            } }
           />
         )}
       </div>

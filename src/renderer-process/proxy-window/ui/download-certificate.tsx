@@ -25,10 +25,11 @@ export const DownloadCertificate = ({
       <Chip
         color='primary'
         disabled={ isInProgress }
-        icon={ <DownloadIcon fontSize='small'/> }
-        label="certificate"
+        icon={ <DownloadIcon /> }
+        label='Certificate'
         onClick={ onDownloadClick }
         size='small'
+        variant='outlined'
       />
       <CustomizedSnackbars
         message='Certificate downloaded successfully!'
