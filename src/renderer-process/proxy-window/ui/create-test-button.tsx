@@ -13,11 +13,9 @@ export const CreateTestButton = ({
     disabled={ disabled }
     onClick={ onCreateTest }
     startIcon={
-      <AddRoundedIcon
-        color='info'
-      />
+      <AddRoundedIcon />
     }
-    variant='outlined'
+    variant='contained'
   >
     {'Create Test'}
   </Button>

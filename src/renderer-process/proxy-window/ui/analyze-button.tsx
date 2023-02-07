@@ -13,11 +13,9 @@ export const AnalyzeButton = ({
     disabled={ disabled }
     onClick={ onAnalyze }
     startIcon={
-      <AutoFixHighIcon
-        color='info'
-      />
+      <AutoFixHighIcon />
     }
-    variant='outlined'
+    variant='contained'
   >
     {'Analyze'}
   </Button>
