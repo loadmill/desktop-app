@@ -5,8 +5,10 @@ import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
   FIND_NEXT,
   GENERATE_TOKEN,
+  GET_IP_ADDRESS,
   GO_BACK,
   GO_FORWARD,
+  IP_ADDRESS,
   IS_AGENT_CONNECTED,
   IS_RECORDING,
   LOADMILL_VIEW_ID,
@@ -52,6 +54,7 @@ export abstract class MainMessage implements IPCMessage {
   data?: {
     entryId?: string;
     filters?: string[];
+    ipvFamily?: 'IPv4' | 'IPv6';
     isConnected?: boolean;
     isRecording?: boolean;
     isSignedIn?: boolean;
@@ -78,6 +81,7 @@ export abstract class RendererMessage implements IPCMessage {
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
     filters?: string[];
+    ipAddress?: string;
     isRecording?: boolean;
     proxies?: ProxyEntry[];
     proxy?: ProxyEntry;
@@ -95,6 +99,7 @@ export type MainMessageTypes =
   typeof DELETE_ENTRY |
   typeof DOWNLOAD_CERTIFICATE |
   typeof FIND_NEXT |
+  typeof GET_IP_ADDRESS |
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof IS_AGENT_CONNECTED |
@@ -121,6 +126,7 @@ export type RendererMessageTypes =
 
 export type ProxyRendererMessageTypes =
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
+  typeof IP_ADDRESS |
   typeof IS_RECORDING |
   typeof SAVED_AS_HAR_SUCCESS |
   typeof UPDATED_ENTRIES |

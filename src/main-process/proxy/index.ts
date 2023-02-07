@@ -14,6 +14,7 @@ import { subscribeToClearEntriesFromRenderer, subscribeToDeleteEntryFromRenderer
 import { dummyEntries } from './dummy-entries-delete-later';
 import { addEntry, initEntries } from './entries';
 import { shouldFilter, subscribeToFiltersFromRenderer } from './filters';
+import { subscribeToGetIpAddressFromRenderer } from './ip-address';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
 import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
 import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
@@ -199,4 +200,5 @@ const subscribeToFilterEvents = (): void => {
   subscribeToSaveAsHar();
   subscribeToClearEntriesFromRenderer();
   subscribeToDeleteEntryFromRenderer();
+  subscribeToGetIpAddressFromRenderer();
 };

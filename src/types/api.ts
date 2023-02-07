@@ -3,6 +3,7 @@ import {
   DELETE_ENTRY,
   DOWNLOAD_CERTIFICATE,
   FIND_NEXT,
+  GET_IP_ADDRESS,
   GO_BACK,
   GO_FORWARD,
   IS_RECORDING,
@@ -44,6 +45,7 @@ export type ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: () => void;
   [DELETE_ENTRY]: (entryId: string) => void;
   [DOWNLOAD_CERTIFICATE]: () => void;
+  [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
   [IS_RECORDING]: () => void;
   [REFRESH_ENTRIES]: () => void;
   [REFRESH_FILTERS]: () => void;

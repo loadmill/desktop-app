@@ -1,6 +1,5 @@
 import DownloadIcon from '@mui/icons-material/Download';
-import { Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
 import React from 'react';
 
 import { CustomizedSnackbars } from './snack-bar';
@@ -22,30 +21,22 @@ export const DownloadCertificate = ({
   };
 
   return (
-    <div
-      style={ {
-        alignItems: 'center',
-        display: 'flex',
-      } }
-    >
-      <IconButton
-        className='fit-content'
+    <>
+      <Chip
         color='primary'
         disabled={ isInProgress }
+        icon={ <DownloadIcon fontSize='small'/> }
+        label="certificate"
         onClick={ onDownloadClick }
-      >
-        <DownloadIcon fontSize='small' />
-      </IconButton>
-      <Typography variant='caption'>
-        Download and install CA certificate
-      </Typography>
+        size='small'
+      />
       <CustomizedSnackbars
         message='Certificate downloaded successfully!'
         onClose={ onCloseSnackBar }
         open={ openSnackBar }
         severity='success'
       />
-    </div>
+    </>
   );
 };
 

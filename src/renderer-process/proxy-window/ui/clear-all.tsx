@@ -1,6 +1,5 @@
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Button from '@mui/material/Button';
 import React from 'react';
 
 const onClear = () => {
@@ -12,18 +11,19 @@ const onClear = () => {
 export const ClearAll = ({
   disabled = false,
 }: ClearAllProps): JSX.Element => (
-
-  <Tooltip
-    title='Clear All'
+  <Button
+    disabled={ disabled }
+    onClick={ onClear }
+    startIcon={
+      <DeleteIcon
+        color='info'
+        fontSize='medium'
+      />
+    }
+    variant='outlined'
   >
-    <IconButton
-      color='info'
-      disabled={ disabled }
-      onClick={ onClear }
-    >
-      <DeleteForeverOutlinedIcon fontSize='medium'/>
-    </IconButton>
-  </Tooltip>
+    {'Clear All'}
+  </Button>
 );
 
 export type ClearAllProps = {
