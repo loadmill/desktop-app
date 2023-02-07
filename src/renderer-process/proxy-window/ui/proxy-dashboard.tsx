@@ -134,7 +134,7 @@ export const ProxyDashboard = (): JSX.Element => {
             alignItems: 'center',
             display: 'flex',
             gap: '8px',
-            padding: '8px',
+            padding: '6px',
           } }
           variant='outlined'
         >
@@ -167,7 +167,7 @@ export const ProxyDashboard = (): JSX.Element => {
           <Autocomplete
             autoComplete
             disablePortal
-            id='combo-box-demo'
+            id='suite-autocomplete'
             options={ top100Films }
             renderInput={
               (params) =>

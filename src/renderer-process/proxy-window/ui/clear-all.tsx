@@ -17,7 +17,6 @@ export const ClearAll = ({
     startIcon={
       <DeleteIcon
         color='info'
-        fontSize='medium'
       />
     }
     variant='outlined'

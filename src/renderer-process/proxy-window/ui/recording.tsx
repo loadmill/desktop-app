@@ -20,7 +20,7 @@ export const Recording = ({
       }
       variant='outlined'
     >
-      {text}
+      { text }
     </Button>
   );
 };

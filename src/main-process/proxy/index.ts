@@ -91,7 +91,6 @@ const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
 };
 
 const toRequest = (ctx: HttpMitmProxy.IContext): ProxyRequest => {
-  log.info('toRequest', ctx.clientToProxyRequest);
   const protocol = 'http' + (ctx.isSSL ? 's' : '') + '://';
 
   const { headers, method, url } = ctx.clientToProxyRequest;
