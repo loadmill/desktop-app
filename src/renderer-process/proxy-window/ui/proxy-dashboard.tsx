@@ -18,7 +18,9 @@ import {
   UPDATED_FILTERS
 } from '../../../universal/constants';
 
+import { AnalyzeButton } from './analyze-button';
 import { ClearAll } from './clear-all';
+import { CreateTestButton } from './create-test-button';
 import { DownloadCertificate } from './download-certificate';
 import { Filters } from './filters';
 import { ProxyEntries } from './proxy-entries';
@@ -173,11 +175,17 @@ export const ProxyDashboard = (): JSX.Element => {
               (params) =>
                 <TextField
                   { ...params }
+                  InputLabelProps={ {
+                    sx: {
+                      color: (theme) => theme.palette.primary.main,
+                    },
+                  } }
                   label='Suite'
                   size='small'
                 />
             }
             sx={ {
+              borderColor: 'green',
               width: 300,
             } }
           />
@@ -197,6 +205,20 @@ export const ProxyDashboard = (): JSX.Element => {
             } }
           />
         )}
+      </div>
+      <div
+        style={ {
+          display: 'flex',
+          gap: '8px',
+          justifyContent: 'flex-end',
+        } }
+      >
+        <AnalyzeButton
+          disabled={ !shouldShowEntries }
+        />
+        <CreateTestButton
+          disabled={ !shouldShowEntries }
+        />
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: 12,
     maxWidth: 70,
     overflow: 'scroll',
-    // whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap',
   },
 }));
 

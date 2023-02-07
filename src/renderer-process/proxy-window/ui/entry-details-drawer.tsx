@@ -109,6 +109,8 @@ export const EntryDetailsDrawer = ({
           topLeft: false,
           topRight: false,
         } }
+        maxWidth={ '99.99%' }
+        minWidth={ '0.01%' }
         style={ {
           overflow: 'auto',
           paddingTop: 8,

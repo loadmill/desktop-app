@@ -1,10 +1,25 @@
 import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { alpha, createTheme, ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 
 import { ProxyDashboard } from './proxy-dashboard';
 
 const darkTheme = createTheme({
+  components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            backgroundColor: alpha('#00B1FF', 0.08),
+            borderColor: '#00B1FF',
+          },
+          '.MuiOutlinedInput-notchedOutline': {
+            borderColor: alpha('#00B1FF', 0.5),
+          },
+        },
+      },
+    },
+  },
   palette: {
     action: {
       active: '#bdd2e7',

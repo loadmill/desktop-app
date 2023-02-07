@@ -51,7 +51,7 @@ export const Filters = ({
       <Button
         className='fit-content'
         onClick={ onOpenFiltersDialog }
-        startIcon={ <FilterListIcon /> }
+        startIcon={ <FilterListIcon color='info'/> }
         variant='outlined'
       >
         Filters
