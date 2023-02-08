@@ -3,6 +3,7 @@ import {
   DELETE_ENTRY,
   DOWNLOAD_CERTIFICATE,
   EXPORT_AS_HAR,
+  FETCH_SUITES,
   FIND_NEXT,
   GET_IP_ADDRESS,
   GO_BACK,
@@ -50,6 +51,7 @@ export type ApiForLoadmillProxyWindow = {
   [DELETE_ENTRY]: (entryId: string) => void;
   [DOWNLOAD_CERTIFICATE]: () => void;
   [EXPORT_AS_HAR]: () => void;
+  [FETCH_SUITES]: () => void;
   [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
   [IS_RECORDING]: () => void;
   [REFRESH_ENTRIES]: () => void;

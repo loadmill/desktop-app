@@ -11,6 +11,7 @@ import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORT_AS_HAR,
   EXPORTED_AS_HAR_SUCCESS,
+  FETCH_SUITES,
   GET_IP_ADDRESS,
   IP_ADDRESS,
   IS_RECORDING,
@@ -21,6 +22,7 @@ import {
   SET_IS_RECORDING,
   UPDATED_ENTRIES,
   UPDATED_FILTERS,
+  UPDATED_SUITES,
 } from '../../universal/constants';
 import { subscribeToProxyViewMessages } from '../renderer-events';
 
@@ -29,6 +31,7 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [DELETE_ENTRY]: (entryId: string): void => sendToMain(DELETE_ENTRY, { entryId }),
   [DOWNLOAD_CERTIFICATE]: (): void => sendToMain(DOWNLOAD_CERTIFICATE),
   [EXPORT_AS_HAR]: (): void => sendToMain(EXPORT_AS_HAR),
+  [FETCH_SUITES]: (): void => sendToMain(FETCH_SUITES),
   [GET_IP_ADDRESS]: (ipvFamily?: 'IPv4' | 'IPv6'): void => sendToMain(GET_IP_ADDRESS, { ipvFamily }),
   [IS_RECORDING]: (): void => sendToMain(IS_RECORDING),
   [REFRESH_ENTRIES]: (): void => sendToMain(REFRESH_ENTRIES),
@@ -39,6 +42,10 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
 
 subscribeToProxyViewMessages(DOWNLOADED_CERTIFICATE_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: DOWNLOADED_CERTIFICATE_SUCCESS });
+});
+
+subscribeToProxyViewMessages(EXPORTED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: EXPORTED_AS_HAR_SUCCESS });
 });
 
 subscribeToProxyViewMessages(IP_ADDRESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
@@ -53,16 +60,16 @@ subscribeToProxyViewMessages(PROXY, (_event: Electron.IpcRendererEvent, data: Pr
   window.postMessage({ data, type: PROXY });
 });
 
-subscribeToProxyViewMessages(EXPORTED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
-  window.postMessage({ data, type: EXPORTED_AS_HAR_SUCCESS });
-});
-
 subscribeToProxyViewMessages(UPDATED_ENTRIES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: UPDATED_ENTRIES });
 });
 
 subscribeToProxyViewMessages(UPDATED_FILTERS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: UPDATED_FILTERS });
+});
+
+subscribeToProxyViewMessages(UPDATED_SUITES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: UPDATED_SUITES });
 });
 
 contextBridge.exposeInMainWorld(DESKTOP_API, WINDOW_API);

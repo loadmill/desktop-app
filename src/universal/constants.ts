@@ -13,6 +13,7 @@ export const
   DOWNLOAD_CERTIFICATE = 'downloadCertificate',
   EXPORTED_AS_HAR_SUCCESS = 'exportedAsHarSuccess',
   EXPORT_AS_HAR = 'exportAsHar',
+  FETCH_SUITES = 'fetchSuites',
   FILTERS = 'filters',
   FIND_NEXT = 'findNext',
   GENERATE_TOKEN = 'generateToken',
@@ -45,6 +46,7 @@ export const
   TOKEN = 'token',
   UPDATED_ENTRIES = 'updatedEntries',
   UPDATED_FILTERS = 'updatedFilters',
+  UPDATED_SUITES = 'updatedSuites',
   UPDATE_DOWNLOADED = 'update-downloaded',
   UPDATE_NOT_AVAILABLE = 'update-not-available',
   WINDOW_ALL_CLOSED = 'window-all-closed';

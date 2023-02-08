@@ -71,8 +71,8 @@ const createWindow = () => {
   setOpenLinksInBrowser(mainWindow.webContents);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   subscribeToToggleMaximizeWindow(mainWindow);
-  const loadmillWebView = createLoadmillWebView(mainWindow);
   const proxyView = createProxyView(mainWindow);
+  const loadmillWebView = createLoadmillWebView(mainWindow);
   subscribeToSwitchView(mainWindow, loadmillWebView, proxyView);
 };
 

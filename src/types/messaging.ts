@@ -5,6 +5,7 @@ import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORT_AS_HAR,
   EXPORTED_AS_HAR_SUCCESS,
+  FETCH_SUITES,
   FIND_NEXT,
   GENERATE_TOKEN,
   GET_IP_ADDRESS,
@@ -30,18 +31,20 @@ import {
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
   UPDATED_ENTRIES,
-  UPDATED_FILTERS
+  UPDATED_FILTERS,
+  UPDATED_SUITES
 } from '../universal/constants';
 
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
+import { SuiteOption } from './suite';
 import { ViewValue } from './views';
 
 /**
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] };
+  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] };
   type: string;
 }
 
@@ -93,6 +96,7 @@ export abstract class ProxyRendererMessage implements IPCMessage {
     isRecording?: boolean;
     proxies?: ProxyEntry[];
     proxy?: ProxyEntry;
+    suites?: SuiteOption[];
   };
   type: ProxyRendererMessageTypes;
 }
@@ -106,6 +110,7 @@ export type MainMessageTypes =
   typeof CLEAR_ALL_ENTRIES |
   typeof DELETE_ENTRY |
   typeof DOWNLOAD_CERTIFICATE |
+  typeof FETCH_SUITES |
   typeof FIND_NEXT |
   typeof GET_IP_ADDRESS |
   typeof GO_BACK |
@@ -144,4 +149,5 @@ export type ProxyRendererMessageTypes =
   typeof EXPORTED_AS_HAR_SUCCESS |
   typeof UPDATED_ENTRIES |
   typeof UPDATED_FILTERS |
+  typeof UPDATED_SUITES |
   typeof PROXY;
