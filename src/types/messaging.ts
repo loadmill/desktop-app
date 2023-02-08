@@ -27,6 +27,7 @@ import {
   SHOW_FIND_ON_PAGE,
   START_AGENT,
   STOP_AGENT,
+  SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
   UPDATED_ENTRIES,
   UPDATED_FILTERS
@@ -34,6 +35,7 @@ import {
 
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
+import { ViewValue } from './views';
 
 /**
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
@@ -61,6 +63,7 @@ export abstract class MainMessage implements IPCMessage {
     text?: string;
     toFind?: string;
     token?: string;
+    view?: ViewValue;
   };
   type: MainMessageTypes;
 }
@@ -113,6 +116,7 @@ export type MainMessageTypes =
   typeof SET_IS_USER_SIGNED_IN |
   typeof START_AGENT |
   typeof STOP_AGENT |
+  typeof SWITCH_VIEW |
   typeof TOGGLE_MAXIMIZE_WINDOW;
 
 export type RendererMessageTypes =

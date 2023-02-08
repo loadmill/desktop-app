@@ -13,7 +13,7 @@ export const HtmlDisplay = ({
     <Typography
       className='html-display'
       color={ color }
-      component="pre"
+      component='pre'
     >
       <code>{prettyHtml}</code>
     </Typography>

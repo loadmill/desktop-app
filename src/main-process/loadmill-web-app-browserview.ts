@@ -26,7 +26,7 @@ export const createLoadmillWebView = (
       preload: LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY,
     },
   });
-  mainWindow.setBrowserView(loadmillWebView);
+  mainWindow.addBrowserView(loadmillWebView);
   setOpenLinksInBrowser(loadmillWebView.webContents);
   sendToRenderer({
     data: { loadmillViewId: loadmillWebView.webContents.id },

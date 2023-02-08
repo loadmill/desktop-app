@@ -16,8 +16,11 @@ import {
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
   STOP_AGENT,
+  SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW
 } from '../universal/constants';
+
+import { ViewValue } from './views';
 
 declare global {
   interface Window {
@@ -34,6 +37,7 @@ export type ApiForMainWindow = {
   [REFRESH_PAGE]: () => void;
   [START_AGENT]: () => void;
   [STOP_AGENT]: () => void;
+  [SWITCH_VIEW]: (view?: ViewValue) => void;
   [TOGGLE_MAXIMIZE_WINDOW]: () => void;
 };
 

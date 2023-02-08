@@ -40,6 +40,7 @@ export const
   SHOW_FIND_ON_PAGE = 'showFindOnPage',
   START_AGENT = 'startAgent',
   STOP_AGENT = 'stopAgent',
+  SWITCH_VIEW = 'switchView',
   TOGGLE_MAXIMIZE_WINDOW = 'toggleMaximizeWindow',
   TOKEN = 'token',
   UPDATED_ENTRIES = 'updatedEntries',

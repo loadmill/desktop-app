@@ -16,6 +16,7 @@ import {
 
 import { GoBackIconButton, GoForwardIconButton, RefreshIconButton, StartAgentIconButton, StopAgentIconButton } from './actions-icon-buttons';
 import { FindOnPage } from './find-on-page';
+import { ViewsSwitch } from './views-switch';
 
 export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
@@ -102,6 +103,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
           setShouldShowFind={ setShouldShowFind }
         />
       }
+      <ViewsSwitch />
       {
         isAgentConnected ? (
           <StopAgentIconButton

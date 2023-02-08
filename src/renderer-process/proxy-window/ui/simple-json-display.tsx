@@ -11,7 +11,7 @@ export const SimpleJsonDisplay = ({
   return (
     <Typography
       color={ '#6eb450' || theme.palette.success.main }
-      component="pre"
+      component='pre'
     >
       <code>{prettyJsonText}</code>
     </Typography>

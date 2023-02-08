@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { sendToMain } from '../../inter-process-communication/renderer-to-main';
 import { ApiForMainWindow } from '../../types/api';
 import { RendererMessage } from '../../types/messaging';
+import { ViewValue } from '../../types/views';
 import {
   DESKTOP_API,
   FIND_NEXT,
@@ -17,6 +18,7 @@ import {
   SHOW_FIND_ON_PAGE,
   START_AGENT,
   STOP_AGENT,
+  SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
 } from '../../universal/constants';
 
@@ -27,6 +29,7 @@ export const WINDOW_API: ApiForMainWindow = {
   [REFRESH_PAGE]: () => sendToMain(REFRESH_PAGE),
   [START_AGENT]: () => sendToMain(START_AGENT),
   [STOP_AGENT]: () => sendToMain(STOP_AGENT),
+  [SWITCH_VIEW]: (view?: ViewValue) => sendToMain(SWITCH_VIEW, { view }),
   [TOGGLE_MAXIMIZE_WINDOW]: () => sendToMain(TOGGLE_MAXIMIZE_WINDOW),
 };
 

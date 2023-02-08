@@ -108,6 +108,7 @@ module.exports = {
     }
     ],
     'indent': ['error', 2, { 'SwitchCase': 1 }],
+    'jsx-quotes': ['error', 'prefer-single'],
     'keyword-spacing': ['error'],
     'max-classes-per-file': ['error', 10],
     'max-len': ['error', 200],
