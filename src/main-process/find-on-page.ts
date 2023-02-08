@@ -10,7 +10,7 @@ export const subscribeToFindOnPageEvents = (webContents: WebContents): void => {
 
 const subscribeToFoundInPageEvent = (webContents: WebContents): void => {
   webContents.on('found-in-page', (_event: Electron.Event, _result: Electron.Result) => {
-    // TODO: improve the traversal between each found result
+    // TODO: improve the traversal between first and last result
   });
 };
 

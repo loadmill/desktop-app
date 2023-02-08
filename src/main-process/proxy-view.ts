@@ -8,6 +8,7 @@ import {
   RESIZE,
 } from '../universal/constants';
 
+import { subscribeToFindOnPageEvents } from './find-on-page';
 import { setOpenLinksInBrowser } from './open-links';
 import { subscribeToDownloadCertificate } from './proxy/download-certificate';
 import { setBrowserViewSize } from './screen-size';
@@ -35,6 +36,7 @@ export const createProxyView = (
 
   proxyView.webContents.loadURL(PROXY_WINDOW_WEBPACK_ENTRY);
   initProxyToRenderer(proxyView.webContents);
+  subscribeToFindOnPageEvents(proxyView.webContents);
 
   return proxyView;
 };

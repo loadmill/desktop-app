@@ -11,6 +11,7 @@ import {
 
 import { LOADMILL_WEB_APP_ORIGIN } from './constants';
 import { setWebContents } from './cookies';
+import { subscribeToFindOnPageEvents } from './find-on-page';
 import { subscribeToNavigationEvents } from './navigation-handler';
 import { setOpenLinksInBrowser } from './open-links';
 import { setBrowserViewSize } from './screen-size';
@@ -43,6 +44,8 @@ export const createLoadmillWebView = (
   loadmillWebView.webContents.loadURL(LOADMILL_WEB_APP_ORIGIN);
 
   setWebContents(loadmillWebView.webContents);
+
+  subscribeToFindOnPageEvents(loadmillWebView.webContents);
 
   return loadmillWebView;
 };

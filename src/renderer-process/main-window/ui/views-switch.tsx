@@ -1,6 +1,6 @@
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import React, { useState } from 'react';
+import React from 'react';
 
 import { ViewValue } from '../../../types/views';
 
@@ -9,8 +9,10 @@ const toggleButtonStyle = {
   fontSize: 12,
 };
 
-export const ViewsSwitch = (): JSX.Element => {
-  const [view, setView] = useState<ViewValue>(ViewValue.WEB_PAGE);
+export const ViewsSwitch = ({
+  setView,
+  view,
+}:ViewsSwitchProps): JSX.Element => {
 
   const onSelectView = (
     _event: React.MouseEvent<HTMLElement>,
@@ -29,6 +31,9 @@ export const ViewsSwitch = (): JSX.Element => {
       exclusive
       onChange={ onSelectView }
       size='small'
+      sx={ {
+        height: '1.75rem',
+      } }
       value={ view }
     >
       <ToggleButton
@@ -47,4 +52,7 @@ export const ViewsSwitch = (): JSX.Element => {
   );
 };
 
-export type ViewsSwitchProps = {};
+export type ViewsSwitchProps = {
+  setView: (view: ViewValue) => void;
+  view: ViewValue;
+};
