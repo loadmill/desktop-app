@@ -213,6 +213,12 @@ const handleStopAgentEvent = () => {
   log.info(`Got ${STOP_AGENT} event`);
   if (!isAgentConnected()) {
     log.info('Agent is already not connected');
+    sendToRenderer({
+      data: {
+        isAgentConnected: isAgentConnected(),
+      },
+      type: IS_AGENT_CONNECTED,
+    });
     return;
   }
   stopAgent();
