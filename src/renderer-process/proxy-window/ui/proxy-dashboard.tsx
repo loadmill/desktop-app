@@ -182,6 +182,7 @@ export const ProxyDashboard = (): JSX.Element => {
             disablePortal
             getOptionLabel={ (option: SuiteOption) => option.description }
             id='suite-autocomplete'
+            onOpen={ window.desktopApi.fetchSuites }
             options={ suites }
             renderInput={
               (params) =>
