@@ -1,26 +1,28 @@
-import { BrowserView, ipcMain } from 'electron';
+import { BrowserView } from 'electron';
 
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import { Navigation } from '../types/navigation';
-import { DID_NAVIGATE_IN_PAGE, GO_BACK, GO_FORWARD, NAVIGATION, REFRESH_PAGE } from '../universal/constants';
+import {
+  DID_NAVIGATE_IN_PAGE,
+  GO_BACK,
+  GO_FORWARD,
+  NAVIGATION,
+  REFRESH_PAGE
+} from '../universal/constants';
+
+import { subscribeToMainProcessMessage } from './main-events';
 
 export const subscribeToNavigationEvents = (webView: BrowserView): void => {
-  ipcMain.on(REFRESH_PAGE, (_event: Electron.IpcMainEvent) => {
+  subscribeToMainProcessMessage(REFRESH_PAGE, () => {
     webView.webContents.reload();
   });
-  ipcMain.on(GO_BACK, (_event: Electron.IpcMainEvent) => {
+  subscribeToMainProcessMessage(GO_BACK, () => {
     webView.webContents.goBack();
   });
-  ipcMain.on(GO_FORWARD, (_event: Electron.IpcMainEvent) => {
+  subscribeToMainProcessMessage(GO_FORWARD, () => {
     webView.webContents.goForward();
   });
-  webView.webContents.on(DID_NAVIGATE_IN_PAGE, (
-    _event: Event,
-    _url: string,
-    _isMainFrame: boolean,
-    _frameProcessId: number,
-    _frameRoutingId: number,
-  ) => {
+  webView.webContents.on(DID_NAVIGATE_IN_PAGE, () => {
     const nav: Navigation = {
       canGoBack: webView.webContents.canGoBack(),
       canGoForward: webView.webContents.canGoForward(),

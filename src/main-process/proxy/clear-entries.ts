@@ -1,18 +1,15 @@
-import { ipcMain } from 'electron';
-
 import { MainMessage } from '../../types/messaging';
 import { CLEAR_ALL_ENTRIES, DELETE_ENTRY } from '../../universal/constants';
+import { subscribeToMainProcessMessage } from '../main-events';
 
 import { clearEntries, deleteEntry } from './entries';
 
 export const subscribeToClearEntriesFromRenderer = (): void => {
-  ipcMain.on(CLEAR_ALL_ENTRIES, (_event: Electron.IpcMainEvent) => {
-    clearEntries();
-  });
+  subscribeToMainProcessMessage(CLEAR_ALL_ENTRIES, clearEntries);
 };
 
 export const subscribeToDeleteEntryFromRenderer = (): void => {
-  ipcMain.on(DELETE_ENTRY, (_event: Electron.IpcMainEvent, { entryId }: MainMessage['data']) => {
+  subscribeToMainProcessMessage(DELETE_ENTRY, (_event: Electron.IpcMainEvent, { entryId }: MainMessage['data']) => {
     deleteEntry(entryId);
   });
 };

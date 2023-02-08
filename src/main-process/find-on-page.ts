@@ -1,7 +1,9 @@
-import { ipcMain, WebContents } from 'electron';
+import { WebContents } from 'electron';
 
 import { MainMessage } from '../types/messaging';
 import { FIND_NEXT } from '../universal/constants';
+
+import { subscribeToMainProcessMessage } from './main-events';
 
 export const subscribeToFindOnPageEvents = (webContents: WebContents): void => {
   subscribeToFoundInPageEvent(webContents);
@@ -15,7 +17,7 @@ const subscribeToFoundInPageEvent = (webContents: WebContents): void => {
 };
 
 const subscribeToFindNextFromRenderer = (webContents: WebContents): void => {
-  ipcMain.on(FIND_NEXT, (_event: Electron.IpcMainEvent, { toFind }: MainMessage['data']) => {
+  subscribeToMainProcessMessage(FIND_NEXT, (_event: Electron.IpcMainEvent, { toFind }: MainMessage['data']) => {
     if (toFind) {
       webContents.findInPage(toFind, {
         findNext: true,

@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge } from 'electron';
 
 import { sendToMain } from '../../inter-process-communication/renderer-to-main';
 import { ApiForLoadmillProxyWindow } from '../../types/api';
@@ -22,6 +22,7 @@ import {
   UPDATED_ENTRIES,
   UPDATED_FILTERS,
 } from '../../universal/constants';
+import { subscribeToProxyViewMessages } from '../renderer-events';
 
 export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: (): void => sendToMain(CLEAR_ALL_ENTRIES),
@@ -36,31 +37,31 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [SET_IS_RECORDING]: (isRecording: boolean): void => sendToMain(SET_IS_RECORDING, { isRecording }),
 };
 
-ipcRenderer.on(DOWNLOADED_CERTIFICATE_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+subscribeToProxyViewMessages(DOWNLOADED_CERTIFICATE_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: DOWNLOADED_CERTIFICATE_SUCCESS });
 });
 
-ipcRenderer.on(IP_ADDRESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+subscribeToProxyViewMessages(IP_ADDRESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: IP_ADDRESS });
 });
 
-ipcRenderer.on(IS_RECORDING, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+subscribeToProxyViewMessages(IS_RECORDING, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: IS_RECORDING });
 });
 
-ipcRenderer.on(PROXY, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+subscribeToProxyViewMessages(PROXY, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: PROXY });
 });
 
-ipcRenderer.on(EXPORTED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+subscribeToProxyViewMessages(EXPORTED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: EXPORTED_AS_HAR_SUCCESS });
 });
 
-ipcRenderer.on(UPDATED_ENTRIES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+subscribeToProxyViewMessages(UPDATED_ENTRIES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: UPDATED_ENTRIES });
 });
 
-ipcRenderer.on(UPDATED_FILTERS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+subscribeToProxyViewMessages(UPDATED_FILTERS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: UPDATED_FILTERS });
 });
 

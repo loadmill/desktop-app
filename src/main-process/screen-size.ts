@@ -1,9 +1,11 @@
-import { BrowserView, BrowserWindow, ipcMain } from 'electron';
+import { BrowserView, BrowserWindow } from 'electron';
 
 import { TOGGLE_MAXIMIZE_WINDOW } from '../universal/constants';
 
+import { subscribeToMainProcessMessage } from './main-events';
+
 export const subscribeToToggleMaximizeWindow = (mainWindow: BrowserWindow): void => {
-  ipcMain.on(TOGGLE_MAXIMIZE_WINDOW, (_event: Electron.IpcMainEvent) => {
+  subscribeToMainProcessMessage(TOGGLE_MAXIMIZE_WINDOW, () => {
     if (mainWindow) {
       mainWindow.isMaximized() ?
         mainWindow.unmaximize() :

@@ -1,10 +1,9 @@
 import { NetworkInterfaceInfo, networkInterfaces } from 'os';
 
-import { ipcMain } from 'electron';
-
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import { MainMessage } from '../../types/messaging';
 import { GET_IP_ADDRESS, IP_ADDRESS } from '../../universal/constants';
+import { subscribeToMainProcessMessage } from '../main-events';
 
 const DEFAULT_IP_ADDRESS = '0.0.0.0';
 
@@ -21,7 +20,7 @@ export const getIpAddress = (family: 'IPv4' | 'IPv6' = 'IPv4'): NetworkInterface
 };
 
 export const subscribeToGetIpAddressFromRenderer = (): void => {
-  ipcMain.on(GET_IP_ADDRESS, (_event: Electron.IpcMainEvent, { ipvFamily }: MainMessage['data']) => {
+  subscribeToMainProcessMessage(GET_IP_ADDRESS, (_event: Electron.IpcMainEvent, { ipvFamily }: MainMessage['data']) => {
     sendFromProxyToRenderer({
       data: {
         ipAddress: getIpAddress(ipvFamily),

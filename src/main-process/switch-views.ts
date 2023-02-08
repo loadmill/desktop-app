@@ -1,9 +1,10 @@
-import { BrowserView, BrowserWindow, ipcMain } from 'electron';
+import { BrowserView, BrowserWindow } from 'electron';
 
 import { MainMessage } from '../types/messaging';
 import { ViewValue } from '../types/views';
 import { SWITCH_VIEW } from '../universal/constants';
 
+import { subscribeToMainProcessMessage } from './main-events';
 import { setBrowserViewSize } from './screen-size';
 
 const switchView = (mainWindow: BrowserWindow, view: BrowserView): void => {
@@ -16,7 +17,7 @@ export const subscribeToSwitchView = (
   loadmillWebView: BrowserView,
   proxyView: BrowserView
 ): void => {
-  ipcMain.on(SWITCH_VIEW, (_event: Electron.IpcMainEvent, { view }: MainMessage['data']) => {
+  subscribeToMainProcessMessage(SWITCH_VIEW, (_event: Electron.IpcMainEvent, { view }: MainMessage['data']) => {
     if (view === ViewValue.WEB_PAGE) {
       switchView(mainWindow, loadmillWebView);
     } else if (view === ViewValue.PROXY) {

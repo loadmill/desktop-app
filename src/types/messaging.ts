@@ -81,6 +81,11 @@ export abstract class RendererMessage implements IPCMessage {
   type: RendererMessageTypes;
 }
 
+export abstract class LoadmillViewRendererMessage implements IPCMessage {
+  data?: {};
+  type: LoadmillViewRendererMessageTypes;
+}
+
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
     filters?: string[];
@@ -127,6 +132,10 @@ export type RendererMessageTypes =
   typeof NAVIGATION |
   typeof SAVED_TOKEN |
   typeof SHOW_FIND_ON_PAGE;
+
+export type LoadmillViewRendererMessageTypes =
+  typeof GENERATE_TOKEN |
+  typeof SAVED_TOKEN;
 
 export type ProxyRendererMessageTypes =
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |

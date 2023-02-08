@@ -1,15 +1,14 @@
 import fs from 'fs';
 
-import { app, ipcMain, shell } from 'electron';
+import { app, shell } from 'electron';
 
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import log from '../../log';
 import { DOWNLOAD_CERTIFICATE, DOWNLOADED_CERTIFICATE_SUCCESS } from '../../universal/constants';
+import { subscribeToMainProcessMessage } from '../main-events';
 
 export const subscribeToDownloadCertificate = (): void => {
-  ipcMain.on(DOWNLOAD_CERTIFICATE, (_event) => {
-    downloadCertificate();
-  });
+  subscribeToMainProcessMessage(DOWNLOAD_CERTIFICATE, downloadCertificate);
 };
 
 const downloadCertificate = (): void => {

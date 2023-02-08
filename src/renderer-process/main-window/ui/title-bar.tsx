@@ -1,6 +1,5 @@
 import React, {
   MouseEvent,
-  SyntheticEvent,
   useEffect,
   useState
 } from 'react';
@@ -75,15 +74,15 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     }
   };
 
-  const onRefreshClick = (_event: SyntheticEvent) => {
+  const onRefreshClick = () => {
     window.desktopApi.refreshPage();
   };
 
-  const onBackClick = (_event: SyntheticEvent) => {
+  const onBackClick = () => {
     window.desktopApi.goBack();
   };
 
-  const onForwardClick = (_event: SyntheticEvent) => {
+  const onForwardClick = () => {
     window.desktopApi.goForward();
   };
 
@@ -163,9 +162,9 @@ export const TitleBarActions = ({
 export type TitleBarActionsProps = {
   canGoBack?: boolean;
   canGoForward?: boolean;
-  onBackClick: (_event: SyntheticEvent) => void;
-  onForwardClick: (_event: SyntheticEvent) => void,
-  onRefreshClick: (_event: SyntheticEvent) => void;
+  onBackClick: () => void;
+  onForwardClick: () => void,
+  onRefreshClick: () => void;
 } & ViewsSwitchProps;
 
 const isDoubleClick = ({ detail }: MouseEvent<HTMLElement>) => detail === 2;

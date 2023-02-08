@@ -21,6 +21,7 @@ import {
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
 } from '../../universal/constants';
+import { subscribeToMainWindowMessages } from '../renderer-events';
 
 export const WINDOW_API: ApiForMainWindow = {
   [FIND_NEXT]: (toFind: string) => sendToMain(FIND_NEXT, { toFind }),
@@ -39,31 +40,31 @@ const isFromMainProcess = ({ senderId }: Electron.IpcRendererEvent) => {
   return senderId === 0;
 };
 
-ipcRenderer.on(GENERATE_TOKEN, async (event: Electron.IpcRendererEvent) => {
+subscribeToMainWindowMessages(GENERATE_TOKEN, (event: Electron.IpcRendererEvent) => {
   if (isFromMainProcess(event)) {
     ipcRenderer.sendTo(loadmillViewId, GENERATE_TOKEN);
   }
 });
 
-ipcRenderer.on(LOADMILL_VIEW_ID, async (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(LOADMILL_VIEW_ID, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
   loadmillViewId = data[LOADMILL_VIEW_ID];
 });
 
-ipcRenderer.on(SAVED_TOKEN, async (event: Electron.IpcRendererEvent) => {
+subscribeToMainWindowMessages(SAVED_TOKEN, (event: Electron.IpcRendererEvent) => {
   if (isFromMainProcess(event)) {
     ipcRenderer.sendTo(loadmillViewId, SAVED_TOKEN);
   }
 });
 
-ipcRenderer.on(NAVIGATION, async (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(NAVIGATION, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
   window.postMessage({ data, type: NAVIGATION });
 });
 
-ipcRenderer.on(SHOW_FIND_ON_PAGE, async (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(SHOW_FIND_ON_PAGE, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
   window.postMessage({ data, type: SHOW_FIND_ON_PAGE });
 });
 
-ipcRenderer.on(IS_AGENT_CONNECTED, async (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(IS_AGENT_CONNECTED, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
   window.postMessage({ data, type: IS_AGENT_CONNECTED });
 });
 

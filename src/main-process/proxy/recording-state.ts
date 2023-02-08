@@ -1,8 +1,8 @@
-import { ipcMain } from 'electron';
 
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import { MainMessage } from '../../types/messaging';
 import { IS_RECORDING, SET_IS_RECORDING } from '../../universal/constants';
+import { subscribeToMainProcessMessage } from '../main-events';
 
 let isRecording = false;
 
@@ -13,13 +13,11 @@ export const setIsRecording = (value: boolean): void => {
 };
 
 export const subscribeToIsRecording = (): void => {
-  ipcMain.on(IS_RECORDING, (_event: Electron.IpcMainEvent) => {
-    sendIsRecording();
-  });
+  subscribeToMainProcessMessage(IS_RECORDING, sendIsRecording);
 };
 
 export const subscribeToSetIsRecording = (): void => {
-  ipcMain.on(SET_IS_RECORDING, (_event: Electron.IpcMainEvent, { isRecording }: MainMessage['data']) => {
+  subscribeToMainProcessMessage(SET_IS_RECORDING, (_event: Electron.IpcMainEvent, { isRecording }: MainMessage['data']) => {
     setIsRecording(isRecording);
     sendIsRecording();
   });

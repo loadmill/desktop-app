@@ -1,7 +1,7 @@
 import { ChildProcessWithoutNullStreams, fork } from 'child_process';
 
 import '@loadmill/agent/dist/cli';
-import { app, ipcMain } from 'electron';
+import { app } from 'electron';
 
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
@@ -25,6 +25,7 @@ import {
   LOADMILL_AGENT_SERVER_URL,
   NODE_TLS_REJECT_UNAUTHORIZED
 } from './constants';
+import { subscribeToMainProcessMessage } from './main-events';
 import { get } from './store';
 import { createAndSaveToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
@@ -136,7 +137,7 @@ export const subscribeToAgentEventsFromRenderer = (): void => {
 };
 
 const subscribeToUserIsSignedInFromRenderer = () => {
-  ipcMain.on(SET_IS_USER_SIGNED_IN, handleSetIsUserSignedInEvent);
+  subscribeToMainProcessMessage(SET_IS_USER_SIGNED_IN, handleSetIsUserSignedInEvent);
 };
 
 const handleSetIsUserSignedInEvent = async (_event: Electron.IpcMainEvent, { isSignedIn }: MainMessage['data']) => {
@@ -178,10 +179,10 @@ const handleUserIsSignedOut = () => {
 };
 
 const subscribeToStartAgentFromRenderer = () => {
-  ipcMain.on(START_AGENT, handleStartAgentEvent);
+  subscribeToMainProcessMessage(START_AGENT, handleStartAgentEvent);
 };
 
-const handleStartAgentEvent = async (_event: Electron.IpcMainEvent) => {
+const handleStartAgentEvent = async () => {
   log.info(`Got ${START_AGENT} event`);
   if (!isUserSignedIn()) {
     log.info('User is not signed in, could not connect the agent');
@@ -205,10 +206,10 @@ const handleStartAgentEvent = async (_event: Electron.IpcMainEvent) => {
 };
 
 const subscribeToStopAgentFromRenderer = () => {
-  ipcMain.on(STOP_AGENT, handleStopAgentEvent);
+  subscribeToMainProcessMessage(STOP_AGENT, handleStopAgentEvent);
 };
 
-const handleStopAgentEvent = (_event: Electron.IpcMainEvent) => {
+const handleStopAgentEvent = () => {
   log.info(`Got ${STOP_AGENT} event`);
   if (!isAgentConnected()) {
     log.info('Agent is already not connected');

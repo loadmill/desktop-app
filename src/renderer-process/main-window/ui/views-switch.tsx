@@ -16,7 +16,7 @@ export const ViewsSwitch = ({
 
   const onSelectView = (
     _event: React.MouseEvent<HTMLElement>,
-    selectedView: ViewValue
+    selectedView: ViewValue,
   ) => {
     if (selectedView != null) {
       setView(selectedView);
