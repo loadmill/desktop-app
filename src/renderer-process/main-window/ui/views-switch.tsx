@@ -9,7 +9,7 @@ const toggleButtonStyle = {
   fontSize: 12,
 };
 
-export const ViewsSwitch = ({}: ViewsSwitchProps): JSX.Element => {
+export const ViewsSwitch = (): JSX.Element => {
   const [view, setView] = useState<ViewValue>(ViewValue.WEB_PAGE);
 
   const onSelectView = (

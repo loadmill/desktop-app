@@ -7,7 +7,6 @@ import {
   init as initMainToRenderer,
   sendToRenderer,
 } from '../inter-process-communication/main-to-renderer';
-import { initProxyToRenderer } from '../inter-process-communication/proxy-to-render';
 import log from '../log';
 import {
   ACTIVATE,
@@ -20,14 +19,13 @@ import {
 } from '../universal/constants';
 
 import { subscribeToAgentEventsFromRenderer } from './agent-handlers';
-import { createDummyWebView } from './dummy-browserview';
 import { subscribeToFindOnPageEvents } from './find-on-page';
 import './keybindings';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
 import './menu';
 import { setOpenLinksInBrowser } from './open-links';
 import { initProxyServer } from './proxy';
-import { createProxyWindow } from './proxy-window';
+import { createProxyView } from './proxy-view';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initStore } from './store';
 import { subscribeToSwitchView } from './switch-views';
@@ -76,11 +74,8 @@ const createWindow = () => {
   subscribeToToggleMaximizeWindow(mainWindow);
   const loadmillWebView = createLoadmillWebView(mainWindow);
   subscribeToFindOnPageEvents(loadmillWebView.webContents);
-  const proxyWindow = createProxyWindow();
-  initProxyToRenderer(proxyWindow);
-  subscribeToCloseEvent(proxyWindow);
-  const dummyView = createDummyWebView(mainWindow);
-  subscribeToSwitchView(mainWindow, loadmillWebView, dummyView);
+  const proxyView = createProxyView(mainWindow);
+  subscribeToSwitchView(mainWindow, loadmillWebView, proxyView);
 };
 
 app.on(BEFORE_QUIT, () => {

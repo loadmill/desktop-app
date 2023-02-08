@@ -4,10 +4,10 @@ import { MainMessage } from '../types/messaging';
 import { ViewValue } from '../types/views';
 import { SWITCH_VIEW } from '../universal/constants';
 
-import { setDummyViewSize } from './dummy-browserview';
+import { setBrowserViewSize } from './screen-size';
 
 const switchView = (mainWindow: BrowserWindow, view: BrowserView): void => {
-  setDummyViewSize(view, mainWindow.getBounds());
+  setBrowserViewSize(view, mainWindow.getBounds());
   mainWindow.setTopBrowserView(view);
 };
 
