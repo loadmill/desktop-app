@@ -150,7 +150,7 @@ export const TitleBarActions = ({
         onRefreshClicked={ onRefreshClick }
       />
       <div style={ { marginLeft: '1rem' } }>
-        < ViewsSwitch
+        <ViewsSwitch
           setView={ setView }
           view={ view }
         />
