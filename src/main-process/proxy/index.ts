@@ -9,6 +9,7 @@ import log from '../../log';
 import { Header } from '../../types/header';
 import { ProxyEntry, ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
 import { PROXY } from '../../universal/constants';
+import { PROXY_CERTIFICATES_DIR_PATH } from '../constants';
 
 import { subscribeToClearEntriesFromRenderer, subscribeToDeleteEntryFromRenderer } from './clear-entries';
 import { dummyEntries } from './dummy-entries-delete-later';
@@ -80,8 +81,8 @@ export const initProxyServer = (): void => {
 
   proxy.listen({
     port: proxyPort,
-    sslCaDir: './public',
-  }, () => log.info(`Proxy listening on port ${proxyPort}!`));
+    sslCaDir: PROXY_CERTIFICATES_DIR_PATH,
+  }, () => log.info(`Proxy listening on port ${proxyPort}! and saving to ${PROXY_CERTIFICATES_DIR_PATH}`));
 };
 
 const createRequest = (ctx: Proxy.IContext): ProxyRequest => {

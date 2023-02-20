@@ -4,6 +4,12 @@ import React from 'react';
 
 import { CustomizedSnackbars } from './snack-bar';
 
+// on download click, send a message to the main process
+// then main process will read the certificate using fs
+// then main process will send the certificate back to the renderer process
+// then renderer process will download the certificate
+// nice and simple :)
+
 export const DownloadCertificate = ({
   isInProgress,
   openSnackBar,

@@ -1,7 +1,6 @@
 import { ChildProcessWithoutNullStreams, fork } from 'child_process';
 
 import '@loadmill/agent/dist/cli';
-import { app } from 'electron';
 
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
@@ -9,7 +8,6 @@ import { AgentMessage, MainMessage } from '../types/messaging';
 import {
   DATA,
   IS_AGENT_CONNECTED,
-  LOADMILL_AGENT,
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
   STOP_AGENT,
@@ -22,6 +20,7 @@ import {
   refreshConnectedStatus
 } from './connected-status';
 import {
+  LOADMILL_AGENT_PATH,
   LOADMILL_AGENT_SERVER_URL,
   NODE_TLS_REJECT_UNAUTHORIZED
 } from './constants';
@@ -63,7 +62,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
     LOADMILL_AGENT_SERVER_URL,
     NODE_TLS_REJECT_UNAUTHORIZED,
   });
-  return fork(app.getAppPath() + '/.webpack/main/' + LOADMILL_AGENT, {
+  return fork(LOADMILL_AGENT_PATH, {
     env: {
       LOADMILL_AGENT_SERVER_URL,
       NODE_TLS_REJECT_UNAUTHORIZED,

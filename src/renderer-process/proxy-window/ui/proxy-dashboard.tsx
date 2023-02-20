@@ -19,6 +19,7 @@ import {
   UPDATED_FILTERS,
   UPDATED_SUITES
 } from '../../../universal/constants';
+import { downloadFile } from '../../download';
 
 import { AnalyzeButton } from './analyze-button';
 import { ClearAll } from './clear-all';
@@ -88,7 +89,8 @@ export const ProxyDashboard = (): JSX.Element => {
     }
   };
 
-  const onDownloadedCertificateSuccess = (_data: ProxyRendererMessage['data']) => {
+  const onDownloadedCertificateSuccess = ({ certFileContents }: ProxyRendererMessage['data']) => {
+    downloadFile(certFileContents, 'loadmill-proxy-certificate.pem');
     setIsDownloadInProgress(false);
     setShowDownloadSuccessSnackBar(true);
   };

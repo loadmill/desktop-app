@@ -54,5 +54,3 @@ export const
 export const PLATFORM: { [platform: string]: NodeJS.Platform; } = {
   DARWIN: 'darwin',
 };
-
-export const LOADMILL_AGENT = 'loadmill-agent';
