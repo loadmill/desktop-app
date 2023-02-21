@@ -23,11 +23,10 @@ import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
 
 export const initProxyServer = (): void => {
   initEntries(dummyEntries);
-  subscribeToFilterEvents();
+  subscribeToProxyEvents();
   const proxyPort = Number(process.env.PROXY_PORT || 1234);
 
   const proxy = Proxy();
-  proxy.use(Proxy.wildcard);
   proxy.use(Proxy.gunzip);
 
   proxy.onError((_ctx, err) => {
@@ -68,7 +67,7 @@ export const initProxyServer = (): void => {
     if (!getIsRecording()) {
       return callback();
     }
-    if (shouldFilter(ctx)) {
+    if (shouldFilter(contextToUrl(ctx))) {
       return callback();
     }
 
@@ -83,6 +82,11 @@ export const initProxyServer = (): void => {
     port: proxyPort,
     sslCaDir: PROXY_CERTIFICATES_DIR_PATH,
   }, () => log.info(`Proxy listening on port ${proxyPort}! and saving to ${PROXY_CERTIFICATES_DIR_PATH}`));
+};
+
+const contextToUrl = ({ clientToProxyRequest }: Proxy.IContext): string => {
+  const { headers: { host }, url } = clientToProxyRequest;
+  return host + url;
 };
 
 const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
@@ -193,7 +197,7 @@ const getResponse = (ctx: HttpMitmProxy.IContext): ProxyResponse => {
   };
 };
 
-const subscribeToFilterEvents = (): void => {
+const subscribeToProxyEvents = (): void => {
   subscribeToRecordingStateEvents();
   subscribeToRefreshEntriesFromRenderer();
   subscribeToFiltersFromRenderer();

@@ -91,7 +91,6 @@ export abstract class LoadmillViewRendererMessage implements IPCMessage {
 
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
-    certFileContents?: string;
     filters?: string[];
     ipAddress?: string;
     isRecording?: boolean;

@@ -8,9 +8,9 @@ export const LOADMILL_WEB_APP_ORIGIN = process.env.LOADMILL_WEB_APP_ORIGIN || 'h
 export const NODE_TLS_REJECT_UNAUTHORIZED = process.env.NODE_TLS_REJECT_UNAUTHORIZED || '0';
 
 export const PACKED_RELATIVE_PATH = app.getAppPath() + '/.webpack/main/';
-
 export const LOADMILL_AGENT = 'loadmill-agent';
 export const LOADMILL_AGENT_PATH = PACKED_RELATIVE_PATH + LOADMILL_AGENT;
 
-export const PROXY_CERTIFICATES_DIR_PATH = PACKED_RELATIVE_PATH + 'proxy/';
+export const PROXY_CERTIFICATES_DIR_PATH = app.getPath('userData') + '/proxy/';
 export const PROXY_CERTIFICATE_PATH = PROXY_CERTIFICATES_DIR_PATH + 'certs/ca.pem';
+export const PROXY_CERTIFICATE_SAVE_PATH = app.getPath('downloads') + '/loadmill-proxy-certificate.pem';

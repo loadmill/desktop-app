@@ -6,7 +6,7 @@ import { /* FILTERS, */ REFRESH_FILTERS, SET_FILTERS, UPDATED_FILTERS } from '..
 import { subscribeToMainProcessMessage } from '../main-events';
 // import { get, set } from '../store';
 
-const DEFULAT_FILTERS = [
+const DEFULAT_FILTERS: string[] = [
   'google-analytics',
   'googleads',
   'goog.',
@@ -28,12 +28,10 @@ const DEFULAT_FILTERS = [
 
 let filters: ProxyFilters;
 
-export const shouldFilter = (ctx: HttpMitmProxy.IContext): boolean => {
+export const shouldFilter = (urlToFilter: string = ''): boolean => {
   try {
-    const { headers: { host }, url } = ctx.clientToProxyRequest;
-    const urlToFilter = host + url;
     const isFiltered = filters.some((filter) => urlToFilter.includes(filter));
-    log.info('filtered', urlToFilter);
+    log.info({ isFiltered, urlToFilter });
     return isFiltered;
   } catch (error) {
     log.error('error filtering', error);
@@ -42,7 +40,7 @@ export const shouldFilter = (ctx: HttpMitmProxy.IContext): boolean => {
 };
 
 export const subscribeToFiltersFromRenderer = (): void => {
-  let filters = /* get(FILTERS) as ProxyFilters || */ DEFULAT_FILTERS;
+  filters = /* get(FILTERS) as ProxyFilters || */ DEFULAT_FILTERS;
   log.info('filters1', filters);
 
   subscribeToMainProcessMessage(SET_FILTERS, (_event, { filters: newFilters }: MainMessage['data']) => {

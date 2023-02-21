@@ -34,7 +34,6 @@ export const createProxyView = (
   };
   mainWindow.on(RESIZE, handleWindowResize);
   proxyView.webContents.loadURL(PROXY_WINDOW_WEBPACK_ENTRY);
-  proxyView.webContents.openDevTools();
   initProxyToRenderer(proxyView.webContents);
   subscribeToDownloadCertificate();
   subscribeToFindOnPageEvents(proxyView.webContents);
