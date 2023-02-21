@@ -55,6 +55,16 @@ const isHTML = (mimeType: string, text: string): boolean => {
   return isHtml(text) || mimeType.includes('text/html');
 };
 
+const isBinary = (content: string) => {
+  for (let i = 0; i < 24; i++) {
+    const charCode = content.charCodeAt(i);
+    if (charCode === 65533 || charCode <= 8) {
+      return true;
+    }
+  }
+  return false;
+};
+
 type BodyContentTextProps = {
   className: string;
   prettyText: string;
@@ -75,6 +85,6 @@ const getBodyContentProps = ({ mimeType = '', text = '' }: Body): BodyContentTex
   }
   return {
     className: '',
-    prettyText: text,
+    prettyText: isBinary(text) ? 'Binary data' : text,
   };
 };

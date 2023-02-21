@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Paper from '@mui/material/Paper';
 import { alpha, Theme } from '@mui/material/styles';
@@ -87,16 +86,22 @@ export const ProxyEntries = ({
   };
 
   return (
-    <Box
+    <Paper
       sx={ {
+        display: 'grid',
+        gridTemplateRows: '1fr auto',
         height: '100%',
+        mb: 2,
+        overflow: 'hidden',
         width: '100%',
       } }
     >
-      <Paper
-        sx={ {
+      <div
+        style={ {
+          display: 'grid',
+          gridTemplateRows: 'auto 1fr',
           height: '100%',
-          mb: 2,
+          overflow: 'hidden',
           position: 'relative',
           width: '100%',
         } }
@@ -108,7 +113,8 @@ export const ProxyEntries = ({
         />
         <TableContainer
           sx={ {
-            height: '100vh',
+            height: '100%',
+            overflow: 'auto',
           } }
         >
           <Table
@@ -152,15 +158,15 @@ export const ProxyEntries = ({
             </TableBody>
           </Table>
         </TableContainer>
-        {
-          activeEntry &&
-            <EntryDetailsDrawer
-              entry={ activeEntry }
-              onClose={ onCloseDetailsDrawer }
-            />
-        }
-      </Paper>
-    </Box>
+      </div>
+      {
+        activeEntry &&
+        <EntryDetailsDrawer
+          entry={ activeEntry }
+          onClose={ onCloseDetailsDrawer }
+        />
+      }
+    </Paper>
   );
 };
 

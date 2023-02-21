@@ -7,7 +7,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import { Resizable } from 're-resizable';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Body } from '../../../types/body';
 import { Header } from '../../../types/header';
@@ -43,8 +43,9 @@ export const EntryDetailsDrawer = ({
   const theme = useTheme();
   return (
     <Resizable
+      className='entry-details-drawer'
       defaultSize={ {
-        height: '50%',
+        height: '30vh',
         width: '100%',
       } }
       enable={ {
@@ -57,15 +58,14 @@ export const EntryDetailsDrawer = ({
         topLeft: false,
         topRight: false,
       } }
-      maxHeight={ '75%' }
-      minHeight={ '25%' }
+      maxHeight={ '1000px' }
+      maxWidth={ '100%' }
+      minHeight={ '282px' }
+      minWidth={ '100%' }
       style={ {
         background: theme.palette.background.paper,
         border: `1px solid ${ theme.palette.primary.main }`,
-        bottom: 0,
         display: 'flex',
-        position: 'absolute',
-        zIndex: 1,
       } }
     >
       <div
@@ -158,44 +158,12 @@ export type EntryDetailsDrawerProps = {
   entry: ProxyEntry;
   onClose: () => void;
 };
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      aria-labelledby={ `simple-tab-${index}` }
-      hidden={ value !== index }
-      id={ `simple-tabpanel-${index}` }
-      role='tabpanel'
-      { ...other }
-    >
-      {value === index && (
-        <Box sx={ { p: 3 } }>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    'aria-controls': `simple-tabpanel-${index}`,
-    id: `simple-tab-${index}`,
-  };
-}
 
 export const BasicTabs = ({
   headers,
   body,
 }: BasicTabsProps): JSX.Element => {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -211,20 +179,10 @@ export const BasicTabs = ({
           variant='fullWidth'
         >
           <Tab
-            label='HEADERS'
-            { ...a11yProps(0) }
-            // sx={ {
-            //   fontSize: '14px',
-            //   textTransform: 'none',
-            // } }
+            label='BODY'
           />
           <Tab
-            label='BODY'
-            { ...a11yProps(1) }
-            // sx={ {
-            //   fontSize: '14px',
-            //   textTransform: 'none',
-            // } }
+            label='HEADERS'
           />
         </Tabs>
       </Box>
@@ -232,16 +190,16 @@ export const BasicTabs = ({
         index={ 0 }
         value={ value }
       >
-        <HeadersList
-          headers={ headers }
+        <BodyDetails
+          body={ body }
         />
       </TabPanel>
       <TabPanel
         index={ 1 }
         value={ value }
       >
-        <BodyDetails
-          body={ body }
+        <HeadersList
+          headers={ headers }
         />
       </TabPanel>
     </Box>
@@ -252,3 +210,27 @@ export type BasicTabsProps = {
   body: Body;
   headers: Header[];
 };
+
+const TabPanel = (props: TabPanelProps) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      hidden={ value !== index }
+      role='tabpanel'
+      { ...other }
+    >
+      {value === index && (
+        <Box sx={ { p: 3 } }>
+          { children }
+        </Box>
+      )}
+    </div>
+  );
+};
+
+type TabPanelProps = {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
