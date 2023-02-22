@@ -22,6 +22,7 @@ import {
 import {
   LOADMILL_AGENT_PATH,
   LOADMILL_AGENT_SERVER_URL,
+  NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED
 } from './constants';
 import { subscribeToMainProcessMessage } from './main-events';
@@ -65,6 +66,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   return fork(LOADMILL_AGENT_PATH, {
     env: {
       LOADMILL_AGENT_SERVER_URL,
+      NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
     },
     stdio: 'pipe',
