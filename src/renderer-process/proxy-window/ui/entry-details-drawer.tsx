@@ -36,6 +36,12 @@ const placeHolderEntry: ProxyEntry = {
   timestamp: Date.now(),
 };
 
+const titleAndContentParentStyle = {
+  display: 'grid',
+  gridTemplateRows: 'auto 1fr',
+  paddingTop: 8,
+};
+
 export const EntryDetailsDrawer = ({
   entry = placeHolderEntry,
   onClose,
@@ -71,22 +77,13 @@ export const EntryDetailsDrawer = ({
       <div
         style={ {
           flex: 1,
-          overflow: 'auto',
-          paddingTop: 8,
+          ...titleAndContentParentStyle
         } }
       >
-        <Typography
-          align='center'
-          style={ {
-            paddingBottom: 8,
-          } }
-          variant='subtitle2'
-        >
-          Request
-        </Typography>
-        <BasicTabs
+        <TitleAndContent
           body={ entry.request.body }
           headers={ entry.request.headers }
+          title='Request'
         />
       </div>
       <Divider
@@ -112,22 +109,13 @@ export const EntryDetailsDrawer = ({
         maxWidth={ '99.99%' }
         minWidth={ '0.01%' }
         style={ {
-          overflow: 'auto',
-          paddingTop: 8,
+          ...titleAndContentParentStyle
         } }
       >
-        <Typography
-          align='center'
-          style={ {
-            paddingBottom: 8,
-          } }
-          variant='subtitle2'
-        >
-          Response
-        </Typography>
-        <BasicTabs
+        <TitleAndContent
           body={ entry.response.body }
           headers={ entry.response.headers }
+          title='Response'
         />
       </Resizable>
       <div
@@ -159,6 +147,36 @@ export type EntryDetailsDrawerProps = {
   onClose: () => void;
 };
 
+export const TitleAndContent = ({
+  body,
+  headers,
+  title,
+}: TitleAndContentProps): JSX.Element => {
+  return (
+    <>
+      <Typography
+        align='center'
+        style={ {
+          paddingBottom: 8,
+        } }
+        variant='subtitle2'
+      >
+        { title }
+      </Typography>
+      <BasicTabs
+        body={ body }
+        headers={ headers }
+      />
+    </>
+  );
+};
+
+export type TitleAndContentProps = {
+  body: Body;
+  headers: Header[];
+  title: 'Request' | 'Response';
+};
+
 export const BasicTabs = ({
   headers,
   body,
@@ -170,7 +188,14 @@ export const BasicTabs = ({
   };
 
   return (
-    <Box sx={ { width: '100%' } }>
+    <Box
+      sx={ {
+        display: 'grid',
+        gridTemplateRows: 'auto 1fr',
+        overflow: 'hidden',
+        width: '100%',
+      } }
+    >
       <Box sx={ { borderBottom: 1, borderColor: 'divider' } }>
         <Tabs
           aria-label='entry-details-tabs'
@@ -218,6 +243,9 @@ const TabPanel = (props: TabPanelProps) => {
     <div
       hidden={ value !== index }
       role='tabpanel'
+      style={ {
+        overflow: 'auto',
+      } }
       { ...other }
     >
       {value === index && (

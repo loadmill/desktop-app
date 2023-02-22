@@ -26,6 +26,7 @@ export const BodyDetails = ({
       <Card>
         <CardHeader
           sx={ {
+            bgcolor: theme => theme.palette.background.paper,
             p: '8px',
           } }
           title={
