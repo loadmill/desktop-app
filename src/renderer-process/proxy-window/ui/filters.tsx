@@ -1,125 +1,36 @@
-import AddIcon from '@mui/icons-material/Add';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import { useTheme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import React from 'react';
+import debounce from 'debounce';
+import React, { useCallback } from 'react';
 
-import { FiltersList } from './filters-list';
+export const FilterRegex = ({
+  filterRegex,
+  setFilterRegex,
+}: FilterRegexProps ): JSX.Element => {
 
-export const Filters = ({
-  filters,
-}: FiltersProps ): JSX.Element => {
-  const [open, setOpen] = React.useState(false);
-  const [newFilter, setNewFilter] = React.useState<string>('');
+  const debouncedSetFilterRegex = useCallback(
+    debounce((filterRegex: string) => {
+      window.desktopApi.setFilterRegex(filterRegex);
+    }, 250),
+    []
+  );
 
-  const theme = useTheme();
-
-  const onOpenFiltersDialog = () => {
-    setOpen(true);
-  };
-
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  const onFilterChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setNewFilter(event.target.value);
-  };
-
-  const onAdd = () => {
-    window.desktopApi.setFilters(
-      [...filters, newFilter]
-    );
-    setNewFilter('');
-    refreshFilters();
-    onClose();
-  };
-
-  const refreshFilters = () => {
-    window.desktopApi.refreshFilters();
+  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    setFilterRegex(event.target.value);
+    debouncedSetFilterRegex(event.target.value);
   };
 
   return (
-    <>
-      <Button
-        className='fit-content'
-        onClick={ onOpenFiltersDialog }
-        startIcon={ <FilterListIcon color='info'/> }
-        variant='outlined'
-      >
-        Filters
-      </Button>
-      <Dialog
-        PaperProps={ { style: {
-          background: theme.palette.background.default,
-          minWidth: '50%',
-        } } }
-        onClose={ onClose }
-        open={ open }
-      >
-        <DialogTitle>Filters</DialogTitle>
-        <DialogContent>
-          <AddFilter
-            newFilter={ newFilter }
-            onAdd={ onAdd }
-            onFilterChange={ onFilterChange }
-          />
-          <FiltersList
-            filters={ filters }
-          />
-        </DialogContent>
-        <DialogActions
-          disableSpacing
-        >
-          <Button onClick={ onClose }>Close</Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <TextField
+      label='Filter (regex)'
+      onChange={ onChange }
+      placeholder='https://myapp.com|wss://myapp.com'
+      size='small'
+      value={ filterRegex }
+    />
   );
 };
 
-export type FiltersProps = {
-  filters: string[];
-};
-
-const AddFilter = ({
-  newFilter,
-  onAdd,
-  onFilterChange,
-}: AddFilterProps): JSX.Element => (
-  <div>
-    <DialogContentText>
-      Add a url or part of it to filter it out
-    </DialogContentText>
-    <div
-      style={ { display: 'flex', justifyContent: 'space-between' } }
-    >
-      <TextField
-        autoFocus
-        fullWidth
-        margin='dense'
-        onChange={ onFilterChange }
-        placeholder='google-analytics.com'
-        type='email'
-        value={ newFilter }
-        variant='standard'
-      />
-      <IconButton onClick={ onAdd }>
-        <AddIcon/>
-      </IconButton>
-    </div>
-  </div>
-);
-
-type AddFilterProps = {
-  newFilter: string;
-  onAdd: () => void;
-  onFilterChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
+export type FilterRegexProps = {
+  filterRegex?: string;
+  setFilterRegex?: (filterRegex: string) => void;
 };

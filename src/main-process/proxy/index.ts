@@ -15,7 +15,7 @@ import { subscribeToClearEntriesFromRenderer, subscribeToDeleteEntryFromRenderer
 import { dummyEntries } from './dummy-entries-delete-later';
 import { addEntry, initEntries } from './entries';
 import { subscribeToExportAsHar } from './export-as-har';
-import { shouldFilter, subscribeToFiltersFromRenderer } from './filters';
+import { shouldSendEntry, subscribeToFilterRegexEvents } from './filters';
 import { subscribeToGetIpAddressFromRenderer } from './ip-address';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
 import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
@@ -67,9 +67,6 @@ export const initProxyServer = (): void => {
     if (!getIsRecording()) {
       return callback();
     }
-    if (shouldFilter(contextToUrl(ctx))) {
-      return callback();
-    }
 
     const request = createRequest(ctx);
 
@@ -82,11 +79,6 @@ export const initProxyServer = (): void => {
     port: proxyPort,
     sslCaDir: PROXY_CERTIFICATES_DIR_PATH,
   }, () => log.info(`Proxy listening on port ${proxyPort}! and saving to ${PROXY_CERTIFICATES_DIR_PATH}`));
-};
-
-const contextToUrl = ({ clientToProxyRequest }: Proxy.IContext): string => {
-  const { headers: { host }, url } = clientToProxyRequest;
-  return host + url;
 };
 
 const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
@@ -178,12 +170,14 @@ const handleResponse = (request: ProxyRequest, ctx: Proxy.IContext) => {
       timestamp: Date.now(),
     };
     addEntry(entry);
-    sendFromProxyToRenderer({
-      data: {
-        proxy: entry,
-      },
-      type: PROXY,
-    });
+    if (shouldSendEntry(entry.request.url)) {
+      sendFromProxyToRenderer({
+        data: {
+          proxy: entry,
+        },
+        type: PROXY,
+      });
+    }
     return callback();
   });
 };
@@ -200,7 +194,7 @@ const getResponse = (ctx: HttpMitmProxy.IContext): ProxyResponse => {
 const subscribeToProxyEvents = (): void => {
   subscribeToRecordingStateEvents();
   subscribeToRefreshEntriesFromRenderer();
-  subscribeToFiltersFromRenderer();
+  subscribeToFilterRegexEvents();
   subscribeToExportAsHar();
   subscribeToClearEntriesFromRenderer();
   subscribeToDeleteEntryFromRenderer();

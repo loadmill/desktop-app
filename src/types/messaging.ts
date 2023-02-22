@@ -11,6 +11,7 @@ import {
   GET_IP_ADDRESS,
   GO_BACK,
   GO_FORWARD,
+  INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_AGENT_CONNECTED,
   IS_RECORDING,
@@ -19,10 +20,9 @@ import {
   NAVIGATION,
   PROXY,
   REFRESH_ENTRIES,
-  REFRESH_FILTERS,
   REFRESH_PAGE,
   SAVED_TOKEN,
-  SET_FILTERS,
+  SET_FILTER_REGEX,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
   SHOW_FIND_ON_PAGE,
@@ -31,7 +31,6 @@ import {
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
   UPDATED_ENTRIES,
-  UPDATED_FILTERS,
   UPDATED_SUITES
 } from '../universal/constants';
 
@@ -58,7 +57,7 @@ export abstract class AgentMessage implements IPCMessage {
 export abstract class MainMessage implements IPCMessage {
   data?: {
     entryId?: string;
-    filters?: string[];
+    filterRegex?: string;
     ipvFamily?: 'IPv4' | 'IPv6';
     isConnected?: boolean;
     isRecording?: boolean;
@@ -91,7 +90,7 @@ export abstract class LoadmillViewRendererMessage implements IPCMessage {
 
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
-    filters?: string[];
+    filterRegex?: string;
     ipAddress?: string;
     isRecording?: boolean;
     proxies?: ProxyEntry[];
@@ -110,18 +109,18 @@ export type MainMessageTypes =
   typeof CLEAR_ALL_ENTRIES |
   typeof DELETE_ENTRY |
   typeof DOWNLOAD_CERTIFICATE |
+  typeof EXPORT_AS_HAR |
   typeof FETCH_SUITES |
   typeof FIND_NEXT |
   typeof GET_IP_ADDRESS |
   typeof GO_BACK |
   typeof GO_FORWARD |
+  typeof INIT_FILTER_REGEX |
   typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
   typeof REFRESH_ENTRIES |
-  typeof REFRESH_FILTERS |
   typeof REFRESH_PAGE |
-  typeof EXPORT_AS_HAR |
-  typeof SET_FILTERS |
+  typeof SET_FILTER_REGEX |
   typeof SET_IS_RECORDING |
   typeof SET_IS_USER_SIGNED_IN |
   typeof START_AGENT |
@@ -144,10 +143,10 @@ export type LoadmillViewRendererMessageTypes =
 
 export type ProxyRendererMessageTypes =
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
+  typeof INIT_FILTER_REGEX |
   typeof IP_ADDRESS |
   typeof IS_RECORDING |
   typeof EXPORTED_AS_HAR_SUCCESS |
   typeof UPDATED_ENTRIES |
-  typeof UPDATED_FILTERS |
   typeof UPDATED_SUITES |
   typeof PROXY;

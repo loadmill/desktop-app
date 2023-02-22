@@ -1,63 +1,57 @@
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
-import log from '../../log';
 import { MainMessage } from '../../types/messaging';
-import { ProxyFilters } from '../../types/proxy-filters';
-import { /* FILTERS, */ REFRESH_FILTERS, SET_FILTERS, UPDATED_FILTERS } from '../../universal/constants';
+import { ProxyEntry } from '../../types/proxy-entry';
+import { FILTER_REGEX, INIT_FILTER_REGEX, SET_FILTER_REGEX, UPDATED_ENTRIES } from '../../universal/constants';
 import { subscribeToMainProcessMessage } from '../main-events';
-// import { get, set } from '../store';
+import { get, set } from '../store';
 
-const DEFULAT_FILTERS: string[] = [
-  'google-analytics',
-  'googleads',
-  'goog.',
-  'google',
-  'facebook',
-  'youtube',
-  'twitter',
-  'instagram',
-  'linkedin',
-  'pinterest',
-  'apple',
-  'microsoft',
-  'amazon',
-  'netflix',
-  'spotify',
-  'twitch',
-  'tiktok',
-];
+import { getEntries } from './entries';
 
-let filters: ProxyFilters;
+let filter = '';
 
-export const shouldFilter = (urlToFilter: string = ''): boolean => {
-  try {
-    const isFiltered = filters.some((filter) => urlToFilter.includes(filter));
-    log.info({ isFiltered, urlToFilter });
-    return isFiltered;
-  } catch (error) {
-    log.error('error filtering', error);
-  }
-  return false;
+export const subscribeToFilterRegexEvents = (): void => {
+  filter = get(FILTER_REGEX) || '';
+  subscribeToInitFilterRegexFromRenderer();
+  subscribeToSetFilterRegexFromRenderer();
 };
 
-export const subscribeToFiltersFromRenderer = (): void => {
-  filters = /* get(FILTERS) as ProxyFilters || */ DEFULAT_FILTERS;
-  log.info('filters1', filters);
-
-  subscribeToMainProcessMessage(SET_FILTERS, (_event, { filters: newFilters }: MainMessage['data']) => {
-    log.info('setting filters', newFilters);
-    filters = newFilters;
-    // set(FILTERS, newFilters);
-    // filters = get(FILTERS) as ProxyFilters;
-  });
-
-  subscribeToMainProcessMessage(REFRESH_FILTERS, () => {
-    log.info('refreshing filters');
-    log.info('filters', filters);
+const subscribeToInitFilterRegexFromRenderer = (): void => {
+  subscribeToMainProcessMessage(INIT_FILTER_REGEX, () => {
     sendFromProxyToRenderer({
       data: {
-        filters,
+        filterRegex: filter,
       },
-      type: UPDATED_FILTERS,
+      type: INIT_FILTER_REGEX,
     });
   });
 };
+
+const subscribeToSetFilterRegexFromRenderer = (): void => {
+  subscribeToMainProcessMessage(SET_FILTER_REGEX, (_event, { filterRegex }: MainMessage['data']) => {
+
+    setFilterRegex(filterRegex);
+
+    sendFromProxyToRenderer({
+      data: {
+        proxies: filterEntries(getEntries()),
+      },
+      type: UPDATED_ENTRIES,
+    });
+  });
+};
+
+const setFilterRegex = (filterRegex: string): void => {
+  filter = filterRegex || '';
+  set(FILTER_REGEX, filterRegex || '');
+};
+
+const filterEntries = (entries: ProxyEntry[]): ProxyEntry[] => {
+  const regex = new RegExp(filter);
+  const entriesToKeep = entries.filter((entry) => {
+    return regex.test(entry.request.url);
+  });
+  return entriesToKeep;
+};
+
+export const shouldSendEntry = (url: string): boolean =>
+  new RegExp(filter).test(url);

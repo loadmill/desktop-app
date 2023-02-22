@@ -1,6 +1,4 @@
-import Autocomplete from '@mui/material/Autocomplete';
 import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 
@@ -11,12 +9,12 @@ import { SuiteOption } from '../../../types/suite';
 import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORTED_AS_HAR_SUCCESS,
+  INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_RECORDING,
   MESSAGE,
   PROXY,
   UPDATED_ENTRIES,
-  UPDATED_FILTERS,
   UPDATED_SUITES
 } from '../../../universal/constants';
 
@@ -24,14 +22,15 @@ import { AnalyzeButton } from './analyze-button';
 import { ClearAll } from './clear-all';
 import { CreateTestButton } from './create-test-button';
 import { DownloadCertificate } from './download-certificate';
-import { Filters } from './filters';
+import { FilterRegex } from './filters';
 import { ProxyEntries } from './proxy-entries';
 import { Recording } from './recording';
+import { SuitesAutocomplete } from './suites-autocomplete';
 
 export const ProxyDashboard = (): JSX.Element => {
   const [shouldShowEntries, setShouldShowEntries] = useState<boolean>(false);
   const [entries, setEntries] = useState<ProxyEntry[]>([]);
-  const [filters, setFilters] = useState<string[]>([]);
+  const [filterRegex, setFilterRegex] = useState<string>('');
   const [suites, setSuites] = useState<SuiteOption[]>([]);
   const [isDownloadInProgress, setIsDownloadInProgress] = React.useState(false);
   const [showDownloadSuccessSnackBar, setShowDownloadSuccessSnackBar] = useState<boolean>(false);
@@ -42,9 +41,9 @@ export const ProxyDashboard = (): JSX.Element => {
   useEffect(() => {
     window.desktopApi.fetchSuites();
     window.desktopApi.getIpAddress();
+    window.desktopApi.initFilterRegex();
     window.desktopApi.isRecording();
     window.desktopApi.refreshEntries();
-    window.desktopApi.refreshFilters();
   }, []);
 
   useEffect(() => {
@@ -61,6 +60,9 @@ export const ProxyDashboard = (): JSX.Element => {
         case DOWNLOADED_CERTIFICATE_SUCCESS:
           onDownloadedCertificateSuccess(data);
           break;
+        case INIT_FILTER_REGEX:
+          onInitFilterRegex(data);
+          break;
         case IP_ADDRESS:
           onIpAddress(data);
           break;
@@ -76,9 +78,6 @@ export const ProxyDashboard = (): JSX.Element => {
         case UPDATED_ENTRIES:
           onUpdatedEntries(data);
           break;
-        case UPDATED_FILTERS:
-          onUpdatedFilters(data);
-          break;
         case UPDATED_SUITES:
           onUpdatedSuites(data);
           break;
@@ -91,6 +90,10 @@ export const ProxyDashboard = (): JSX.Element => {
   const onDownloadedCertificateSuccess = (_data: ProxyRendererMessage['data']) => {
     setIsDownloadInProgress(false);
     setShowDownloadSuccessSnackBar(true);
+  };
+
+  const onInitFilterRegex = ({ filterRegex }: ProxyRendererMessage['data']) => {
+    setFilterRegex(filterRegex);
   };
 
   const onIpAddress = ({ ipAddress }: ProxyRendererMessage['data']) => {
@@ -115,10 +118,6 @@ export const ProxyDashboard = (): JSX.Element => {
     if (proxies.length > 0) {
       setShouldShowEntries(true);
     }
-  };
-
-  const onUpdatedFilters = ({ filters }: ProxyRendererMessage['data']) => {
-    setFilters(filters);
   };
 
   const onUpdatedSuites = ({ suites }: ProxyRendererMessage['data']) => {
@@ -174,33 +173,12 @@ export const ProxyDashboard = (): JSX.Element => {
           />
         </Paper>
         <div style={ { display: 'flex', gap: '8px' } }>
-          <Filters
-            filters={ filters }
+          <FilterRegex
+            filterRegex={ filterRegex }
+            setFilterRegex={ setFilterRegex }
           />
-          <Autocomplete
-            autoComplete
-            disablePortal
-            getOptionLabel={ (option: SuiteOption) => option.description }
-            id='suite-autocomplete'
-            onOpen={ window.desktopApi.fetchSuites }
-            options={ suites }
-            renderInput={
-              (params) =>
-                <TextField
-                  { ...params }
-                  InputLabelProps={ {
-                    sx: {
-                      color: (theme) => theme.palette.primary.main,
-                    },
-                  } }
-                  label='Suite'
-                  size='small'
-                />
-            }
-            sx={ {
-              borderColor: 'green',
-              width: 300,
-            } }
+          <SuitesAutocomplete
+            suites={ suites }
           />
         </div>
       </div>

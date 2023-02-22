@@ -13,15 +13,14 @@ import {
   EXPORTED_AS_HAR_SUCCESS,
   FETCH_SUITES,
   GET_IP_ADDRESS,
+  INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_RECORDING,
   PROXY,
   REFRESH_ENTRIES,
-  REFRESH_FILTERS,
-  SET_FILTERS,
+  SET_FILTER_REGEX,
   SET_IS_RECORDING,
   UPDATED_ENTRIES,
-  UPDATED_FILTERS,
   UPDATED_SUITES,
 } from '../../universal/constants';
 import { subscribeToProxyViewMessages } from '../renderer-events';
@@ -33,10 +32,10 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [EXPORT_AS_HAR]: (): void => sendToMain(EXPORT_AS_HAR),
   [FETCH_SUITES]: (): void => sendToMain(FETCH_SUITES),
   [GET_IP_ADDRESS]: (ipvFamily?: 'IPv4' | 'IPv6'): void => sendToMain(GET_IP_ADDRESS, { ipvFamily }),
+  [INIT_FILTER_REGEX]: () => sendToMain(INIT_FILTER_REGEX),
   [IS_RECORDING]: (): void => sendToMain(IS_RECORDING),
   [REFRESH_ENTRIES]: (): void => sendToMain(REFRESH_ENTRIES),
-  [REFRESH_FILTERS]: (): void => sendToMain(REFRESH_FILTERS),
-  [SET_FILTERS]: (filters: string[]): void => sendToMain(SET_FILTERS, { filters }),
+  [SET_FILTER_REGEX]: (filterRegex: string): void => sendToMain(SET_FILTER_REGEX, { filterRegex }),
   [SET_IS_RECORDING]: (isRecording: boolean): void => sendToMain(SET_IS_RECORDING, { isRecording }),
 };
 
@@ -46,6 +45,10 @@ subscribeToProxyViewMessages(DOWNLOADED_CERTIFICATE_SUCCESS, (_event: Electron.I
 
 subscribeToProxyViewMessages(EXPORTED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: EXPORTED_AS_HAR_SUCCESS });
+});
+
+subscribeToProxyViewMessages(INIT_FILTER_REGEX, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: INIT_FILTER_REGEX });
 });
 
 subscribeToProxyViewMessages(IP_ADDRESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
@@ -62,10 +65,6 @@ subscribeToProxyViewMessages(PROXY, (_event: Electron.IpcRendererEvent, data: Pr
 
 subscribeToProxyViewMessages(UPDATED_ENTRIES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: UPDATED_ENTRIES });
-});
-
-subscribeToProxyViewMessages(UPDATED_FILTERS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
-  window.postMessage({ data, type: UPDATED_FILTERS });
 });
 
 subscribeToProxyViewMessages(UPDATED_SUITES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {

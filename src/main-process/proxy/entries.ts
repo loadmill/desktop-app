@@ -1,6 +1,8 @@
 import log from '../../log';
 import { ProxyEntry } from '../../types/proxy-entry';
 
+const MAX_ENTRIES = 1000;
+
 const entries: ProxyEntry[] = [];
 
 export const getEntries = (): ProxyEntry[] => entries;
@@ -11,6 +13,9 @@ export const initEntries = (newEntries: ProxyEntry[]): void => {
 
 export const addEntry = (entry: ProxyEntry): void => {
   entries.push(entry);
+  if (entries.length > MAX_ENTRIES) {
+    entries.shift();
+  }
 };
 
 export const clearEntries = (): void => {
