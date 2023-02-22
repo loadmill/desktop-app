@@ -5,6 +5,7 @@ import { ApiForLoadmillProxyWindow } from '../../types/api';
 import { ProxyRendererMessage } from '../../types/messaging';
 import {
   CLEAR_ALL_ENTRIES,
+  DELETE_ENTRIES,
   DELETE_ENTRY,
   DESKTOP_API,
   DOWNLOAD_CERTIFICATE,
@@ -27,9 +28,10 @@ import { subscribeToProxyViewMessages } from '../renderer-events';
 
 export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: (): void => sendToMain(CLEAR_ALL_ENTRIES),
+  [DELETE_ENTRIES]: (entryIds: string[]): void => sendToMain(DELETE_ENTRIES, { entryIds }),
   [DELETE_ENTRY]: (entryId: string): void => sendToMain(DELETE_ENTRY, { entryId }),
   [DOWNLOAD_CERTIFICATE]: (): void => sendToMain(DOWNLOAD_CERTIFICATE),
-  [EXPORT_AS_HAR]: (): void => sendToMain(EXPORT_AS_HAR),
+  [EXPORT_AS_HAR]: (entryIds: string[]): void => sendToMain(EXPORT_AS_HAR, { entryIds }),
   [FETCH_SUITES]: (): void => sendToMain(FETCH_SUITES),
   [GET_IP_ADDRESS]: (ipvFamily?: 'IPv4' | 'IPv6'): void => sendToMain(GET_IP_ADDRESS, { ipvFamily }),
   [INIT_FILTER_REGEX]: () => sendToMain(INIT_FILTER_REGEX),

@@ -1,11 +1,13 @@
 import log from '../../log';
 import { ProxyEntry } from '../../types/proxy-entry';
 
+import { filterEntries } from './filters';
+
 const MAX_ENTRIES = 1000;
 
 const entries: ProxyEntry[] = [];
 
-export const getEntries = (): ProxyEntry[] => entries;
+export const getEntries = (): ProxyEntry[] => filterEntries(entries);
 
 export const initEntries = (newEntries: ProxyEntry[]): void => {
   entries.push(...newEntries);
@@ -29,4 +31,12 @@ export const deleteEntry = (id: ProxyEntry['id']): void => {
   } else {
     log.error(`Could not find entry with id ${id}`);
   }
+};
+
+export const deleteEntries = (ids: ProxyEntry['id'][]): void => {
+  if (ids.length === entries.length) {
+    clearEntries();
+    return;
+  }
+  ids.forEach(id => deleteEntry(id));
 };

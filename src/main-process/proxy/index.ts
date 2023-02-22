@@ -11,11 +11,12 @@ import { ProxyEntry, ProxyRequest, ProxyResponse } from '../../types/proxy-entry
 import { PROXY } from '../../universal/constants';
 import { PROXY_CERTIFICATES_DIR_PATH } from '../constants';
 
-import { subscribeToClearEntriesFromRenderer, subscribeToDeleteEntryFromRenderer } from './clear-entries';
+import { subscribeToClearEntriesEvents } from './clear-entries-handlers';
 import { dummyEntries } from './dummy-entries-delete-later';
 import { addEntry, initEntries } from './entries';
 import { subscribeToExportAsHar } from './export-as-har';
-import { shouldSendEntry, subscribeToFilterRegexEvents } from './filters';
+import { shouldSendEntry } from './filters';
+import { subscribeToFilterRegexEvents } from './filters-handlers';
 import { subscribeToGetIpAddressFromRenderer } from './ip-address';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
 import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
@@ -196,7 +197,6 @@ const subscribeToProxyEvents = (): void => {
   subscribeToRefreshEntriesFromRenderer();
   subscribeToFilterRegexEvents();
   subscribeToExportAsHar();
-  subscribeToClearEntriesFromRenderer();
-  subscribeToDeleteEntryFromRenderer();
+  subscribeToClearEntriesEvents();
   subscribeToGetIpAddressFromRenderer();
 };

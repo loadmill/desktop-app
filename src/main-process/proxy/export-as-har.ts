@@ -6,6 +6,7 @@ import { app, shell } from 'electron';
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import log from '../../log';
 import { proxyEntriesToHar } from '../../proxy-to-har/proxy-to-har';
+import { MainMessage } from '../../types/messaging';
 import { EXPORT_AS_HAR, EXPORTED_AS_HAR_SUCCESS } from '../../universal/constants';
 import { toPrettyJsonString } from '../../universal/utils';
 import { subscribeToMainProcessMessage } from '../main-events';
@@ -16,11 +17,11 @@ export const subscribeToExportAsHar = (): void => {
   subscribeToMainProcessMessage(EXPORT_AS_HAR, exportAsHar);
 };
 
-const exportAsHar = (): void => {
+const exportAsHar = (_event: Electron.IpcMainEvent, { entryIds }: MainMessage['data']): void => {
   const fileName = `loadmill-desktop-proxy-${randomUUID()}.har`;
   const savePath = app.getPath('downloads') + `/${fileName}`;
   log.info('savePath', savePath);
-  const harToSave = proxyEntriesToHar(getEntries());
+  const harToSave = proxyEntriesToHar(getEntries().filter((entry) => entryIds.includes(entry.id)));
 
   fs.writeFile(savePath, toPrettyJsonString(harToSave), (err: NodeJS.ErrnoException) => {
     if (err) {

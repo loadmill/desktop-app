@@ -21,16 +21,20 @@ export const ProxyEntries = ({
   entries,
   selectedEntriesActionsProps,
 }: ProxyEntriesProps): JSX.Element => {
-  const [selected, setSelected] = useState<string[]>([]);
   const [activeEntry, setActiveEntry] = useState<ProxyEntry | undefined>(undefined);
+  const [selected, setSelected] = useState<string[]>([]);
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
+      if (selected.length > 0) {
+        resetSelected();
+        return;
+      }
       const newSelected = entries.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
-    setSelected([]);
+    resetSelected();
   };
 
   const onSelectEntry = (event: React.SyntheticEvent, id: string) => {
@@ -52,6 +56,20 @@ export const ProxyEntries = ({
     }
 
     setSelected(newSelected);
+  };
+
+  const resetSelected = () => {
+    setSelected([]);
+  };
+
+  const resetActiveEntry = () => {
+    setActiveEntry(undefined);
+  };
+
+  const resetActiveEntryOnCleared = () => {
+    if (selected.some((id) => id === activeEntry?.id)) {
+      resetActiveEntry();
+    }
   };
 
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
@@ -77,12 +95,12 @@ export const ProxyEntries = ({
   const onActiveEntryChange = (id: string) => {
     const isSameEntry = activeEntry?.id === id;
     isSameEntry ?
-      setActiveEntry(undefined) :
+      resetActiveEntry() :
       setActiveEntry(entries.find((entry) => entry.id === id));
   };
 
   const onCloseDetailsDrawer = () => {
-    setActiveEntry(undefined);
+    resetActiveEntry();
   };
 
   return (
@@ -108,6 +126,8 @@ export const ProxyEntries = ({
       >
         <EnhancedTableToolbar
           numSelected={ selected.length }
+          resetActiveEntryOnCleared={ resetActiveEntryOnCleared }
+          resetSelected={ resetSelected }
           selectedEntries={ selected }
           selectedEntriesActionsProps={ selectedEntriesActionsProps }
         />
@@ -124,7 +144,7 @@ export const ProxyEntries = ({
           >
             <EnhancedTableHead
               numSelected={ selected.length }
-              onSelectAllClick={ handleSelectAllClick }
+              onSelectAllClick={ onSelectAllClick }
               rowCount={ entries.length }
             />
             <TableBody>
@@ -173,6 +193,10 @@ export const ProxyEntries = ({
 export type ProxyEntriesProps = {
   entries: ProxyEntry[];
   selectedEntriesActionsProps?: {
+    clear?: {
+      resetSelected?: () => void;
+      setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+    };
     export?: {
       setShowExportAsHarSuccessSnackBar?: React.Dispatch<React.SetStateAction<boolean>>;
       showExportAsHarSuccessSnackBar?: boolean;
@@ -182,13 +206,25 @@ export type ProxyEntriesProps = {
 
 const EnhancedTableToolbar = ({
   numSelected,
+  resetActiveEntryOnCleared,
+  resetSelected,
   selectedEntries,
   selectedEntriesActionsProps,
 }: EnhancedTableToolbarProps) => {
-  const { export: {
-    setShowExportAsHarSuccessSnackBar,
-    showExportAsHarSuccessSnackBar,
-  } } = selectedEntriesActionsProps;
+  const {
+    clear: {
+      setLoading,
+    },
+    export: {
+      setShowExportAsHarSuccessSnackBar,
+      showExportAsHarSuccessSnackBar,
+    }
+  } = selectedEntriesActionsProps;
+
+  const exportEntriesAsHar = () => {
+    window.desktopApi.exportAsHar(selectedEntries);
+  };
+
   return (
     <Toolbar
       sx={ {
@@ -229,7 +265,10 @@ const EnhancedTableToolbar = ({
           } }
         >
           <ClearSelectedEntries
+            resetActiveEntryOnCleared={ resetActiveEntryOnCleared }
+            resetSelected={ resetSelected }
             selectedEntries={ selectedEntries }
+            setLoading={ setLoading }
           />
           <ExportProxyAsHar
             onExport={ exportEntriesAsHar }
@@ -244,17 +283,19 @@ const EnhancedTableToolbar = ({
 
 type EnhancedTableToolbarProps = {
   numSelected?: number;
+  resetActiveEntryOnCleared?: () => void;
+  resetSelected?: () => void;
   selectedEntries?: string[];
   selectedEntriesActionsProps?: {
+    clear?: {
+      setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+    };
     export?: {
       setShowExportAsHarSuccessSnackBar?: React.Dispatch<React.SetStateAction<boolean>>;
       showExportAsHarSuccessSnackBar?: boolean;
     };
   };
-};
-
-const exportEntriesAsHar = () => {
-  window.desktopApi.exportAsHar();
+  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const EnhancedTableHead = ({ onSelectAllClick, numSelected, rowCount }: EnhancedTableHeadProps) => {

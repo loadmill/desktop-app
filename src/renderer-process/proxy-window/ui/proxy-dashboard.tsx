@@ -1,4 +1,5 @@
 import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 
@@ -37,6 +38,7 @@ export const ProxyDashboard = (): JSX.Element => {
   const [showExportAsHarSuccessSnackBar, setShowExportAsHarSuccessSnackBar] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
+  const [loadingEntries, setLoadingEntries] = useState<boolean>(false);
 
   useEffect(() => {
     window.desktopApi.fetchSuites();
@@ -116,6 +118,7 @@ export const ProxyDashboard = (): JSX.Element => {
   const onUpdatedEntries = ({ proxies }: ProxyRendererMessage['data']) => {
     setEntries(proxies);
     if (proxies.length > 0) {
+      setLoadingEntries(false);
       setShouldShowEntries(true);
     }
   };
@@ -185,10 +188,20 @@ export const ProxyDashboard = (): JSX.Element => {
       <div
         className='proxy-entries-list'
       >
+        {loadingEntries && !shouldShowEntries && (
+          <>
+            <Skeleton animation='wave' />
+            <Skeleton animation='wave' />
+            <Skeleton animation='wave' />
+          </>
+        )}
         {shouldShowEntries && (
           <ProxyEntries
             entries={ entries }
             selectedEntriesActionsProps={ {
+              clear: {
+                setLoading: setLoadingEntries,
+              },
               export: {
                 setShowExportAsHarSuccessSnackBar: setShowExportAsHarSuccessSnackBar,
                 showExportAsHarSuccessSnackBar: showExportAsHarSuccessSnackBar,

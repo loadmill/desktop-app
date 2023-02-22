@@ -1,5 +1,6 @@
 import {
   CLEAR_ALL_ENTRIES,
+  DELETE_ENTRIES,
   DELETE_ENTRY,
   DOWNLOAD_CERTIFICATE,
   EXPORT_AS_HAR,
@@ -48,9 +49,10 @@ export type ApiForLoadmillBrowserView = {
 
 export type ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: () => void;
+  [DELETE_ENTRIES]: (entryIds: string[]) => void;
   [DELETE_ENTRY]: (entryId: string) => void;
   [DOWNLOAD_CERTIFICATE]: () => void;
-  [EXPORT_AS_HAR]: () => void;
+  [EXPORT_AS_HAR]: (entryIds: string[]) => void;
   [FETCH_SUITES]: () => void;
   [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
   [INIT_FILTER_REGEX]: () => void;

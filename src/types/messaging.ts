@@ -1,5 +1,6 @@
 import {
   CLEAR_ALL_ENTRIES,
+  DELETE_ENTRIES,
   DELETE_ENTRY,
   DOWNLOAD_CERTIFICATE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
@@ -57,6 +58,7 @@ export abstract class AgentMessage implements IPCMessage {
 export abstract class MainMessage implements IPCMessage {
   data?: {
     entryId?: string;
+    entryIds?: string[];
     filterRegex?: string;
     ipvFamily?: 'IPv4' | 'IPv6';
     isConnected?: boolean;
@@ -107,6 +109,7 @@ export type AgentMessageTypes =
 
 export type MainMessageTypes =
   typeof CLEAR_ALL_ENTRIES |
+  typeof DELETE_ENTRIES |
   typeof DELETE_ENTRY |
   typeof DOWNLOAD_CERTIFICATE |
   typeof EXPORT_AS_HAR |

@@ -23,7 +23,7 @@ export const FilterRegex = ({
     <TextField
       label='Filter (regex)'
       onChange={ onChange }
-      placeholder='https://myapp.com|wss://myapp.com'
+      placeholder='myapp.com/*'
       size='small'
       value={ filterRegex }
     />

@@ -7,9 +7,13 @@ import { getEntries } from './entries';
 
 export const subscribeToRefreshEntriesFromRenderer = (): void => {
   subscribeToMainProcessMessage(REFRESH_ENTRIES, () => {
-    sendFromProxyToRenderer({
-      data: { proxies: getEntries() },
-      type: UPDATED_ENTRIES,
-    });
+    sendUpdatedEntries();
+  });
+};
+
+export const sendUpdatedEntries = (): void => {
+  sendFromProxyToRenderer({
+    data: { proxies: getEntries() },
+    type: UPDATED_ENTRIES,
   });
 };
