@@ -46,6 +46,12 @@ module.exports = {
       },
       files: '*.spec.*',
     },
+    {
+      files: ['test/__mocks__/log.ts'],
+      rules: {
+        'no-console': 'off',
+      },
+    }
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {

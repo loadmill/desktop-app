@@ -38,6 +38,10 @@ export const harEntry: HarEntry = {
       { name: 'Accept', value: '*/*' }
     ],
     method: 'GET',
+    postData: {
+      mimeType: 'text/plain',
+      text: 'Hello, World!'
+    },
     queryString: [{ name: 'foo', value: 'bar' }, { name: 'baz', value: 'qux' }, { name: 'baz', value: 'quux' }, { name: 'corge', value: '' }],
     url: 'https://example.com?foo=bar&baz=qux&baz=quux&corge=',
   },
