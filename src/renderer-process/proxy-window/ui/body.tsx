@@ -25,6 +25,9 @@ export const BodyDetails = ({
     ) : (
       <Card>
         <CardHeader
+          sx={ {
+            p: '8px',
+          } }
           title={
             <Typography variant='subtitle2'>
               {mimeType || 'No MIME type'}
@@ -34,6 +37,7 @@ export const BodyDetails = ({
         <Divider />
         <CardContent
           sx={ {
+            bgcolor: theme => theme.palette.background.paper,
             display: 'relative',
           } }
         >

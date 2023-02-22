@@ -1,4 +1,3 @@
-import AccordionDetails from '@mui/material/AccordionDetails';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,33 +9,9 @@ import React from 'react';
 
 import { Header } from '../../../types/header';
 
-import { Accordion } from './accordion';
-import { AccordionSummary } from './accordion-summary';
 import { StyledTableCell, StyledTableRow } from './table-row-cell';
 
 export const Headers = ({
-  headers,
-}: HeadersProps): JSX.Element => (
-  <>
-    <Accordion>
-      <AccordionSummary>
-        <Typography>Headers</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <HeadersList
-          headers={ headers }
-        />
-
-      </AccordionDetails>
-    </Accordion>
-  </>
-);
-
-export type HeadersProps = {
-  headers: Header[];
-};
-
-export const HeadersList = ({
   headers
 }: HeadersProps): JSX.Element => {
   if (headers.length === 0) {
@@ -47,8 +22,18 @@ export const HeadersList = ({
     );
   }
   return (
-    <TableContainer component={ Paper }>
-      <Table>
+    <TableContainer
+      component={ Paper }
+      sx={ {
+        bgcolor: theme => theme.palette.background.paper,
+        height: '100%',
+        overflow: 'auto',
+      } }
+    >
+      <Table
+        size={ 'small' }
+        stickyHeader
+      >
         <TableHead>
           <TableRow>
             <StyledTableCell>Name</StyledTableCell>
@@ -58,7 +43,11 @@ export const HeadersList = ({
         <TableBody>
           {headers.map((header) => (
             <StyledTableRow
+              hover
               key={ header.name }
+              sx={ {
+                bgcolor: (theme) => theme.palette.background.paper,
+              } }
             >
               <StyledTableCell>{header.name}</StyledTableCell>
               <StyledTableCell>{header.value}</StyledTableCell>
@@ -68,4 +57,8 @@ export const HeadersList = ({
       </Table>
     </TableContainer>
   );
+};
+
+export type HeadersProps = {
+  headers: Header[];
 };

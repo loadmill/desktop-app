@@ -14,7 +14,7 @@ import { Header } from '../../../types/header';
 import { ProxyEntry } from '../../../types/proxy-entry';
 
 import { BodyDetails } from './body';
-import { HeadersList } from './headers';
+import { Headers } from './headers';
 
 const placeHolderEntry: ProxyEntry = {
   id: '-1',
@@ -198,7 +198,7 @@ export const BasicTabs = ({
         index={ 1 }
         value={ value }
       >
-        <HeadersList
+        <Headers
           headers={ headers }
         />
       </TabPanel>
