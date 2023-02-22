@@ -12,8 +12,7 @@ import { PROXY } from '../../universal/constants';
 import { PROXY_CERTIFICATES_DIR_PATH } from '../constants';
 
 import { subscribeToClearEntriesEvents } from './clear-entries-handlers';
-import { dummyEntries } from './dummy-entries-delete-later';
-import { addEntry, initEntries } from './entries';
+import { addEntry } from './entries';
 import { subscribeToExportAsHar } from './export-as-har';
 import { shouldSendEntry } from './filters';
 import { subscribeToFilterRegexEvents } from './filters-handlers';
@@ -23,7 +22,6 @@ import { getIsRecording, subscribeToRecordingStateEvents } from './recording-sta
 import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
 
 export const initProxyServer = (): void => {
-  initEntries(dummyEntries);
   subscribeToProxyEvents();
   const proxyPort = Number(process.env.PROXY_PORT || 1234);
 
