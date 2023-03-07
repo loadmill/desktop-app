@@ -1,5 +1,7 @@
 import {
   CLEAR_ALL_ENTRIES,
+  CREATE_TEST,
+  CREATE_TEST_COMPLETE,
   DELETE_ENTRIES,
   DELETE_ENTRY,
   DOWNLOAD_CERTIFICATE,
@@ -37,14 +39,14 @@ import {
 
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
-import { SuiteOption } from './suite';
+import { CreateTestResult, SuiteOption } from './suite';
 import { ViewValue } from './views';
 
 /**
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] };
+  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | CreateTestResult };
   type: string;
 }
 
@@ -64,6 +66,7 @@ export abstract class MainMessage implements IPCMessage {
     isConnected?: boolean;
     isRecording?: boolean;
     isSignedIn?: boolean;
+    suiteId?: string;
     text?: string;
     toFind?: string;
     token?: string;
@@ -92,6 +95,7 @@ export abstract class LoadmillViewRendererMessage implements IPCMessage {
 
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
+    createTestResult?: CreateTestResult;
     filterRegex?: string;
     ipAddress?: string;
     isRecording?: boolean;
@@ -109,6 +113,7 @@ export type AgentMessageTypes =
 
 export type MainMessageTypes =
   typeof CLEAR_ALL_ENTRIES |
+  typeof CREATE_TEST |
   typeof DELETE_ENTRIES |
   typeof DELETE_ENTRY |
   typeof DOWNLOAD_CERTIFICATE |
@@ -145,6 +150,7 @@ export type LoadmillViewRendererMessageTypes =
   typeof SAVED_TOKEN;
 
 export type ProxyRendererMessageTypes =
+  typeof CREATE_TEST_COMPLETE |
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
   typeof INIT_FILTER_REGEX |
   typeof IP_ADDRESS |

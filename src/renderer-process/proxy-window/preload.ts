@@ -5,6 +5,8 @@ import { ApiForLoadmillProxyWindow } from '../../types/api';
 import { ProxyRendererMessage } from '../../types/messaging';
 import {
   CLEAR_ALL_ENTRIES,
+  CREATE_TEST,
+  CREATE_TEST_COMPLETE,
   DELETE_ENTRIES,
   DELETE_ENTRY,
   DESKTOP_API,
@@ -28,6 +30,7 @@ import { subscribeToProxyViewMessages } from '../renderer-events';
 
 export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [CLEAR_ALL_ENTRIES]: (): void => sendToMain(CLEAR_ALL_ENTRIES),
+  [CREATE_TEST]: (suiteId?: string): void => sendToMain(CREATE_TEST, { suiteId }),
   [DELETE_ENTRIES]: (entryIds: string[]): void => sendToMain(DELETE_ENTRIES, { entryIds }),
   [DELETE_ENTRY]: (entryId: string): void => sendToMain(DELETE_ENTRY, { entryId }),
   [DOWNLOAD_CERTIFICATE]: (): void => sendToMain(DOWNLOAD_CERTIFICATE),
@@ -40,6 +43,10 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [SET_FILTER_REGEX]: (filterRegex: string): void => sendToMain(SET_FILTER_REGEX, { filterRegex }),
   [SET_IS_RECORDING]: (isRecording: boolean): void => sendToMain(SET_IS_RECORDING, { isRecording }),
 };
+
+subscribeToProxyViewMessages(CREATE_TEST_COMPLETE, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: CREATE_TEST_COMPLETE });
+});
 
 subscribeToProxyViewMessages(DOWNLOADED_CERTIFICATE_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: DOWNLOADED_CERTIFICATE_SUCCESS });

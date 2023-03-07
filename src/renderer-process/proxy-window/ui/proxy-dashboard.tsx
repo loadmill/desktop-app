@@ -6,8 +6,9 @@ import React, { useEffect, useState } from 'react';
 import { isFromPreload } from '../../../inter-process-communication';
 import { ProxyRendererMessage } from '../../../types/messaging';
 import { ProxyEntry } from '../../../types/proxy-entry';
-import { SuiteOption } from '../../../types/suite';
+import { CreateTestResult, SuiteOption } from '../../../types/suite';
 import {
+  CREATE_TEST_COMPLETE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORTED_AS_HAR_SUCCESS,
   INIT_FILTER_REGEX,
@@ -21,7 +22,7 @@ import {
 
 import { AnalyzeButton } from './analyze-button';
 import { ClearAll } from './clear-all';
-import { CreateTestButton } from './create-test-button';
+import { CreateTest } from './create-test';
 import { DownloadCertificate } from './download-certificate';
 import { FilterRegex } from './filters';
 import { ProxyEntries } from './proxy-entries';
@@ -39,6 +40,11 @@ export const ProxyDashboard = (): JSX.Element => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
   const [loadingEntries, setLoadingEntries] = useState<boolean>(false);
+  const [selectedSuiteId, setSelectedSuiteId] = useState<string>();
+  const [isLoadingCreateTest, setIsLoadingCreateTest] = useState<boolean>(false);
+  const [showCreateTestSnackBar, setShowCreateTestSnackBar] = useState<boolean>(false);
+  const [createTestSnackBarMessage, setCreateTestSnackBarMessage] = useState<string>('');
+  const [severity, setSeverity] = useState<'error' | 'success'>('success');
 
   useEffect(() => {
     window.desktopApi.fetchSuites();
@@ -59,6 +65,9 @@ export const ProxyDashboard = (): JSX.Element => {
     if (isFromPreload(event)) {
       const { data: { type, data } } = event;
       switch (type) {
+        case CREATE_TEST_COMPLETE:
+          onCreateTestComplete(data);
+          break;
         case DOWNLOADED_CERTIFICATE_SUCCESS:
           onDownloadedCertificateSuccess(data);
           break;
@@ -87,6 +96,14 @@ export const ProxyDashboard = (): JSX.Element => {
           break;
       }
     }
+  };
+
+  const onCreateTestComplete = (data: ProxyRendererMessage['data']) => {
+    setIsLoadingCreateTest(false);
+    setShowCreateTestSnackBar(true);
+    const { msg, status } = getCreateTestSnackBarMessage(data?.createTestResult);
+    setCreateTestSnackBarMessage(msg);
+    setSeverity(status);
   };
 
   const onDownloadedCertificateSuccess = (_data: ProxyRendererMessage['data']) => {
@@ -125,6 +142,11 @@ export const ProxyDashboard = (): JSX.Element => {
 
   const onUpdatedSuites = ({ suites }: ProxyRendererMessage['data']) => {
     setSuites(suites);
+  };
+
+  const onCreateTest = () => {
+    setIsLoadingCreateTest(true);
+    window.desktopApi.createTest(selectedSuiteId);
   };
 
   const isClearAllDisabled = !shouldShowEntries;
@@ -181,6 +203,8 @@ export const ProxyDashboard = (): JSX.Element => {
             setFilterRegex={ setFilterRegex }
           />
           <SuitesAutocomplete
+            selectedSuiteId={ selectedSuiteId }
+            setSelectedSuiteId={ setSelectedSuiteId }
             suites={ suites }
           />
         </div>
@@ -220,12 +244,35 @@ export const ProxyDashboard = (): JSX.Element => {
         <AnalyzeButton
           disabled={ !shouldShowEntries }
         />
-        <CreateTestButton
+        <CreateTest
+          createTestSnackBarMessage={ createTestSnackBarMessage }
           disabled={ !shouldShowEntries }
+          isLoadingCreateTest={ isLoadingCreateTest }
+          onCloseSnackBar={ () => {
+            setShowCreateTestSnackBar(false);
+            setCreateTestSnackBarMessage('');
+            setIsLoadingCreateTest(false);
+          } }
+          onCreateTest={ onCreateTest }
+          openSnackBar={ showCreateTestSnackBar }
+          severity={ severity }
         />
       </div>
     </div>
   );
+};
+
+const getCreateTestSnackBarMessage = (createTestResult?: CreateTestResult): { msg: string; status: 'success' | 'error' } => {
+  if (createTestResult?.error) {
+    return {
+      msg: createTestResult.error,
+      status: 'error',
+    };
+  }
+  return {
+    msg: 'Test created successfully',
+    status: 'success',
+  };
 };
 
 export type ProxyDashboardProps = {};

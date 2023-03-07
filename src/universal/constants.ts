@@ -3,6 +3,8 @@ export const
   BEFORE_QUIT = 'before-quit',
   CLEAR_ALL_ENTRIES = 'clearAllEntries',
   CLOSE = 'close',
+  CREATE_TEST = 'createTest',
+  CREATE_TEST_COMPLETE = 'createTestComplete',
   DATA = 'data',
   DELETE_ENTRIES = 'deleteEntries',
   DELETE_ENTRY = 'deleteEntry',

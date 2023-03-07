@@ -9,12 +9,14 @@ import { subscribeToMainProcessMessage } from './main-events';
 export const fetchSuites = async (): Promise<SuiteOption[]> => {
   try {
     const response = await callLoadmillApi('api/test-suites?page=0&rowsPerPage=25');
+    if (response.status === 401) {
+      throw new Error('Unauthorized 401');
+    }
     const { testSuites } = await response.json() as SuitesPage;
     const suiteOptions = testSuites.map(({ description, id }) => ({ description, id }));
     return suiteOptions;
   } catch (error) {
-    log.error('fetchSuites');
-    log.error(error);
+    log.error('Error fetching suites, reason:', error);
   }
   return [];
 };

@@ -191,6 +191,12 @@ const handleStartAgentEvent = async () => {
   }
   if (isAgentConnected()) {
     log.info('Agent is already connected');
+    sendToRenderer({
+      data: {
+        isAgentConnected: isAgentConnected(),
+      },
+      type: IS_AGENT_CONNECTED,
+    });
     return;
   }
   let token = get(TOKEN) as string;
