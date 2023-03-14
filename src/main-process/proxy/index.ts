@@ -12,8 +12,8 @@ import { PROXY } from '../../universal/constants';
 import { PROXY_CERTIFICATES_DIR_PATH } from '../constants';
 
 import { subscribeToClearEntriesEvents } from './clear-entries-handlers';
-import { subscribeToCreateTest } from './create-test';
-import { addEntry } from './entries';
+import { dummyEntries } from './dummy-entries';
+import { addEntry, initEntries } from './entries';
 import { subscribeToExportAsHar } from './export-as-har';
 import { shouldSendEntry } from './filters';
 import { subscribeToFilterRegexEvents } from './filters-handlers';
@@ -21,8 +21,11 @@ import { subscribeToGetIpAddressFromRenderer } from './ip-address';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
 import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
 import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
+import { subscribeToAnalyzeRequests } from './test-actions/analyze';
+import { subscribeToCreateTest } from './test-actions/create-test';
 
 export const initProxyServer = (): void => {
+  initEntries(dummyEntries);
   subscribeToProxyEvents();
   const proxyPort = Number(process.env.PROXY_PORT || 1234);
 
@@ -35,7 +38,7 @@ export const initProxyServer = (): void => {
       id: logId,
       path: getProxyErrorsLogPath(),
     });
-    appendToProxyErrorsLog(`${new Date().toLocaleString() } ${logId}: ${err}\n`, 'proxy-erros.log');
+    appendToProxyErrorsLog(`${new Date().toLocaleString()} ${logId}: ${err}\n`, 'proxy-erros.log');
   });
 
   // nasty hack, will fix it later
@@ -199,4 +202,5 @@ const subscribeToProxyEvents = (): void => {
   subscribeToClearEntriesEvents();
   subscribeToGetIpAddressFromRenderer();
   subscribeToCreateTest();
+  subscribeToAnalyzeRequests();
 };

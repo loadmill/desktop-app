@@ -1,5 +1,7 @@
 export const
   ACTIVATE = 'activate',
+  ANALYZE_REQUESTS = 'analyzeRequests',
+  ANALYZE_REQUESTS_COMPLETE = 'analyzeRequestsComplete',
   BEFORE_QUIT = 'before-quit',
   CLEAR_ALL_ENTRIES = 'clearAllEntries',
   CLOSE = 'close',

@@ -1,4 +1,6 @@
 import {
+  ANALYZE_REQUESTS,
+  ANALYZE_REQUESTS_COMPLETE,
   CLEAR_ALL_ENTRIES,
   CREATE_TEST,
   CREATE_TEST_COMPLETE,
@@ -96,6 +98,7 @@ export abstract class LoadmillViewRendererMessage implements IPCMessage {
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
     createTestResult?: CreateTestResult;
+    error?: string;
     filterRegex?: string;
     ipAddress?: string;
     isRecording?: boolean;
@@ -112,6 +115,7 @@ export type AgentMessageTypes =
   typeof STOP_AGENT;
 
 export type MainMessageTypes =
+  typeof ANALYZE_REQUESTS |
   typeof CLEAR_ALL_ENTRIES |
   typeof CREATE_TEST |
   typeof DELETE_ENTRIES |
@@ -150,6 +154,7 @@ export type LoadmillViewRendererMessageTypes =
   typeof SAVED_TOKEN;
 
 export type ProxyRendererMessageTypes =
+  typeof ANALYZE_REQUESTS_COMPLETE |
   typeof CREATE_TEST_COMPLETE |
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
   typeof INIT_FILTER_REGEX |

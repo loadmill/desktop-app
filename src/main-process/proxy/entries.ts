@@ -7,7 +7,7 @@ const MAX_ENTRIES = 1000;
 
 const entries: ProxyEntry[] = [];
 
-export const getEntries = (): ProxyEntry[] => filterEntries(entries);
+export const getEntries = (filter = true): ProxyEntry[] => filter ? filterEntries(entries) : entries;
 
 export const initEntries = (newEntries: ProxyEntry[]): void => {
   entries.push(...newEntries);

@@ -4,6 +4,7 @@ import { Content, Response } from './response';
 
 export type ProxyEntry = {
   id: string;
+  irrelevant?: boolean;
   request: ProxyRequest;
   response: ProxyResponse;
   /**

@@ -8,6 +8,7 @@ import { ProxyRendererMessage } from '../../../types/messaging';
 import { ProxyEntry } from '../../../types/proxy-entry';
 import { CreateTestResult, SuiteOption } from '../../../types/suite';
 import {
+  ANALYZE_REQUESTS_COMPLETE,
   CREATE_TEST_COMPLETE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORTED_AS_HAR_SUCCESS,
@@ -20,7 +21,7 @@ import {
   UPDATED_SUITES
 } from '../../../universal/constants';
 
-import { AnalyzeButton } from './analyze-button';
+import { Analyze } from './analyze';
 import { ClearAll } from './clear-all';
 import { CreateTest } from './create-test';
 import { DownloadCertificate } from './download-certificate';
@@ -39,12 +40,15 @@ export const ProxyDashboard = (): JSX.Element => {
   const [showExportAsHarSuccessSnackBar, setShowExportAsHarSuccessSnackBar] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
-  const [loadingEntries, setLoadingEntries] = useState<boolean>(false);
+  const [loadingEntries, setLoadingEntries] = useState<boolean>(true);
   const [selectedSuiteId, setSelectedSuiteId] = useState<string>();
   const [isLoadingCreateTest, setIsLoadingCreateTest] = useState<boolean>(false);
   const [showCreateTestSnackBar, setShowCreateTestSnackBar] = useState<boolean>(false);
   const [createTestSnackBarMessage, setCreateTestSnackBarMessage] = useState<string>('');
   const [severity, setSeverity] = useState<'error' | 'success'>('success');
+  const [isLoadingAnalyze, setIsLoadingAnalyze] = useState<boolean>(false);
+  const [showAnalyzeSnackBar, setShowAnalyzeSnackBar] = useState<boolean>(false);
+  const [analyzeSnackBarMessage, setAnalyzeSnackBarMessage] = useState<string>('');
 
   useEffect(() => {
     window.desktopApi.fetchSuites();
@@ -65,6 +69,9 @@ export const ProxyDashboard = (): JSX.Element => {
     if (isFromPreload(event)) {
       const { data: { type, data } } = event;
       switch (type) {
+        case ANALYZE_REQUESTS_COMPLETE:
+          onAnalyzeComplete(data);
+          break;
         case CREATE_TEST_COMPLETE:
           onCreateTestComplete(data);
           break;
@@ -96,6 +103,14 @@ export const ProxyDashboard = (): JSX.Element => {
           break;
       }
     }
+  };
+
+  const onAnalyzeComplete = (data: ProxyRendererMessage['data']) => {
+    setIsLoadingAnalyze(false);
+    setShowAnalyzeSnackBar(true);
+    const { msg, status } = getAnalyzeSnackBarMessage(data?.error);
+    setAnalyzeSnackBarMessage(msg);
+    setSeverity(status);
   };
 
   const onCreateTestComplete = (data: ProxyRendererMessage['data']) => {
@@ -133,11 +148,13 @@ export const ProxyDashboard = (): JSX.Element => {
   };
 
   const onUpdatedEntries = ({ proxies }: ProxyRendererMessage['data']) => {
+    setShouldShowEntries(false);
+    setLoadingEntries(true);
     setEntries(proxies);
     if (proxies.length > 0) {
-      setLoadingEntries(false);
       setShouldShowEntries(true);
     }
+    setLoadingEntries(false);
   };
 
   const onUpdatedSuites = ({ suites }: ProxyRendererMessage['data']) => {
@@ -149,6 +166,10 @@ export const ProxyDashboard = (): JSX.Element => {
     window.desktopApi.createTest(selectedSuiteId);
   };
 
+  const onAnalyze = () => {
+    setIsLoadingAnalyze(true);
+    window.desktopApi.analyzeRequests();
+  };
   const isClearAllDisabled = !shouldShowEntries;
 
   return (
@@ -214,9 +235,13 @@ export const ProxyDashboard = (): JSX.Element => {
       >
         {loadingEntries && !shouldShowEntries && (
           <>
-            <Skeleton animation='wave' />
-            <Skeleton animation='wave' />
-            <Skeleton animation='wave' />
+            <Skeleton
+              height={ 64 }
+            />
+            <Skeleton
+              height={ 200 }
+              variant='rounded'
+            />
           </>
         )}
         {shouldShowEntries && (
@@ -241,8 +266,18 @@ export const ProxyDashboard = (): JSX.Element => {
           justifyContent: 'flex-end',
         } }
       >
-        <AnalyzeButton
+        <Analyze
+          analyzeSnackBarMessage={ analyzeSnackBarMessage }
           disabled={ !shouldShowEntries }
+          isLoadingAnalyze={ isLoadingAnalyze }
+          onAnalyze={ onAnalyze }
+          onCloseSnackBar={ () => {
+            setShowAnalyzeSnackBar(false);
+            setAnalyzeSnackBarMessage('');
+            setIsLoadingAnalyze(false);
+          } }
+          openSnackBar={ showAnalyzeSnackBar }
+          severity={ severity }
         />
         <CreateTest
           createTestSnackBarMessage={ createTestSnackBarMessage }
@@ -271,6 +306,19 @@ const getCreateTestSnackBarMessage = (createTestResult?: CreateTestResult): { ms
   }
   return {
     msg: 'Test created successfully',
+    status: 'success',
+  };
+};
+
+const getAnalyzeSnackBarMessage = (error?: string): { msg: string; status: 'success' | 'error' } => {
+  if (error) {
+    return {
+      msg: error,
+      status: 'error',
+    };
+  }
+  return {
+    msg: 'Analyze completed successfully',
     status: 'success',
   };
 };

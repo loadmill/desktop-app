@@ -150,7 +150,7 @@ export const ProxyEntries = ({
             <TableBody>
               {entries
                 .map((entry, index) => {
-                  const { id, request: { method, url }, response: { status }, timestamp } = entry;
+                  const { id, irrelevant, request: { method, url }, response: { status }, timestamp } = entry;
                   const urlParts = new URL(url);
                   const path = urlParts.pathname;
                   const host = urlParts.hostname;
@@ -161,6 +161,7 @@ export const ProxyEntries = ({
                       id={ id }
                       index={ index }
                       isActiveEntry={ activeEntry?.id === id }
+                      isIrrelevant={ irrelevant }
                       isItemSelected={ isSelected(id as string) }
                       key={ id }
                       method={ method }
@@ -366,6 +367,7 @@ const ProxyEntryRow = ({
   id,
   index,
   isActiveEntry,
+  isIrrelevant,
   isItemSelected,
   method,
   onActiveEntryChange,
@@ -387,9 +389,7 @@ const ProxyEntryRow = ({
       role='checkbox'
       selected={ isItemSelected }
       sx={ {
-        bgcolor: (theme) => isActiveEntry ?
-          theme.palette.action.selected :
-          theme.palette.background.paper,
+        bgcolor: (theme) => getRowColor({ isActiveEntry, isIrrelevant }, theme),
         cursor: 'pointer',
       } }
       tabIndex={ -1 }
@@ -429,6 +429,7 @@ type ProxyEntryRowProps = {
   id: string;
   index: number;
   isActiveEntry: boolean;
+  isIrrelevant?: boolean;
   isItemSelected: boolean;
   method: string;
   onActiveEntryChange: (id: string) => void;
@@ -449,4 +450,14 @@ const colorStatus = (status: number, theme: Theme): string => {
   }
 
   return 'yellow';
+};
+
+const getRowColor = ({ isIrrelevant, isActiveEntry }: Partial<ProxyEntryRowProps>, theme: Theme): string => {
+  if (isIrrelevant) {
+    return theme.palette.action.disabled;
+  }
+  if (isActiveEntry) {
+    return theme.palette.action.selected;
+  }
+  return theme.palette.background.paper;
 };

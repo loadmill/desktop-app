@@ -1,4 +1,5 @@
 import {
+  ANALYZE_REQUESTS,
   CLEAR_ALL_ENTRIES,
   CREATE_TEST,
   DELETE_ENTRIES,
@@ -49,6 +50,7 @@ export type ApiForLoadmillBrowserView = {
 };
 
 export type ApiForLoadmillProxyWindow = {
+  [ANALYZE_REQUESTS]: () => void;
   [CLEAR_ALL_ENTRIES]: () => void;
   [CREATE_TEST]: (suiteId?: string) => void;
   [DELETE_ENTRIES]: (entryIds: string[]) => void;
