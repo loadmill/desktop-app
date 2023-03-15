@@ -152,13 +152,9 @@ export const ProxyEntries = ({
               {entries
                 .map((entry, index) => {
                   const { id, irrelevant, request: { method, url }, response: { status }, timestamp } = entry;
-                  const urlParts = new URL(url);
-                  const path = urlParts.pathname;
-                  const host = urlParts.hostname;
 
                   return (
                     <ProxyEntryRow
-                      host={ host }
                       id={ id }
                       index={ index }
                       isActiveEntry={ activeEntry?.id === id }
@@ -169,9 +165,9 @@ export const ProxyEntries = ({
                       onActiveEntryChange={ onActiveEntryChange }
                       onKeyDown={ onKeyDown }
                       onSelectEntry={ onSelectEntry }
-                      path={ path }
                       status={ String(status) }
                       timestamp={ new Date(timestamp).toISOString().replace('T', ' ').substring(0, 23) }
+                      url={ url }
                     />
                   );
                 }
@@ -351,12 +347,8 @@ const proxyEntriesHeadCells: readonly ProxyEntriesHeadCell[] = [
     label: 'Method',
   },
   {
-    id: 'host',
-    label: 'Host',
-  },
-  {
-    id: 'path',
-    label: 'Path',
+    id: 'url',
+    label: 'Url',
   },
   {
     id: 'timestamp',
@@ -370,7 +362,6 @@ type ProxyEntriesHeadCell = {
 }
 
 const ProxyEntryRow = ({
-  host,
   id,
   index,
   isActiveEntry,
@@ -380,9 +371,9 @@ const ProxyEntryRow = ({
   onActiveEntryChange,
   onKeyDown,
   onSelectEntry,
-  path,
   status,
   timestamp,
+  url,
 }: ProxyEntryRowProps): JSX.Element => {
   const labelId = `enhanced-table-checkbox-${index}`;
   return (
@@ -425,15 +416,13 @@ const ProxyEntryRow = ({
         {status}
       </StyledTableCell>
       <StyledTableCell sx={ { width: '5%' } }>{method}</StyledTableCell>
-      <StyledTableCell sx={ { width: '20%' } }>{host}</StyledTableCell>
-      <StyledTableCell sx={ { width: '50%' } }>{path}</StyledTableCell>
+      <StyledTableCell sx={ { width: '70%' } }>{url}</StyledTableCell>
       <StyledTableCell sx={ { width: '20%' } }>{timestamp}</StyledTableCell>
     </StyledTableRow>
   );
 };
 
 type ProxyEntryRowProps = {
-  host: string;
   id: string;
   index: number;
   isActiveEntry: boolean;
@@ -443,9 +432,9 @@ type ProxyEntryRowProps = {
   onActiveEntryChange: (id: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSelectEntry: (event: React.SyntheticEvent, id: string) => void;
-  path: string;
   status: string;
   timestamp: string;
+  url: string;
 };
 
 const colorStatus = (status: number, theme: Theme): string => {
