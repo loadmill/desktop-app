@@ -7,7 +7,21 @@ const MAX_ENTRIES = 1000;
 
 const entries: ProxyEntry[] = [];
 
-export const getEntries = (filter = true): ProxyEntry[] => filter ? filterEntries(entries) : entries;
+export type GetEntriesOptions = {
+  filter?: boolean;
+  onlyRelevant?: boolean;
+};
+
+export const getEntries = ({ filter = true, onlyRelevant = false }: GetEntriesOptions = {}): ProxyEntry[] => {
+  let filteredEntries = entries;
+  if (filter) {
+    filteredEntries = filterEntries(filteredEntries);
+  }
+  if (onlyRelevant) {
+    filteredEntries = filteredEntries.filter(entry => !entry.irrelevant);
+  }
+  return filteredEntries;
+};
 
 export const initEntries = (newEntries: ProxyEntry[]): void => {
   entries.push(...newEntries);

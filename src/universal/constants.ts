@@ -32,6 +32,7 @@ export const
   LOADMILL_DESKTOP = 'loadmillDesktop',
   LOADMILL_VIEW_ID = 'loadmillViewId',
   MAIN_WINDOW_ID = 'mainWindowId',
+  MARK_RELEVANT = 'markRelevant',
   MESSAGE = 'message',
   NAVIGATION = 'navigation',
   PROXY = 'proxy',

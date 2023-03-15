@@ -15,6 +15,7 @@ import { ProxyEntry } from '../../../types/proxy-entry';
 import { ClearSelectedEntries } from './clear-selected';
 import { EntryDetailsDrawer } from './entry-details-drawer';
 import { ExportProxyAsHar } from './export-proxy-as-har';
+import { MarkRelevant } from './mark-relevant';
 import { StyledTableCell, StyledTableRow } from './table-row-cell';
 
 export const ProxyEntries = ({
@@ -265,6 +266,12 @@ const EnhancedTableToolbar = ({
             gap: '8px',
           } }
         >
+          <MarkRelevant
+            resetActiveEntryOnCleared={ resetActiveEntryOnCleared }
+            resetSelected={ resetSelected }
+            selectedEntries={ selectedEntries }
+            setLoading={ setLoading }
+          />
           <ClearSelectedEntries
             resetActiveEntryOnCleared={ resetActiveEntryOnCleared }
             resetSelected={ resetSelected }
@@ -389,8 +396,9 @@ const ProxyEntryRow = ({
       role='checkbox'
       selected={ isItemSelected }
       sx={ {
-        bgcolor: (theme) => getRowColor({ isActiveEntry, isIrrelevant }, theme),
+        bgcolor: (theme) => getRowBackgroundColor({ isActiveEntry }, theme),
         cursor: 'pointer',
+        textDecoration: isIrrelevant ? 'line-through 0.13rem' : 'none',
       } }
       tabIndex={ -1 }
     >
@@ -452,12 +460,8 @@ const colorStatus = (status: number, theme: Theme): string => {
   return 'yellow';
 };
 
-const getRowColor = ({ isIrrelevant, isActiveEntry }: Partial<ProxyEntryRowProps>, theme: Theme): string => {
-  if (isIrrelevant) {
-    return theme.palette.action.disabled;
-  }
-  if (isActiveEntry) {
-    return theme.palette.action.selected;
-  }
-  return theme.palette.background.paper;
+const getRowBackgroundColor = ({ isActiveEntry }: Partial<ProxyEntryRowProps>, theme: Theme): string => {
+  return isActiveEntry ?
+    theme.palette.action.selected :
+    theme.palette.background.paper;
 };

@@ -5,7 +5,7 @@ import { CREATE_TEST, CREATE_TEST_COMPLETE } from '../../../universal/constants'
 import { callLoadmillApi } from '../../call-loadmill-api';
 import { subscribeToMainProcessMessage } from '../../main-events';
 
-import { entriesToHarString } from './entries-to-string';
+import { entriesToHarString } from './entries-to-har-string';
 import { getImportStatus, importHar } from './import-har';
 
 export const subscribeToCreateTest = (): void => {
@@ -16,7 +16,7 @@ const onCreateTest = async (_event: Electron.IpcMainEvent, { suiteId }: MainMess
   if (!suiteId) {
     suiteId = await createTestSuite();
   }
-  const harAsString = entriesToHarString();
+  const harAsString = entriesToHarString({ onlyRelevant: true });
   const token = await importHar(harAsString, suiteId);
   await pollImportStatus(token);
 };

@@ -22,6 +22,7 @@ import {
   IS_RECORDING,
   LOADMILL_VIEW_ID,
   MAIN_WINDOW_ID,
+  MARK_RELEVANT,
   NAVIGATION,
   PROXY,
   REFRESH_ENTRIES,
@@ -130,6 +131,7 @@ export type MainMessageTypes =
   typeof INIT_FILTER_REGEX |
   typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
+  typeof MARK_RELEVANT |
   typeof REFRESH_ENTRIES |
   typeof REFRESH_PAGE |
   typeof SET_FILTER_REGEX |

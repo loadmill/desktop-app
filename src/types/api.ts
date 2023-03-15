@@ -13,6 +13,7 @@ import {
   GO_FORWARD,
   INIT_FILTER_REGEX,
   IS_RECORDING,
+  MARK_RELEVANT,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
   SET_FILTER_REGEX,
@@ -61,6 +62,7 @@ export type ApiForLoadmillProxyWindow = {
   [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
   [INIT_FILTER_REGEX]: () => void;
   [IS_RECORDING]: () => void;
+  [MARK_RELEVANT]: (entryIds: string[]) => void;
   [REFRESH_ENTRIES]: () => void;
   [SET_FILTER_REGEX]: (filterRegex: string) => void;
   [SET_IS_RECORDING]: (isRecording: boolean) => void;

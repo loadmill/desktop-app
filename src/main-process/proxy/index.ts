@@ -12,12 +12,12 @@ import { PROXY } from '../../universal/constants';
 import { PROXY_CERTIFICATES_DIR_PATH } from '../constants';
 
 import { subscribeToClearEntriesEvents } from './clear-entries-handlers';
-import { dummyEntries } from './dummy-entries';
-import { addEntry, initEntries } from './entries';
+import { addEntry } from './entries';
 import { subscribeToExportAsHar } from './export-as-har';
 import { shouldSendEntry } from './filters';
 import { subscribeToFilterRegexEvents } from './filters-handlers';
 import { subscribeToGetIpAddressFromRenderer } from './ip-address';
+import { subscribeToMarkRelevant } from './mark-relevant';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
 import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
 import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
@@ -25,7 +25,6 @@ import { subscribeToAnalyzeRequests } from './test-actions/analyze';
 import { subscribeToCreateTest } from './test-actions/create-test';
 
 export const initProxyServer = (): void => {
-  initEntries(dummyEntries);
   subscribeToProxyEvents();
   const proxyPort = Number(process.env.PROXY_PORT || 1234);
 
@@ -203,4 +202,5 @@ const subscribeToProxyEvents = (): void => {
   subscribeToGetIpAddressFromRenderer();
   subscribeToCreateTest();
   subscribeToAnalyzeRequests();
+  subscribeToMarkRelevant();
 };

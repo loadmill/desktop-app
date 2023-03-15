@@ -5,7 +5,7 @@ import { ANALYZE_REQUESTS, ANALYZE_REQUESTS_COMPLETE, UPDATED_ENTRIES } from '..
 import { subscribeToMainProcessMessage } from '../../main-events';
 import { getEntries } from '../entries';
 
-import { entriesToHarString } from './entries-to-string';
+import { entriesToHarString } from './entries-to-har-string';
 import { getTransformResult, isTransformResult, LoadmillRequest, transform, TransformStatus } from './transform';
 
 export const subscribeToAnalyzeRequests = (): void => {
