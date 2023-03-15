@@ -1,7 +1,6 @@
 import { ChildProcessWithoutNullStreams, fork } from 'child_process';
 
 import '@loadmill/agent/dist/cli';
-import { app, ipcMain } from 'electron';
 
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
@@ -9,7 +8,6 @@ import { AgentMessage, MainMessage } from '../types/messaging';
 import {
   DATA,
   IS_AGENT_CONNECTED,
-  LOADMILL_AGENT,
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
   STOP_AGENT,
@@ -22,9 +20,12 @@ import {
   refreshConnectedStatus
 } from './connected-status';
 import {
+  LOADMILL_AGENT_PATH,
   LOADMILL_AGENT_SERVER_URL,
+  NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED
 } from './constants';
+import { subscribeToMainProcessMessage } from './main-events';
 import { get } from './store';
 import { createAndSaveToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
@@ -62,9 +63,10 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
     LOADMILL_AGENT_SERVER_URL,
     NODE_TLS_REJECT_UNAUTHORIZED,
   });
-  return fork(app.getAppPath() + '/.webpack/main/' + LOADMILL_AGENT, {
+  return fork(LOADMILL_AGENT_PATH, {
     env: {
       LOADMILL_AGENT_SERVER_URL,
+      NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
     },
     stdio: 'pipe',
@@ -136,7 +138,7 @@ export const subscribeToAgentEventsFromRenderer = (): void => {
 };
 
 const subscribeToUserIsSignedInFromRenderer = () => {
-  ipcMain.on(SET_IS_USER_SIGNED_IN, handleSetIsUserSignedInEvent);
+  subscribeToMainProcessMessage(SET_IS_USER_SIGNED_IN, handleSetIsUserSignedInEvent);
 };
 
 const handleSetIsUserSignedInEvent = async (_event: Electron.IpcMainEvent, { isSignedIn }: MainMessage['data']) => {
@@ -151,7 +153,7 @@ const handleSetIsUserSignedInEvent = async (_event: Electron.IpcMainEvent, { isS
 
 const handleUserIsSignedIn = async () => {
   log.info('Checking if token exists...');
-  const token = get(TOKEN);
+  const token = get(TOKEN) as string;
   if (token) {
     log.info('Token exists');
     if (!isAgentConnected()) {
@@ -161,7 +163,7 @@ const handleUserIsSignedIn = async () => {
   } else {
     log.info('Token does not exists, fetching new token from loadmill server');
     await createAndSaveToken();
-    const token = get(TOKEN);
+    const token = get(TOKEN) as string;
     if (token) {
       startAgent(token);
     } else {
@@ -178,10 +180,10 @@ const handleUserIsSignedOut = () => {
 };
 
 const subscribeToStartAgentFromRenderer = () => {
-  ipcMain.on(START_AGENT, handleStartAgentEvent);
+  subscribeToMainProcessMessage(START_AGENT, handleStartAgentEvent);
 };
 
-const handleStartAgentEvent = async (_event: Electron.IpcMainEvent) => {
+const handleStartAgentEvent = async () => {
   log.info(`Got ${START_AGENT} event`);
   if (!isUserSignedIn()) {
     log.info('User is not signed in, could not connect the agent');
@@ -189,13 +191,19 @@ const handleStartAgentEvent = async (_event: Electron.IpcMainEvent) => {
   }
   if (isAgentConnected()) {
     log.info('Agent is already connected');
+    sendToRenderer({
+      data: {
+        isAgentConnected: isAgentConnected(),
+      },
+      type: IS_AGENT_CONNECTED,
+    });
     return;
   }
-  let token = get(TOKEN);
+  let token = get(TOKEN) as string;
   if (!token) {
     log.info('Token does not exists, fetching new token from loadmill server');
     await createAndSaveToken();
-    token = get(TOKEN);
+    token = get(TOKEN) as string;
     if (!token) {
       log.info('Token still does not exists, could not connect the agent');
       return;
@@ -205,13 +213,19 @@ const handleStartAgentEvent = async (_event: Electron.IpcMainEvent) => {
 };
 
 const subscribeToStopAgentFromRenderer = () => {
-  ipcMain.on(STOP_AGENT, handleStopAgentEvent);
+  subscribeToMainProcessMessage(STOP_AGENT, handleStopAgentEvent);
 };
 
-const handleStopAgentEvent = (_event: Electron.IpcMainEvent) => {
+const handleStopAgentEvent = () => {
   log.info(`Got ${STOP_AGENT} event`);
   if (!isAgentConnected()) {
     log.info('Agent is already not connected');
+    sendToRenderer({
+      data: {
+        isAgentConnected: isAgentConnected(),
+      },
+      type: IS_AGENT_CONNECTED,
+    });
     return;
   }
   stopAgent();

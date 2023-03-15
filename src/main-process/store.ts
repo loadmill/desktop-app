@@ -10,10 +10,12 @@ export const initStore = (): void => {
   });
 };
 
-export const set = (key: string, value?: string): void => {
+export const set = (key: string, value?: StoreValue): void => {
   Store._store.set(key, value);
 };
 
-export const get = (key: string): string | undefined => {
-  return Store._store.get(key) as string | undefined;
+export const get = (key: string): StoreValue => {
+  return Store._store.get(key) as StoreValue;
 };
+
+export type StoreValue = string | undefined;

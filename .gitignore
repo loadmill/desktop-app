@@ -93,3 +93,6 @@ out*/
 .notes*
 
 .errors*
+
+certs/
+keys/

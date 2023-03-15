@@ -70,6 +70,14 @@ module.exports = {
               'preload': {
                 'js': './src/renderer-process/loadmill-view/preload.ts'
               }
+            },
+            {
+              'html': './src/renderer-process/proxy-window/index.html',
+              'js': './src/renderer-process/proxy-window/renderer.ts',
+              'name': 'proxy_window',
+              'preload': {
+                'js': './src/renderer-process/proxy-window/preload.ts'
+              }
             }
           ]
         }

@@ -24,13 +24,13 @@ const getIconFromName = (iconType: Icons): JSX.Element => {
   }
 };
 
-const ActionIconButton: React.FC<ActionsIconButtonsProps> = ({
+const ActionIconButton = ({
   disabled,
   iconType,
   onActionClicked,
   placement,
   title,
-}): JSX.Element => (
+}: ActionsIconButtonsProps): JSX.Element => (
   <div className={ !disabled ? 'undraggable' : '' }>
     <Tooltip
       placement={ placement || 'right' }
@@ -57,10 +57,10 @@ export type ActionsIconButtonsProps = {
   title?: string;
 };
 
-export const GoBackIconButton: React.FC<GoBackIconButtonProps> = ({
+export const GoBackIconButton = ({
   disabled,
   onGoBackClicked,
-}): JSX.Element => {
+}: GoBackIconButtonProps): JSX.Element => {
   return (
     <>
       <ActionIconButton
@@ -78,10 +78,10 @@ export type GoBackIconButtonProps = {
   onGoBackClicked: (e: SyntheticEvent) => void;
 };
 
-export const GoForwardIconButton: React.FC<GoForwardIconButtonProps> = ({
+export const GoForwardIconButton = ({
   disabled,
   onGoForwardClicked,
-}): JSX.Element => {
+}: GoForwardIconButtonProps): JSX.Element => {
   return (
     <>
       <ActionIconButton
@@ -99,12 +99,14 @@ export type GoForwardIconButtonProps = {
   onGoForwardClicked: (e: SyntheticEvent) => void
 };
 
-export const RefreshIconButton: React.FC<RefreshIconButtonProps> = ({
+export const RefreshIconButton = ({
+  disabled,
   onRefreshClicked,
-}): JSX.Element => {
+}: RefreshIconButtonProps): JSX.Element => {
   return (
     <>
       <ActionIconButton
+        disabled={ disabled }
         iconType='refresh'
         onActionClicked={ onRefreshClicked }
         title='Refresh'
@@ -114,6 +116,7 @@ export const RefreshIconButton: React.FC<RefreshIconButtonProps> = ({
 };
 
 export type RefreshIconButtonProps = {
+  disabled?: boolean;
   onRefreshClicked: (e: SyntheticEvent) => void;
 };
 

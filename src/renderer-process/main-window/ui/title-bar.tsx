@@ -1,12 +1,12 @@
 import React, {
   MouseEvent,
-  SyntheticEvent,
   useEffect,
   useState
 } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';
 import { RendererMessage } from '../../../types/messaging';
+import { ViewValue } from '../../../types/views';
 import {
   IS_AGENT_CONNECTED,
   MESSAGE,
@@ -16,12 +16,14 @@ import {
 
 import { GoBackIconButton, GoForwardIconButton, RefreshIconButton, StartAgentIconButton, StopAgentIconButton } from './actions-icon-buttons';
 import { FindOnPage } from './find-on-page';
+import { ViewsSwitch, ViewsSwitchProps } from './views-switch';
 
 export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
   const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
+  const [view, setView] = useState<ViewValue>(ViewValue.WEB_PAGE);
 
   useEffect(() => {
     window.addEventListener(MESSAGE, onPreloadMessage);
@@ -72,15 +74,15 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     }
   };
 
-  const onRefreshClick = (_event: SyntheticEvent) => {
+  const onRefreshClick = () => {
     window.desktopApi.refreshPage();
   };
 
-  const onBackClick = (_event: SyntheticEvent) => {
+  const onBackClick = () => {
     window.desktopApi.goBack();
   };
 
-  const onForwardClick = (_event: SyntheticEvent) => {
+  const onForwardClick = () => {
     window.desktopApi.goForward();
   };
 
@@ -95,6 +97,8 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         onBackClick={ onBackClick }
         onForwardClick={ onForwardClick }
         onRefreshClick={ onRefreshClick }
+        setView={ setView }
+        view={ view }
       />
       {
         shouldShowFind &&
@@ -125,22 +129,32 @@ export const TitleBarActions = ({
   onBackClick,
   onForwardClick,
   onRefreshClick,
+  setView,
+  view,
 }: TitleBarActionsProps): JSX.Element => {
+  const isNavigationDisabled = view === ViewValue.PROXY;
   return (
     <div
       className='title-bar-actn-btns'
     >
       <GoBackIconButton
-        disabled={ !canGoBack }
+        disabled={ isNavigationDisabled || !canGoBack }
         onGoBackClicked={ onBackClick }
       />
       <GoForwardIconButton
-        disabled={ !canGoForward }
+        disabled={ isNavigationDisabled || !canGoForward }
         onGoForwardClicked={ onForwardClick }
       />
       <RefreshIconButton
+        disabled={ isNavigationDisabled }
         onRefreshClicked={ onRefreshClick }
       />
+      <div style={ { marginLeft: '1rem' } }>
+        <ViewsSwitch
+          setView={ setView }
+          view={ view }
+        />
+      </div>
     </div>
   );
 };
@@ -148,9 +162,9 @@ export const TitleBarActions = ({
 export type TitleBarActionsProps = {
   canGoBack?: boolean;
   canGoForward?: boolean;
-  onBackClick: (_event: SyntheticEvent) => void;
-  onForwardClick: (_event: SyntheticEvent) => void,
-  onRefreshClick: (_event: SyntheticEvent) => void;
-};
+  onBackClick: () => void;
+  onForwardClick: () => void,
+  onRefreshClick: () => void;
+} & ViewsSwitchProps;
 
 const isDoubleClick = ({ detail }: MouseEvent<HTMLElement>) => detail === 2;

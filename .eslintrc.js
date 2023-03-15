@@ -28,11 +28,30 @@ module.exports = {
       },
     },
     {
+      files: ['accordion-summary.tsx', 'table-row-cell.tsx'],
+      rules: {
+        'sort-keys': 'off',
+      },
+    },
+    {
+      files: ['src/main-process/proxy/index.ts'],
+      rules: {
+        '@typescript-eslint/ban-ts-comment': 'off',
+        'no-restricted-globals': 'off',
+      },
+    },
+    {
       env: {
         mocha: true,
       },
       files: '*.spec.*',
     },
+    {
+      files: ['test/__mocks__/log.ts'],
+      rules: {
+        'no-console': 'off',
+      },
+    }
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -95,6 +114,7 @@ module.exports = {
     }
     ],
     'indent': ['error', 2, { 'SwitchCase': 1 }],
+    'jsx-quotes': ['error', 'prefer-single'],
     'keyword-spacing': ['error'],
     'max-classes-per-file': ['error', 10],
     'max-len': ['error', 200],
@@ -111,7 +131,7 @@ module.exports = {
     'quotes': ['error', 'single'],
     'react-hooks/exhaustive-deps': 'off',
     'react/boolean-prop-naming': ['error', {
-      'rule': 'disabled|^(is|has|can)[A-Z]([A-Za-z0-9]?)+',
+      'rule': 'loading|open|disabled|^(is|has|can|should)[A-Z]([A-Za-z0-9]?)+',
       'validateNested': true,
     }],
     'react/destructuring-assignment': 'error',

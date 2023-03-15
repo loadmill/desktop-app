@@ -11,12 +11,12 @@ import {
 
 import { LOADMILL_WEB_APP_ORIGIN } from './constants';
 import { setWebContents } from './cookies';
+import { subscribeToFindOnPageEvents } from './find-on-page';
 import { subscribeToNavigationEvents } from './navigation-handler';
 import { setOpenLinksInBrowser } from './open-links';
+import { setBrowserViewSize } from './screen-size';
 
 declare const LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY: string; // webpack hack 😒
-
-const TITLE_BAR_HEIGHT = 44;
 
 export const createLoadmillWebView = (
   mainWindow: BrowserWindow,
@@ -26,17 +26,17 @@ export const createLoadmillWebView = (
       preload: LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY,
     },
   });
-  mainWindow.setBrowserView(loadmillWebView);
+  mainWindow.addBrowserView(loadmillWebView);
   setOpenLinksInBrowser(loadmillWebView.webContents);
   sendToRenderer({
     data: { loadmillViewId: loadmillWebView.webContents.id },
     type: LOADMILL_VIEW_ID,
   });
 
-  setLoadmillWebviewSize(loadmillWebView, mainWindow.getBounds());
+  setBrowserViewSize(loadmillWebView, mainWindow.getBounds());
 
   const handleWindowResize = (_e: Electron.Event) => {
-    setLoadmillWebviewSize(loadmillWebView, mainWindow.getBounds());
+    setBrowserViewSize(loadmillWebView, mainWindow.getBounds());
   };
   mainWindow.on(RESIZE, handleWindowResize);
   subscribeToNavigationEvents(loadmillWebView);
@@ -45,14 +45,7 @@ export const createLoadmillWebView = (
 
   setWebContents(loadmillWebView.webContents);
 
-  return loadmillWebView;
-};
+  subscribeToFindOnPageEvents(loadmillWebView.webContents);
 
-const setLoadmillWebviewSize = (view: BrowserView, bounds: Electron.Rectangle) => {
-  view.setBounds({
-    height: bounds.height - TITLE_BAR_HEIGHT,
-    width: bounds.width,
-    x: 0,
-    y: TITLE_BAR_HEIGHT,
-  });
+  return loadmillWebView;
 };

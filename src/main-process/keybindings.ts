@@ -47,17 +47,16 @@ const registerKeyBind = (
   callback: () => void,
 ) => {
   const isSuccessful = globalShortcut.register(accelerator, callback);
-  logRegistration(isSuccessful, accelerator);
+  logFailedRegistration(isSuccessful, accelerator);
 };
 
-const logRegistration = (
+const logFailedRegistration = (
   isSuccessful: boolean,
   accelerator: Electron.Accelerator,
 ) => {
   if (!isSuccessful) {
     log.info(accelerator + ' registration failed');
   }
-  log.info(accelerator, { isRegistered: globalShortcut.isRegistered(accelerator) });
 };
 
 app.on('will-quit', () => {
