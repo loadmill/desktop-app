@@ -29,7 +29,7 @@ export const ClearSelectedEntries = ({
       }
       variant='outlined'
     >
-      {'Clear'}
+      {'Delete'}
     </Button>
   );
 };

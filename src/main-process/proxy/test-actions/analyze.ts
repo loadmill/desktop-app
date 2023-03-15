@@ -70,8 +70,9 @@ const pollTransformStatus = async (token: string): Promise<void> => {
 
 const markIrrelevantRequests = (entries: ProxyEntry[], requests: LoadmillRequest[]): void => {
   entries.forEach((entry, index) => {
+    const isLastEntry = index === entries.length - 1;
     const request = requests[index];
-    if (isIrrelevantRequest(request)) {
+    if (!isLastEntry && isIrrelevantRequest(request)) {
       entry.irrelevant = true;
     }
   });

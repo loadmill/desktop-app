@@ -8,7 +8,7 @@ import { subscribeToMainProcessMessage } from './main-events';
 
 export const fetchSuites = async (): Promise<SuiteOption[]> => {
   try {
-    const response = await callLoadmillApi('api/test-suites?page=0&rowsPerPage=25');
+    const response = await callLoadmillApi('api/test-suites?page=0&rowsPerPage=100');
     if (response.status === 401) {
       throw new Error('Unauthorized 401');
     }
