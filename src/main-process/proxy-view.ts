@@ -38,6 +38,5 @@ export const createProxyView = (
   subscribeToDownloadCertificate();
   subscribeToFindOnPageEvents(proxyView.webContents);
   subscribeToFetchSuites();
-  proxyView.webContents.openDevTools();
   return proxyView;
 };
