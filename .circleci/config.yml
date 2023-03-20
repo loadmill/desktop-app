@@ -63,7 +63,7 @@ jobs:
                   ARTIFACTS_URLS=$(curl -s \
                     --header 'authorization: Basic ${CIRCLECI_API_TOKEN}' \
                     --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM/artifacts" \
-                    | python -c 'import sys, json;\
+                    | python3 -c 'import sys, json;\
                     print("\\n\\n".join([artifact["url"] for artifact in json.load(sys.stdin)["items"]]))')
                   echo "export ARTIFACTS_URLS='${ARTIFACTS_URLS}'" >> $BASH_ENV
             - run:
