@@ -57,6 +57,25 @@ jobs:
                 command: yarn only-make
             - store_artifacts:
                 path: out/make/
+            - run:
+                name: Fetch Artifacts URLs
+                command: |
+                  ARTIFACTS_URLS=$(curl -s \
+                    --header 'authorization: Basic ${CIRCLECI_API_TOKEN}' \
+                    --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM/artifacts" \
+                    | python -c 'import sys, json;\
+                    print("\\n\\n".join([artifact["url"] for artifact in json.load(sys.stdin)["items"]]))')
+                  echo "export ARTIFACTS_URLS='${ARTIFACTS_URLS}'" >> $BASH_ENV
+            - run:
+                name: Post Artifacts URLs to GitHub PR
+                command: |
+                  COMMENT="Artifacts are available here:\\n\\n${ARTIFACTS_URLS}"
+                  PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
+                  curl -X POST \
+                      -H "Authorization: token ${GITHUB_API_TOKEN}" \
+                      -H "Content-Type: application/json" \
+                      -d "{\"body\": \"$COMMENT\"}" \
+                      "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments"
       - when:
           condition:
             equal: [ main, << pipeline.git.branch >> ]
