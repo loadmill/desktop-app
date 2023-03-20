@@ -43,9 +43,9 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-const onReady = () => {
+const onReady = async () => {
   initStore();
-  initProxyServer();
+  await initProxyServer();
   subscribeToAgentEventsFromRenderer();
   createWindow();
 };

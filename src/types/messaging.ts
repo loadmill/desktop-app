@@ -24,6 +24,7 @@ import {
   MAIN_WINDOW_ID,
   MARK_RELEVANT,
   NAVIGATION,
+  PORT,
   PROXY,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
@@ -103,6 +104,7 @@ export abstract class ProxyRendererMessage implements IPCMessage {
     filterRegex?: string;
     ipAddress?: string;
     isRecording?: boolean;
+    port?: number;
     proxies?: ProxyEntry[];
     proxy?: ProxyEntry;
     suites?: SuiteOption[];
@@ -132,6 +134,7 @@ export type MainMessageTypes =
   typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
   typeof MARK_RELEVANT |
+  typeof PORT |
   typeof REFRESH_ENTRIES |
   typeof REFRESH_PAGE |
   typeof SET_FILTER_REGEX |
@@ -165,4 +168,5 @@ export type ProxyRendererMessageTypes =
   typeof EXPORTED_AS_HAR_SUCCESS |
   typeof UPDATED_ENTRIES |
   typeof UPDATED_SUITES |
+  typeof PORT |
   typeof PROXY;

@@ -22,6 +22,7 @@ import {
   IP_ADDRESS,
   IS_RECORDING,
   MARK_RELEVANT,
+  PORT,
   PROXY,
   REFRESH_ENTRIES,
   SET_FILTER_REGEX,
@@ -44,6 +45,7 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [INIT_FILTER_REGEX]: () => sendToMain(INIT_FILTER_REGEX),
   [IS_RECORDING]: (): void => sendToMain(IS_RECORDING),
   [MARK_RELEVANT]: (entryIds: string[]): void => sendToMain(MARK_RELEVANT, { entryIds }),
+  [PORT]: (): void => sendToMain(PORT),
   [REFRESH_ENTRIES]: (): void => sendToMain(REFRESH_ENTRIES),
   [SET_FILTER_REGEX]: (filterRegex: string): void => sendToMain(SET_FILTER_REGEX, { filterRegex }),
   [SET_IS_RECORDING]: (isRecording: boolean): void => sendToMain(SET_IS_RECORDING, { isRecording }),
@@ -75,6 +77,10 @@ subscribeToProxyViewMessages(IP_ADDRESS, (_event: Electron.IpcRendererEvent, dat
 
 subscribeToProxyViewMessages(IS_RECORDING, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: IS_RECORDING });
+});
+
+subscribeToProxyViewMessages(PORT, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: PORT });
 });
 
 subscribeToProxyViewMessages(PROXY, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {

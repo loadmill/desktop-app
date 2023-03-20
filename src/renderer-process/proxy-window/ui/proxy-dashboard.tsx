@@ -16,6 +16,7 @@ import {
   IP_ADDRESS,
   IS_RECORDING,
   MESSAGE,
+  PORT,
   PROXY,
   UPDATED_ENTRIES,
   UPDATED_SUITES
@@ -40,6 +41,7 @@ export const ProxyDashboard = (): JSX.Element => {
   const [showExportAsHarSuccessSnackBar, setShowExportAsHarSuccessSnackBar] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
+  const [port, setPort] = useState<number>(0);
   const [loadingEntries, setLoadingEntries] = useState<boolean>(true);
   const [selectedSuiteId, setSelectedSuiteId] = useState<string>();
   const [isLoadingCreateTest, setIsLoadingCreateTest] = useState<boolean>(false);
@@ -55,6 +57,7 @@ export const ProxyDashboard = (): JSX.Element => {
     window.desktopApi.getIpAddress();
     window.desktopApi.initFilterRegex();
     window.desktopApi.isRecording();
+    window.desktopApi.port();
     window.desktopApi.refreshEntries();
   }, []);
 
@@ -86,6 +89,9 @@ export const ProxyDashboard = (): JSX.Element => {
           break;
         case IS_RECORDING:
           onIsRecording(data);
+          break;
+        case PORT:
+          onPort(data);
           break;
         case PROXY:
           onProxyMsg(data);
@@ -136,6 +142,10 @@ export const ProxyDashboard = (): JSX.Element => {
 
   const onIsRecording = ({ isRecording }: ProxyRendererMessage['data']) => {
     setIsRecording(isRecording);
+  };
+
+  const onPort = ({ port }: ProxyRendererMessage['data']) => {
+    setPort(port);
   };
 
   const onProxyMsg = ({ proxy }: ProxyRendererMessage['data']) => {
@@ -208,7 +218,7 @@ export const ProxyDashboard = (): JSX.Element => {
             <Typography
               variant='button'
             >
-              { ipAddress + ':1234' }
+              { ipAddress + ':' + port }
             </Typography>
           </Typography>
           <DownloadCertificate
