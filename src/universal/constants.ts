@@ -23,6 +23,7 @@ export const
   FIND_NEXT = 'findNext',
   GENERATE_TOKEN = 'generateToken',
   GET_IP_ADDRESS = 'getIpAddress',
+  GET_PORT = 'getPort',
   GO_BACK = 'goBack',
   GO_FORWARD = 'goForward',
   INIT_FILTER_REGEX = 'initFilterRegex',

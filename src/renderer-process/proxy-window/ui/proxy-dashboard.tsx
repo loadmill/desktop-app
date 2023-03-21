@@ -57,7 +57,7 @@ export const ProxyDashboard = (): JSX.Element => {
     window.desktopApi.getIpAddress();
     window.desktopApi.initFilterRegex();
     window.desktopApi.isRecording();
-    window.desktopApi.port();
+    window.desktopApi.getPort();
     window.desktopApi.refreshEntries();
   }, []);
 

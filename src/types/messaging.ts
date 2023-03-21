@@ -14,6 +14,7 @@ import {
   FIND_NEXT,
   GENERATE_TOKEN,
   GET_IP_ADDRESS,
+  GET_PORT,
   GO_BACK,
   GO_FORWARD,
   INIT_FILTER_REGEX,
@@ -128,13 +129,13 @@ export type MainMessageTypes =
   typeof FETCH_SUITES |
   typeof FIND_NEXT |
   typeof GET_IP_ADDRESS |
+  typeof GET_PORT |
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof INIT_FILTER_REGEX |
   typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
   typeof MARK_RELEVANT |
-  typeof PORT |
   typeof REFRESH_ENTRIES |
   typeof REFRESH_PAGE |
   typeof SET_FILTER_REGEX |
