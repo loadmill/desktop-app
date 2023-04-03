@@ -27,7 +27,8 @@ export const BodyDetails = ({
         <CardHeader
           sx={ {
             bgcolor: theme => theme.palette.background.paper,
-            p: '8px',
+            p: '0px',
+            paddingBottom: 1,
           } }
           title={
             <Typography variant='subtitle2'>
@@ -38,8 +39,11 @@ export const BodyDetails = ({
         <Divider />
         <CardContent
           sx={ {
+            '&:last-child': {
+              paddingBottom: '8px'
+            },
             bgcolor: theme => theme.palette.background.paper,
-            display: 'relative',
+            p: '8px',
           } }
         >
           <BodyContent
