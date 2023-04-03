@@ -9,6 +9,7 @@ import {
   FETCH_SUITES,
   FIND_NEXT,
   GET_IP_ADDRESS,
+  GET_PORT,
   GO_BACK,
   GO_FORWARD,
   INIT_FILTER_REGEX,
@@ -60,6 +61,7 @@ export type ApiForLoadmillProxyWindow = {
   [EXPORT_AS_HAR]: (entryIds: string[]) => void;
   [FETCH_SUITES]: () => void;
   [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
+  [GET_PORT]: () => void;
   [INIT_FILTER_REGEX]: () => void;
   [IS_RECORDING]: () => void;
   [MARK_RELEVANT]: (entryIds: string[]) => void;

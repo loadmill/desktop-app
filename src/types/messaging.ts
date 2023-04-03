@@ -14,6 +14,7 @@ import {
   FIND_NEXT,
   GENERATE_TOKEN,
   GET_IP_ADDRESS,
+  GET_PORT,
   GO_BACK,
   GO_FORWARD,
   INIT_FILTER_REGEX,
@@ -24,6 +25,7 @@ import {
   MAIN_WINDOW_ID,
   MARK_RELEVANT,
   NAVIGATION,
+  PORT,
   PROXY,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
@@ -103,6 +105,7 @@ export abstract class ProxyRendererMessage implements IPCMessage {
     filterRegex?: string;
     ipAddress?: string;
     isRecording?: boolean;
+    port?: number;
     proxies?: ProxyEntry[];
     proxy?: ProxyEntry;
     suites?: SuiteOption[];
@@ -126,6 +129,7 @@ export type MainMessageTypes =
   typeof FETCH_SUITES |
   typeof FIND_NEXT |
   typeof GET_IP_ADDRESS |
+  typeof GET_PORT |
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof INIT_FILTER_REGEX |
@@ -165,4 +169,5 @@ export type ProxyRendererMessageTypes =
   typeof EXPORTED_AS_HAR_SUCCESS |
   typeof UPDATED_ENTRIES |
   typeof UPDATED_SUITES |
+  typeof PORT |
   typeof PROXY;

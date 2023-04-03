@@ -18,10 +18,12 @@ import {
   EXPORTED_AS_HAR_SUCCESS,
   FETCH_SUITES,
   GET_IP_ADDRESS,
+  GET_PORT,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_RECORDING,
   MARK_RELEVANT,
+  PORT,
   PROXY,
   REFRESH_ENTRIES,
   SET_FILTER_REGEX,
@@ -41,6 +43,7 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [EXPORT_AS_HAR]: (entryIds: string[]): void => sendToMain(EXPORT_AS_HAR, { entryIds }),
   [FETCH_SUITES]: (): void => sendToMain(FETCH_SUITES),
   [GET_IP_ADDRESS]: (ipvFamily?: 'IPv4' | 'IPv6'): void => sendToMain(GET_IP_ADDRESS, { ipvFamily }),
+  [GET_PORT]: (): void => sendToMain(GET_PORT),
   [INIT_FILTER_REGEX]: () => sendToMain(INIT_FILTER_REGEX),
   [IS_RECORDING]: (): void => sendToMain(IS_RECORDING),
   [MARK_RELEVANT]: (entryIds: string[]): void => sendToMain(MARK_RELEVANT, { entryIds }),
@@ -75,6 +78,10 @@ subscribeToProxyViewMessages(IP_ADDRESS, (_event: Electron.IpcRendererEvent, dat
 
 subscribeToProxyViewMessages(IS_RECORDING, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: IS_RECORDING });
+});
+
+subscribeToProxyViewMessages(PORT, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: PORT });
 });
 
 subscribeToProxyViewMessages(PROXY, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {

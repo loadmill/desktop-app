@@ -18,15 +18,16 @@ import { shouldSendEntry } from './filters';
 import { subscribeToFilterRegexEvents } from './filters-handlers';
 import { subscribeToGetIpAddressFromRenderer } from './ip-address';
 import { subscribeToMarkRelevant } from './mark-relevant';
+import { initToAvailablePort, subscribeToPort } from './port';
 import { appendToProxyErrorsLog, getProxyErrorsLogPath } from './proxy-error-file';
 import { getIsRecording, subscribeToRecordingStateEvents } from './recording-state';
 import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
 import { subscribeToAnalyzeRequests } from './test-actions/analyze';
 import { subscribeToCreateTest } from './test-actions/create-test';
 
-export const initProxyServer = (): void => {
+export const initProxyServer = async (): Promise<void> => {
   subscribeToProxyEvents();
-  const proxyPort = Number(process.env.PROXY_PORT || 1234);
+  const proxyPort = await initToAvailablePort();
 
   const proxy = Proxy();
   proxy.use(Proxy.gunzip);
@@ -203,4 +204,5 @@ const subscribeToProxyEvents = (): void => {
   subscribeToCreateTest();
   subscribeToAnalyzeRequests();
   subscribeToMarkRelevant();
+  subscribeToPort();
 };

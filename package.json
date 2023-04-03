@@ -1,7 +1,7 @@
 {
   "name": "desktop-app",
   "productName": "Loadmill",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "The Loadmill desktop app",
   "author": {
     "name": "Gilad Gur Andelman",
@@ -76,6 +76,7 @@
     "electron-log": "^4.4.8",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
+    "get-port": "^6.1.2",
     "http-mitm-proxy": "^0.9.0",
     "is-html": "^3.0.0",
     "node-fetch": "^3.3.0",
