@@ -1,4 +1,5 @@
 import {
+  app,
   BrowserView,
   BrowserWindow,
 } from 'electron';
@@ -38,5 +39,8 @@ export const createProxyView = (
   subscribeToDownloadCertificate();
   subscribeToFindOnPageEvents(proxyView.webContents);
   subscribeToFetchSuites();
+  if (!app.isPackaged) {
+    proxyView.webContents.openDevTools();
+  }
   return proxyView;
 };

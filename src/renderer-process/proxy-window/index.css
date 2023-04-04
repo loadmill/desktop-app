@@ -44,6 +44,9 @@ body {
 }
 
 .body-content {
+  font-family: monospace;
+  font-size: 12px;
+  margin: 0;
   overflow: auto;
 }
 

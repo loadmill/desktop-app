@@ -1,4 +1,3 @@
-import Typography from '@mui/material/Typography';
 import isHtml from 'is-html';
 import prettyHTML from 'pretty';
 import React from 'react';
@@ -28,12 +27,9 @@ export const BodyContent = ({
         } }
         text={ prettyText }
       />
-      <Typography
-        className={ 'body-content ' + className }
-        component='pre'
-      >
-        <code>{prettyText}</code>
-      </Typography>
+      <pre className={ 'body-content ' + className }>
+        { prettyText }
+      </pre>
     </div>
   );
 };

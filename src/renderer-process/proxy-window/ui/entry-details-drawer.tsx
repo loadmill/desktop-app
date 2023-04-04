@@ -39,7 +39,6 @@ const placeHolderEntry: ProxyEntry = {
 const titleAndContentParentStyle = {
   display: 'grid',
   gridTemplateRows: 'auto 1fr',
-  paddingTop: 8,
 };
 
 export const EntryDetailsDrawer = ({
@@ -83,7 +82,7 @@ export const EntryDetailsDrawer = ({
         <TitleAndContent
           body={ entry.request.body }
           headers={ entry.request.headers }
-          title='Request'
+          title='REQUEST'
         />
       </div>
       <Divider
@@ -115,7 +114,7 @@ export const EntryDetailsDrawer = ({
         <TitleAndContent
           body={ entry.response.body }
           headers={ entry.response.headers }
-          title='Response'
+          title='RESPONSE'
         />
       </Resizable>
       <div
@@ -153,33 +152,31 @@ export const TitleAndContent = ({
   title,
 }: TitleAndContentProps): JSX.Element => {
   return (
-    <>
-      <Typography
-        align='center'
-        style={ {
-          paddingBottom: 8,
-        } }
-        variant='subtitle2'
-      >
-        { title }
-      </Typography>
-      <BasicTabs
-        body={ body }
-        headers={ headers }
-      />
-    </>
+    <BasicTabs
+      body={ body }
+      headers={ headers }
+      title={ title }
+    />
   );
 };
 
 export type TitleAndContentProps = {
   body: Body;
   headers: Header[];
-  title: 'Request' | 'Response';
+  title: 'REQUEST' | 'RESPONSE';
+};
+
+const tabStyle = {
+  fontSize: '0.75rem',
+  height: '40px',
+  minHeight: 0,
+  p: 0,
 };
 
 export const BasicTabs = ({
-  headers,
   body,
+  headers,
+  title,
 }: BasicTabsProps): JSX.Element => {
   const [value, setValue] = useState(0);
 
@@ -196,18 +193,43 @@ export const BasicTabs = ({
         width: '100%',
       } }
     >
-      <Box sx={ { borderBottom: 1, borderColor: 'divider' } }>
+      <Box
+        sx={ {
+          alignItems: 'center',
+          borderBottom: 1,
+          borderColor: 'divider',
+          display: 'flex',
+          gap: '8px',
+          paddingLeft: '8px'
+        } }
+      >
+        <Typography
+          align='center'
+          style={ {
+            fontSize: '0.75rem',
+            fontWeight: 'bold',
+            paddingBottom: 0,
+          } }
+          variant='subtitle2'
+        >
+          { title }
+        </Typography>
         <Tabs
           aria-label='entry-details-tabs'
           onChange={ handleChange }
+          sx={ {
+            height: '40px',
+            minHeight: '40px',
+          } }
           value={ value }
-          variant='fullWidth'
         >
           <Tab
             label='BODY'
+            sx={ tabStyle }
           />
           <Tab
             label='HEADERS'
+            sx={ tabStyle }
           />
         </Tabs>
       </Box>
@@ -231,10 +253,7 @@ export const BasicTabs = ({
   );
 };
 
-export type BasicTabsProps = {
-  body: Body;
-  headers: Header[];
-};
+export type BasicTabsProps = TitleAndContentProps;
 
 const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
@@ -249,7 +268,7 @@ const TabPanel = (props: TabPanelProps) => {
       { ...other }
     >
       {value === index && (
-        <Box sx={ { p: 3 } }>
+        <Box sx={ { p: 2 } }>
           { children }
         </Box>
       )}
