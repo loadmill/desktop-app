@@ -17,6 +17,8 @@ import {
   GET_PORT,
   GO_BACK,
   GO_FORWARD,
+  IMPORT_HAR,
+  IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_AGENT_CONNECTED,
@@ -132,6 +134,7 @@ export type MainMessageTypes =
   typeof GET_PORT |
   typeof GO_BACK |
   typeof GO_FORWARD |
+  typeof IMPORT_HAR |
   typeof INIT_FILTER_REGEX |
   typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
@@ -163,6 +166,8 @@ export type ProxyRendererMessageTypes =
   typeof ANALYZE_REQUESTS_COMPLETE |
   typeof CREATE_TEST_COMPLETE |
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
+  typeof IMPORT_HAR |
+  typeof IMPORT_HAR_IS_IN_PROGRESS |
   typeof INIT_FILTER_REGEX |
   typeof IP_ADDRESS |
   typeof IS_RECORDING |

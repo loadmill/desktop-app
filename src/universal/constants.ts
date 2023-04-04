@@ -26,6 +26,8 @@ export const
   GET_PORT = 'getPort',
   GO_BACK = 'goBack',
   GO_FORWARD = 'goForward',
+  IMPORT_HAR = 'importHar',
+  IMPORT_HAR_IS_IN_PROGRESS = 'importHarIsInProgress',
   INIT_FILTER_REGEX = 'initFilterRegex',
   IP_ADDRESS = 'ipAddress',
   IS_AGENT_CONNECTED = 'isAgentConnected',

@@ -12,6 +12,7 @@ import {
   GET_PORT,
   GO_BACK,
   GO_FORWARD,
+  IMPORT_HAR,
   INIT_FILTER_REGEX,
   IS_RECORDING,
   MARK_RELEVANT,
@@ -62,6 +63,7 @@ export type ApiForLoadmillProxyWindow = {
   [FETCH_SUITES]: () => void;
   [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
   [GET_PORT]: () => void;
+  [IMPORT_HAR]: () => void;
   [INIT_FILTER_REGEX]: () => void;
   [IS_RECORDING]: () => void;
   [MARK_RELEVANT]: (entryIds: string[]) => void;

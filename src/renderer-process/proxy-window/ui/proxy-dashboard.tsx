@@ -12,6 +12,8 @@ import {
   CREATE_TEST_COMPLETE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORTED_AS_HAR_SUCCESS,
+  IMPORT_HAR,
+  IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_RECORDING,
@@ -27,6 +29,7 @@ import { ClearAll } from './clear-all';
 import { CreateTest } from './create-test';
 import { DownloadCertificate } from './download-certificate';
 import { FilterRegex } from './filters';
+import { ImportHar } from './import-har';
 import { ProxyEntries } from './proxy-entries';
 import { Recording } from './recording';
 import { SuitesAutocomplete } from './suites-autocomplete';
@@ -51,6 +54,8 @@ export const ProxyDashboard = (): JSX.Element => {
   const [isLoadingAnalyze, setIsLoadingAnalyze] = useState<boolean>(false);
   const [showAnalyzeSnackBar, setShowAnalyzeSnackBar] = useState<boolean>(false);
   const [analyzeSnackBarMessage, setAnalyzeSnackBarMessage] = useState<string>('');
+  const [isImportHarInProgress, setIsImportHarInProgress] = useState<boolean>(false);
+  const [isImportHarDisabled, setIsImportHarDisabled] = useState<boolean>(false);
 
   useEffect(() => {
     window.desktopApi.fetchSuites();
@@ -80,6 +85,12 @@ export const ProxyDashboard = (): JSX.Element => {
           break;
         case DOWNLOADED_CERTIFICATE_SUCCESS:
           onDownloadedCertificateSuccess(data);
+          break;
+        case IMPORT_HAR:
+          onImportHar(data);
+          break;
+        case IMPORT_HAR_IS_IN_PROGRESS:
+          onImportHarIsInProgress(data);
           break;
         case INIT_FILTER_REGEX:
           onInitFilterRegex(data);
@@ -132,6 +143,15 @@ export const ProxyDashboard = (): JSX.Element => {
     setShowDownloadSuccessSnackBar(true);
   };
 
+  const onImportHar = (_data: ProxyRendererMessage['data']) => {
+    setIsImportHarInProgress(false);
+    setIsImportHarDisabled(false);
+  };
+
+  const onImportHarIsInProgress = (_data: ProxyRendererMessage['data']) => {
+    setIsImportHarInProgress(true);
+  };
+
   const onInitFilterRegex = ({ filterRegex }: ProxyRendererMessage['data']) => {
     setFilterRegex(filterRegex);
   };
@@ -180,6 +200,12 @@ export const ProxyDashboard = (): JSX.Element => {
     setIsLoadingAnalyze(true);
     window.desktopApi.analyzeRequests();
   };
+
+  const onImportHarClick = () => {
+    setIsImportHarDisabled(true);
+    window.desktopApi.importHar();
+  };
+
   const isClearAllDisabled = !shouldShowEntries;
 
   return (
@@ -192,6 +218,11 @@ export const ProxyDashboard = (): JSX.Element => {
         <div style={ { display: 'flex', gap: '8px' } }>
           <Recording
             isRecording={ isRecording }
+          />
+          <ImportHar
+            disabled={ isImportHarDisabled }
+            isImportHarInProgress={ isImportHarInProgress }
+            onImportHar={ onImportHarClick }
           />
           <ClearAll
             disabled={ isClearAllDisabled }

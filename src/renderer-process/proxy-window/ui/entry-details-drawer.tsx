@@ -238,7 +238,7 @@ export const BasicTabs = ({
         value={ value }
       >
         <BodyDetails
-          body={ body }
+          body={ body || {} }
         />
       </TabPanel>
       <TabPanel

@@ -16,6 +16,7 @@ import { addEntry } from './entries';
 import { subscribeToExportAsHar } from './export-as-har';
 import { shouldSendEntry } from './filters';
 import { subscribeToFilterRegexEvents } from './filters-handlers';
+import { subscribeToImportHar } from './import-har';
 import { subscribeToGetIpAddressFromRenderer } from './ip-address';
 import { subscribeToMarkRelevant } from './mark-relevant';
 import { initToAvailablePort, subscribeToPort } from './port';
@@ -205,4 +206,5 @@ const subscribeToProxyEvents = (): void => {
   subscribeToAnalyzeRequests();
   subscribeToMarkRelevant();
   subscribeToPort();
+  subscribeToImportHar();
 };
