@@ -213,10 +213,6 @@ const EnhancedTableToolbar = ({
     clear: {
       setLoading,
     },
-    export: {
-      setShowExportAsHarSuccessSnackBar,
-      showExportAsHarSuccessSnackBar,
-    }
   } = selectedEntriesActionsProps;
 
   const exportEntriesAsHar = () => {
@@ -276,8 +272,6 @@ const EnhancedTableToolbar = ({
           />
           <ExportProxyAsHar
             onExport={ exportEntriesAsHar }
-            openSnackBar={ showExportAsHarSuccessSnackBar }
-            setOpenSnackBar={ setShowExportAsHarSuccessSnackBar }
           />
         </div>
       )}
@@ -293,10 +287,6 @@ type EnhancedTableToolbarProps = {
   selectedEntriesActionsProps?: {
     clear?: {
       setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-    };
-    export?: {
-      setShowExportAsHarSuccessSnackBar?: React.Dispatch<React.SetStateAction<boolean>>;
-      showExportAsHarSuccessSnackBar?: boolean;
     };
   };
   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;

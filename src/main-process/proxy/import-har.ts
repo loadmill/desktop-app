@@ -27,27 +27,30 @@ const onImportHar = () => {
 
   if (Array.isArray(filePaths) && filePaths.length === 1 && filePaths[0].length > 0) {
     sendFromProxyToRenderer({ type: IMPORT_HAR_IS_IN_PROGRESS });
-    const harAsTextBuffer = fs.readFileSync(filePaths[0]);
-    const harAsText = harAsTextBuffer.toString();
-    let harAsJson;
     try {
-      harAsJson = JSON.parse(harAsText) as Har;
+      const harAsTextBuffer = fs.readFileSync(filePaths[0]);
+      const harAsText = harAsTextBuffer.toString();
+      const harAsJson = JSON.parse(harAsText) as Har;
+      const proxyEntries = harToProxyEntries(harAsJson);
+
+      clearEntries();
+      appendEntries(proxyEntries);
+
+      sendFromProxyToRenderer({
+        data: {
+          proxies: getEntries(),
+        },
+        type: UPDATED_ENTRIES,
+      });
     } catch (e) {
       log.error('Error while parsing HAR file', e);
-      sendFromProxyToRenderer({ type: IMPORT_HAR });
-      return;
+      sendFromProxyToRenderer({
+        data: {
+          error: e,
+        },
+        type: IMPORT_HAR,
+      });
     }
-    const proxyEntries = harToProxyEntries(harAsJson);
-
-    clearEntries();
-    appendEntries(proxyEntries);
-
-    sendFromProxyToRenderer({
-      data: {
-        proxies: getEntries(),
-      },
-      type: UPDATED_ENTRIES,
-    });
   }
 
   sendFromProxyToRenderer({ type: IMPORT_HAR });

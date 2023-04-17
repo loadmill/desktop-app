@@ -35,11 +35,11 @@ const pollImportStatus = async (token: string): Promise<void> => {
     } else {
       let data;
       if (!status) {
-        data = { createTestResult: { error: 'Error getting import status' } };
+        data = { error: 'Error getting import status' };
       } else if (typeof status !== 'string' && status.err) {
-        data = { createTestResult: { error: status.err } };
+        data = { error: status.err };
       } else if (pollingAttempts > MAX_POLLING_ATTEMPTS) {
-        data = { createTestResult: { error: 'Import timed out' } };
+        data = { error: 'Import timed out' };
       } // else status === 'done'
       sendFromProxyToRenderer({
         data,

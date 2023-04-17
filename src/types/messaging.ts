@@ -46,14 +46,14 @@ import {
 
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
-import { CreateTestResult, SuiteOption } from './suite';
+import { SuiteOption } from './suite';
 import { ViewValue } from './views';
 
 /**
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | CreateTestResult };
+  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] };
   type: string;
 }
 
@@ -102,7 +102,6 @@ export abstract class LoadmillViewRendererMessage implements IPCMessage {
 
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
-    createTestResult?: CreateTestResult;
     error?: string;
     filterRegex?: string;
     ipAddress?: string;
