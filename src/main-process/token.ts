@@ -1,11 +1,23 @@
-import fetch from 'node-fetch';
-
 import log from '../log';
+import { Token } from '../types/token';
 import { TOKEN } from '../universal/constants';
 
-import { LOADMILL_WEB_APP_ORIGIN } from './constants';
-import { getCookie } from './cookies';
+import { callLoadmillApi } from './call-loadmill-api';
 import { set } from './store';
+import { getUser } from './user';
+
+export const isValidToken = (token: unknown): token is Token => (
+  typeof token === 'object' &&
+  token !== null &&
+  'id' in token &&
+  'owner' in token &&
+  'token' in token
+);
+
+export const isCorrectUser = async (userId: string): Promise<boolean> => {
+  const { id } = await getUser();
+  return id === userId;
+};
 
 export const createAndSaveToken = async (): Promise<void> => {
   try {
@@ -15,15 +27,17 @@ export const createAndSaveToken = async (): Promise<void> => {
   }
 };
 
-export const _createAndSaveToken = async (): Promise<void> => {
-  const cookie = await getCookie();
-  const response = await fetch(LOADMILL_WEB_APP_ORIGIN + '/settings/tokens', {
-    headers: { 'cookie': cookie },
+const _createAndSaveToken = async (): Promise<void> => {
+  const response = await callLoadmillApi('settings/tokens', {
     method: 'POST',
   });
 
-  const { token } = await response.json() as { id: string; token: string; };
-  log.info('Setting new token', hideToken(token));
+  const token = await response.json() as Token;
+  log.info('Setting new token', {
+    id: token.id,
+    owner: token.owner,
+    token: hideToken(token.token),
+  });
   set(TOKEN, token);
 };
 
