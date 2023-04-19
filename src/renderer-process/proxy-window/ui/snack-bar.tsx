@@ -4,7 +4,7 @@ import React from 'react';
 
 export const CustomizedSnackbars = ({
   message,
-  onClose = () => {},
+  onClose,
   open = false,
   severity = 'info',
 }: CustomizedSnackbarsProps): JSX.Element => {

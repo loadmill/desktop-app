@@ -17,6 +17,8 @@ import {
   GET_PORT,
   GO_BACK,
   GO_FORWARD,
+  IMPORT_HAR,
+  IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_AGENT_CONNECTED,
@@ -44,14 +46,14 @@ import {
 
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
-import { CreateTestResult, SuiteOption } from './suite';
+import { SuiteOption } from './suite';
 import { ViewValue } from './views';
 
 /**
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | CreateTestResult };
+  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] };
   type: string;
 }
 
@@ -100,7 +102,6 @@ export abstract class LoadmillViewRendererMessage implements IPCMessage {
 
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
-    createTestResult?: CreateTestResult;
     error?: string;
     filterRegex?: string;
     ipAddress?: string;
@@ -132,6 +133,7 @@ export type MainMessageTypes =
   typeof GET_PORT |
   typeof GO_BACK |
   typeof GO_FORWARD |
+  typeof IMPORT_HAR |
   typeof INIT_FILTER_REGEX |
   typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
@@ -163,6 +165,8 @@ export type ProxyRendererMessageTypes =
   typeof ANALYZE_REQUESTS_COMPLETE |
   typeof CREATE_TEST_COMPLETE |
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
+  typeof IMPORT_HAR |
+  typeof IMPORT_HAR_IS_IN_PROGRESS |
   typeof INIT_FILTER_REGEX |
   typeof IP_ADDRESS |
   typeof IS_RECORDING |

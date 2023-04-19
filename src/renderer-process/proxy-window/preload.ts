@@ -19,6 +19,8 @@ import {
   FETCH_SUITES,
   GET_IP_ADDRESS,
   GET_PORT,
+  IMPORT_HAR,
+  IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_RECORDING,
@@ -44,6 +46,7 @@ export const WINDOW_API: ApiForLoadmillProxyWindow = {
   [FETCH_SUITES]: (): void => sendToMain(FETCH_SUITES),
   [GET_IP_ADDRESS]: (ipvFamily?: 'IPv4' | 'IPv6'): void => sendToMain(GET_IP_ADDRESS, { ipvFamily }),
   [GET_PORT]: (): void => sendToMain(GET_PORT),
+  [IMPORT_HAR]: (): void => sendToMain(IMPORT_HAR),
   [INIT_FILTER_REGEX]: () => sendToMain(INIT_FILTER_REGEX),
   [IS_RECORDING]: (): void => sendToMain(IS_RECORDING),
   [MARK_RELEVANT]: (entryIds: string[]): void => sendToMain(MARK_RELEVANT, { entryIds }),
@@ -66,6 +69,14 @@ subscribeToProxyViewMessages(DOWNLOADED_CERTIFICATE_SUCCESS, (_event: Electron.I
 
 subscribeToProxyViewMessages(EXPORTED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: EXPORTED_AS_HAR_SUCCESS });
+});
+
+subscribeToProxyViewMessages(IMPORT_HAR, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: IMPORT_HAR });
+});
+
+subscribeToProxyViewMessages(IMPORT_HAR_IS_IN_PROGRESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: IMPORT_HAR_IS_IN_PROGRESS });
 });
 
 subscribeToProxyViewMessages(INIT_FILTER_REGEX, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {

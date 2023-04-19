@@ -23,7 +23,7 @@ export const getEntries = ({ filter = true, onlyRelevant = false }: GetEntriesOp
   return filteredEntries;
 };
 
-export const initEntries = (newEntries: ProxyEntry[]): void => {
+export const appendEntries = (newEntries: ProxyEntry[]): void => {
   entries.push(...newEntries);
 };
 

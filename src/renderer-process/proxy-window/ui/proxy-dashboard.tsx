@@ -6,12 +6,14 @@ import React, { useEffect, useState } from 'react';
 import { isFromPreload } from '../../../inter-process-communication';
 import { ProxyRendererMessage } from '../../../types/messaging';
 import { ProxyEntry } from '../../../types/proxy-entry';
-import { CreateTestResult, SuiteOption } from '../../../types/suite';
+import { SuiteOption } from '../../../types/suite';
 import {
   ANALYZE_REQUESTS_COMPLETE,
   CREATE_TEST_COMPLETE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORTED_AS_HAR_SUCCESS,
+  IMPORT_HAR,
+  IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_RECORDING,
@@ -27,8 +29,10 @@ import { ClearAll } from './clear-all';
 import { CreateTest } from './create-test';
 import { DownloadCertificate } from './download-certificate';
 import { FilterRegex } from './filters';
+import { ImportHar } from './import-har';
 import { ProxyEntries } from './proxy-entries';
 import { Recording } from './recording';
+import { CustomizedSnackbars } from './snack-bar';
 import { SuitesAutocomplete } from './suites-autocomplete';
 
 export const ProxyDashboard = (): JSX.Element => {
@@ -37,20 +41,18 @@ export const ProxyDashboard = (): JSX.Element => {
   const [filterRegex, setFilterRegex] = useState<string>('');
   const [suites, setSuites] = useState<SuiteOption[]>([]);
   const [isDownloadInProgress, setIsDownloadInProgress] = React.useState(false);
-  const [showDownloadSuccessSnackBar, setShowDownloadSuccessSnackBar] = useState<boolean>(false);
-  const [showExportAsHarSuccessSnackBar, setShowExportAsHarSuccessSnackBar] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
   const [port, setPort] = useState<number>(0);
   const [loadingEntries, setLoadingEntries] = useState<boolean>(true);
   const [selectedSuiteId, setSelectedSuiteId] = useState<string>();
   const [isLoadingCreateTest, setIsLoadingCreateTest] = useState<boolean>(false);
-  const [showCreateTestSnackBar, setShowCreateTestSnackBar] = useState<boolean>(false);
-  const [createTestSnackBarMessage, setCreateTestSnackBarMessage] = useState<string>('');
   const [severity, setSeverity] = useState<'error' | 'success'>('success');
   const [isLoadingAnalyze, setIsLoadingAnalyze] = useState<boolean>(false);
-  const [showAnalyzeSnackBar, setShowAnalyzeSnackBar] = useState<boolean>(false);
-  const [analyzeSnackBarMessage, setAnalyzeSnackBarMessage] = useState<string>('');
+  const [isImportHarInProgress, setIsImportHarInProgress] = useState<boolean>(false);
+  const [isImportHarDisabled, setIsImportHarDisabled] = useState<boolean>(false);
+  const [snackBarMessage, setSnackBarMessage] = useState<string>('');
+  const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
 
   useEffect(() => {
     window.desktopApi.fetchSuites();
@@ -80,6 +82,12 @@ export const ProxyDashboard = (): JSX.Element => {
           break;
         case DOWNLOADED_CERTIFICATE_SUCCESS:
           onDownloadedCertificateSuccess(data);
+          break;
+        case IMPORT_HAR:
+          onImportHar(data);
+          break;
+        case IMPORT_HAR_IS_IN_PROGRESS:
+          onImportHarIsInProgress(data);
           break;
         case INIT_FILTER_REGEX:
           onInitFilterRegex(data);
@@ -112,24 +120,47 @@ export const ProxyDashboard = (): JSX.Element => {
   };
 
   const onAnalyzeComplete = (data: ProxyRendererMessage['data']) => {
+    if (data?.error) {
+      setSnackBarMessage('Analyzing requests failed: ' + data?.error);
+      setSeverity('error');
+    } else {
+      setSnackBarMessage('Analyzed requests successfully');
+    }
+    setOpenSnackBar(true);
     setIsLoadingAnalyze(false);
-    setShowAnalyzeSnackBar(true);
-    const { msg, status } = getAnalyzeSnackBarMessage(data?.error);
-    setAnalyzeSnackBarMessage(msg);
-    setSeverity(status);
   };
 
   const onCreateTestComplete = (data: ProxyRendererMessage['data']) => {
+    if (data?.error) {
+      setSnackBarMessage('Creating test failed: ' + data?.error);
+      setSeverity('error');
+    } else {
+      setSnackBarMessage('Created test successfully');
+    }
+    setOpenSnackBar(true);
     setIsLoadingCreateTest(false);
-    setShowCreateTestSnackBar(true);
-    const { msg, status } = getCreateTestSnackBarMessage(data?.createTestResult);
-    setCreateTestSnackBarMessage(msg);
-    setSeverity(status);
   };
 
   const onDownloadedCertificateSuccess = (_data: ProxyRendererMessage['data']) => {
+    setSnackBarMessage('Downloaded certificate successfully');
+    setOpenSnackBar(true);
     setIsDownloadInProgress(false);
-    setShowDownloadSuccessSnackBar(true);
+  };
+
+  const onImportHar = (data: ProxyRendererMessage['data']) => {
+    if (data?.error) {
+      setSnackBarMessage('Importing HAR file failed: ' + data?.error);
+      setSeverity('error');
+    } else {
+      setSnackBarMessage('Imported HAR file successfully');
+    }
+    setOpenSnackBar(true);
+    setIsImportHarInProgress(false);
+    setIsImportHarDisabled(false);
+  };
+
+  const onImportHarIsInProgress = (_data: ProxyRendererMessage['data']) => {
+    setIsImportHarInProgress(true);
   };
 
   const onInitFilterRegex = ({ filterRegex }: ProxyRendererMessage['data']) => {
@@ -154,7 +185,8 @@ export const ProxyDashboard = (): JSX.Element => {
   };
 
   const onExportedAsHarSuccess = (_data: ProxyRendererMessage['data']) => {
-    setShowExportAsHarSuccessSnackBar(true);
+    setSnackBarMessage('Exported as HAR file successfully');
+    setOpenSnackBar(true);
   };
 
   const onUpdatedEntries = ({ proxies }: ProxyRendererMessage['data']) => {
@@ -180,6 +212,18 @@ export const ProxyDashboard = (): JSX.Element => {
     setIsLoadingAnalyze(true);
     window.desktopApi.analyzeRequests();
   };
+
+  const onImportHarClick = () => {
+    setIsImportHarDisabled(true);
+    window.desktopApi.importHar();
+  };
+
+  const onCloseSnackBar = () => {
+    setOpenSnackBar(false);
+    setSnackBarMessage('');
+    setSeverity('success');
+  };
+
   const isClearAllDisabled = !shouldShowEntries;
 
   return (
@@ -192,6 +236,11 @@ export const ProxyDashboard = (): JSX.Element => {
         <div style={ { display: 'flex', gap: '8px' } }>
           <Recording
             isRecording={ isRecording }
+          />
+          <ImportHar
+            disabled={ isImportHarDisabled }
+            isImportHarInProgress={ isImportHarInProgress }
+            onImportHar={ onImportHarClick }
           />
           <ClearAll
             disabled={ isClearAllDisabled }
@@ -223,9 +272,7 @@ export const ProxyDashboard = (): JSX.Element => {
           </Typography>
           <DownloadCertificate
             isInProgress={ isDownloadInProgress }
-            openSnackBar={ showDownloadSuccessSnackBar }
             setIsInProgress={ setIsDownloadInProgress }
-            setOpenSnackBar={ setShowDownloadSuccessSnackBar }
           />
         </Paper>
         <div style={ { display: 'flex', gap: '8px' } }>
@@ -261,10 +308,6 @@ export const ProxyDashboard = (): JSX.Element => {
               clear: {
                 setLoading: setLoadingEntries,
               },
-              export: {
-                setShowExportAsHarSuccessSnackBar: setShowExportAsHarSuccessSnackBar,
-                showExportAsHarSuccessSnackBar: showExportAsHarSuccessSnackBar,
-              }
             } }
           />
         )}
@@ -277,60 +320,27 @@ export const ProxyDashboard = (): JSX.Element => {
         } }
       >
         <Analyze
-          analyzeSnackBarMessage={ analyzeSnackBarMessage }
           disabled={ !shouldShowEntries }
           isLoadingAnalyze={ isLoadingAnalyze }
           onAnalyze={ onAnalyze }
-          onCloseSnackBar={ () => {
-            setShowAnalyzeSnackBar(false);
-            setAnalyzeSnackBarMessage('');
-            setIsLoadingAnalyze(false);
-          } }
-          openSnackBar={ showAnalyzeSnackBar }
-          severity={ severity }
         />
         <CreateTest
-          createTestSnackBarMessage={ createTestSnackBarMessage }
           disabled={ !shouldShowEntries }
           isLoadingCreateTest={ isLoadingCreateTest }
-          onCloseSnackBar={ () => {
-            setShowCreateTestSnackBar(false);
-            setCreateTestSnackBarMessage('');
-            setIsLoadingCreateTest(false);
-          } }
           onCreateTest={ onCreateTest }
-          openSnackBar={ showCreateTestSnackBar }
-          severity={ severity }
         />
       </div>
+      {
+        openSnackBar &&
+          <CustomizedSnackbars
+            message={ snackBarMessage }
+            onClose={ onCloseSnackBar }
+            open={ openSnackBar }
+            severity={ severity }
+          />
+      }
     </div>
   );
-};
-
-const getCreateTestSnackBarMessage = (createTestResult?: CreateTestResult): { msg: string; status: 'success' | 'error' } => {
-  if (createTestResult?.error) {
-    return {
-      msg: createTestResult.error,
-      status: 'error',
-    };
-  }
-  return {
-    msg: 'Test created successfully',
-    status: 'success',
-  };
-};
-
-const getAnalyzeSnackBarMessage = (error?: string): { msg: string; status: 'success' | 'error' } => {
-  if (error) {
-    return {
-      msg: error,
-      status: 'error',
-    };
-  }
-  return {
-    msg: 'Analyze completed successfully',
-    status: 'success',
-  };
 };
 
 export type ProxyDashboardProps = {};
