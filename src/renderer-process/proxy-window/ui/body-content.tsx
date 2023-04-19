@@ -9,8 +9,9 @@ import { CopyButton } from './copy-button';
 
 export const BodyContent = ({
   body,
+  shouldDecode = false,
 }: BodyContentProps): JSX.Element => {
-  const { className, prettyText } = getBodyContentProps(body);
+  const { className, prettyText } = getBodyContentProps(body, shouldDecode);
 
   return (
     <div
@@ -36,6 +37,7 @@ export const BodyContent = ({
 
 export type BodyContentProps = {
   body: Body;
+  shouldDecode?: boolean;
 };
 
 const isJSON = (mimeType: string, text: string): boolean => {
@@ -44,7 +46,7 @@ const isJSON = (mimeType: string, text: string): boolean => {
   } catch (error) {
     return false;
   }
-  return mimeType.includes('application/json');
+  return mimeType.includes('json');
 };
 
 const isHTML = (mimeType: string, text: string): boolean => {
@@ -66,7 +68,8 @@ type BodyContentTextProps = {
   prettyText: string;
 };
 
-const getBodyContentProps = ({ mimeType = '', text = '' }: Body): BodyContentTextProps => {
+const getBodyContentProps = ({ mimeType = '', text = '' }: Body, shouldDecode = false): BodyContentTextProps => {
+  text = shouldDecode ? atob(text) : text;
   if (isJSON(mimeType, text)) {
     return {
       className: 'json-display',

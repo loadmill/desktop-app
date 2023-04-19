@@ -6,6 +6,4 @@ export type Response = {
   status: number;
 };
 
-export type Content = Body & {
-  encoding?: string;
-};
+export type Content = Body;
