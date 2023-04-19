@@ -11,6 +11,7 @@ import {
 import log from '../log';
 import {
   ACTIVATE,
+  BEFORE_QUIT,
   BEFORE_QUIT_FOR_UPDATE,
   CLOSE,
   MAIN_WINDOW_ID,
@@ -76,6 +77,10 @@ const createWindow = () => {
   const loadmillWebView = createLoadmillWebView(mainWindow);
   subscribeToSwitchView(mainWindow, loadmillWebView, proxyView);
 };
+
+app.on(BEFORE_QUIT, () => {
+  forceQuit = true;
+});
 
 autoUpdater.on(BEFORE_QUIT_FOR_UPDATE, () => {
   forceQuit = true;
