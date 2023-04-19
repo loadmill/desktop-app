@@ -1,5 +1,6 @@
 import {
   app,
+  autoUpdater,
   BrowserWindow,
 } from 'electron';
 
@@ -10,7 +11,7 @@ import {
 import log from '../log';
 import {
   ACTIVATE,
-  BEFORE_QUIT,
+  BEFORE_QUIT_FOR_UPDATE,
   CLOSE,
   MAIN_WINDOW_ID,
   PLATFORM,
@@ -76,7 +77,7 @@ const createWindow = () => {
   subscribeToSwitchView(mainWindow, loadmillWebView, proxyView);
 };
 
-app.on(BEFORE_QUIT, () => {
+autoUpdater.on(BEFORE_QUIT_FOR_UPDATE, () => {
   forceQuit = true;
 });
 
