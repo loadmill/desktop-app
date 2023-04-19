@@ -2,7 +2,7 @@ export const
   ACTIVATE = 'activate',
   ANALYZE_REQUESTS = 'analyzeRequests',
   ANALYZE_REQUESTS_COMPLETE = 'analyzeRequestsComplete',
-  BEFORE_QUIT = 'before-quit',
+  BEFORE_QUIT_FOR_UPDATE = 'before-quit-for-update',
   CLEAR_ALL_ENTRIES = 'clearAllEntries',
   CLOSE = 'close',
   CREATE_TEST = 'createTest',
