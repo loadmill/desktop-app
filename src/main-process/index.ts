@@ -86,6 +86,10 @@ autoUpdater.on(BEFORE_QUIT_FOR_UPDATE, () => {
   forceQuit = true;
 });
 
+app.on(BEFORE_QUIT, () => {
+  forceQuit = true;
+});
+
 app.on(READY, onReady);
 
 // Quit when all windows are closed, except on macOS. There, it's common

@@ -12,6 +12,7 @@ import { PROXY } from '../../universal/constants';
 import { PROXY_CERTIFICATES_DIR_PATH } from '../constants';
 
 import { subscribeToClearEntriesEvents } from './clear-entries-handlers';
+import { getEncoding } from './encoding';
 import { addEntry } from './entries';
 import { subscribeToExportAsHar } from './export-as-har';
 import { shouldSendEntry } from './filters';
@@ -142,9 +143,11 @@ const handleRequestBody = (request: ProxyRequest, ctx: Proxy.IContext): void => 
 };
 
 const setBody = (rOr: ProxyRequest | ProxyResponse, chunks: Uint8Array[]) => {
+  const text = (Buffer.concat(chunks)).toString();
   rOr.body = {
+    encoding: getEncoding(text),
     mimeType: getMimeType(rOr.headers),
-    text: (Buffer.concat(chunks)).toString(),
+    text,
   };
 };
 
