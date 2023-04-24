@@ -28,7 +28,6 @@ export const createProxyView = (
   });
   mainWindow.addBrowserView(proxyView);
   setOpenLinksInBrowser(proxyView.webContents);
-  setBrowserViewSize(proxyView, mainWindow.getBounds());
 
   const handleWindowResize = (_e: Electron.Event) => {
     setBrowserViewSize(proxyView, mainWindow.getBounds());
