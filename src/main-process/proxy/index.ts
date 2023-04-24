@@ -82,6 +82,7 @@ export const initProxyServer = async (): Promise<void> => {
 
   proxy.listen({
     caOverrides: {
+      OU: 'Loadmill Proxy Server Certificate',
       commonName: 'LoadmillProxyCA',
       organizationName: 'Loadmill',
     },
