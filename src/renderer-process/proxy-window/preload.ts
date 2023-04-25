@@ -25,6 +25,7 @@ import {
   IP_ADDRESS,
   IS_RECORDING,
   MARK_RELEVANT,
+  ONLINE,
   PORT,
   PROXY,
   REFRESH_ENTRIES,
@@ -105,6 +106,10 @@ subscribeToProxyViewMessages(UPDATED_ENTRIES, (_event: Electron.IpcRendererEvent
 
 subscribeToProxyViewMessages(UPDATED_SUITES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: UPDATED_SUITES });
+});
+
+window.addEventListener(ONLINE, () => {
+  WINDOW_API.getIpAddress();
 });
 
 contextBridge.exposeInMainWorld(DESKTOP_API, WINDOW_API);

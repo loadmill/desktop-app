@@ -39,6 +39,7 @@ export const
   MARK_RELEVANT = 'markRelevant',
   MESSAGE = 'message',
   NAVIGATION = 'navigation',
+  ONLINE = 'online',
   PORT = 'port',
   PROXY = 'proxy',
   READY = 'ready',
