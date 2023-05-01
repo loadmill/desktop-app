@@ -30,7 +30,7 @@ export const ProxyDashboardHeader = ({
   <div
     className='proxy-dashboard-header'
   >
-    <div style={ { display: 'flex', gap: '8px' } }>
+    <div className='d-flex-sm-gap'>
       <Recording
         isRecording={ isRecording }
       />
@@ -44,19 +44,17 @@ export const ProxyDashboardHeader = ({
       />
     </div>
     <Paper
+      className='d-flex-sm-gap'
       sx={ {
         alignItems: 'center',
-        display: 'flex',
-        gap: '8px',
         padding: '6px',
       } }
       variant='outlined'
     >
       <Typography
+        className='d-flex-xs-gap'
         style={ {
           alignItems: 'baseline',
-          display: 'flex',
-          gap: '4px',
         } }
         variant='body2'
       >
@@ -72,7 +70,7 @@ export const ProxyDashboardHeader = ({
         setIsInProgress={ setIsDownloadInProgress }
       />
     </Paper>
-    <div style={ { display: 'flex', gap: '8px' } }>
+    <div className='d-flex-sm-gap'>
       <FilterRegex
         filterRegex={ filterRegex }
         setFilterRegex={ setFilterRegex }

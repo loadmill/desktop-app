@@ -10,16 +10,14 @@ export const LinkToProxyDocs: React.FC<LinkToProxyDocsProps> = (): JSX.Element =
   <Tooltip
     title='Documentation'
   >
-    <span>
-      <Link
-        href={ LINK_TO_PROXY_DOCS }
-        target='_blank'
-      >
-        <IconButton>
-          <HelpOutlineSharpIcon />
-        </IconButton>
-      </Link>
-    </span>
+    <Link
+      href={ LINK_TO_PROXY_DOCS }
+      target='_blank'
+    >
+      <IconButton>
+        <HelpOutlineSharpIcon />
+      </IconButton>
+    </Link>
   </Tooltip>
 );
 

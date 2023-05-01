@@ -10,19 +10,10 @@ export const ProxyDashboardFooter = ({
   isLoadingCreateTest,
   onAnalyze,
   onCreateTest,
-
 }: ProxyDashboardFooterProps): JSX.Element => (
-  <div
-    className='proxy-dashboard-footer'
-  >
+  <div className='proxy-dashboard-footer'>
     <LinkToProxyDocs />
-    <div
-      style={ {
-        display: 'flex',
-        gap: '8px',
-        justifyContent: 'flex-end',
-      } }
-    >
+    <div className='d-flex-sm-gap'>
       <Analyze
         disabled={ disabled }
         isLoadingAnalyze={ isLoadingAnalyze }

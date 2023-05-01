@@ -237,7 +237,6 @@ export const ProxyDashboard = (): JSX.Element => {
         setIsDownloadInProgress={ setIsDownloadInProgress }
         setSelectedSuiteId={ setSelectedSuiteId }
         suites={ suites }
-
       />
       <div
         className='proxy-entries-list'
