@@ -63,10 +63,32 @@ body {
   color: #6eb450;
 }
 
-.proxy-dashboard-header {
+.proxy-dashboard-header,
+.proxy-dashboard-footer {
   align-items: center;
   display: flex;
   justify-content: space-between;
+}
+
+.proxy-dashboard-footer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+[class*='d-flex'] {
+  display: flex;
+}
+
+[class*='lg-gap'][class*='d-flex'] {
+  gap: 16px;
+}
+
+[class*='sm-gap'][class*='d-flex'] {
+  gap: 8px;
+}
+
+[class*='xs-gap'][class*='d-flex'] {
+  gap: 4px;
 }
 
 .entries-list {

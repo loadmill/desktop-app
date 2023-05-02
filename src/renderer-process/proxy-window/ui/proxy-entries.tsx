@@ -252,12 +252,7 @@ const EnhancedTableToolbar = ({
       )}
 
       {numSelected > 0 && (
-        <div
-          style={ {
-            display: 'flex',
-            gap: '8px',
-          } }
-        >
+        <div className='d-flex-sm-gap'>
           <MarkRelevant
             resetActiveEntryOnCleared={ resetActiveEntryOnCleared }
             resetSelected={ resetSelected }

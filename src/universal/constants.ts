@@ -65,3 +65,5 @@ export const
 export const PLATFORM: { [platform: string]: NodeJS.Platform; } = {
   DARWIN: 'darwin',
 };
+
+export const LINK_TO_PROXY_DOCS = 'https://docs.loadmill.com/introduction/deviceless-mobile-testing';

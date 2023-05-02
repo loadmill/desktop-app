@@ -194,12 +194,11 @@ export const BasicTabs = ({
       } }
     >
       <Box
+        className='d-flex-sm-gap'
         sx={ {
           alignItems: 'center',
           borderBottom: 1,
           borderColor: 'divider',
-          display: 'flex',
-          gap: '8px',
           paddingLeft: '8px'
         } }
       >
