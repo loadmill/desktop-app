@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import http from 'http';
 
 import async from 'async';
-import { IContext, Proxy } from 'loadmill-http-mitm-proxy';
+import Proxy from 'loadmill-http-mitm-proxy';
 
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import log from '../../log';
@@ -31,7 +31,7 @@ export const initProxyServer = async (): Promise<void> => {
   subscribeToProxyEvents();
   const proxyPort = await initToAvailablePort();
 
-  const proxy = new Proxy();
+  const proxy = Proxy();
   proxy.use(Proxy.gunzip);
 
   proxy.onError((_ctx, err) => {
@@ -81,23 +81,18 @@ export const initProxyServer = async (): Promise<void> => {
   });
 
   proxy.listen({
-    caOverrides: {
-      OU: 'Loadmill Proxy Server Certificate',
-      commonName: 'LoadmillProxyCA',
-      organizationName: 'Loadmill',
-    },
     port: proxyPort,
     sslCaDir: PROXY_CERTIFICATES_DIR_PATH,
   }, () => log.info(`Proxy listening on port ${proxyPort}! and saving to ${PROXY_CERTIFICATES_DIR_PATH}`));
 };
 
-const createRequest = (ctx: IContext): ProxyRequest => {
+const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
   const request = toRequest(ctx);
   handleRequestBody(request, ctx);
   return request;
 };
 
-const toRequest = (ctx: IContext): ProxyRequest => {
+const toRequest = (ctx: Proxy.IContext): ProxyRequest => {
   const protocol = 'http' + (ctx.isSSL ? 's' : '') + '://';
 
   const { headers, method, url } = ctx.clientToProxyRequest;
@@ -133,7 +128,7 @@ const stringOrArrayToString = (value: string | string[]): string =>
     value.join(',') :
     value;
 
-const handleRequestBody = (request: ProxyRequest, ctx: IContext): void => {
+const handleRequestBody = (request: ProxyRequest, ctx: Proxy.IContext): void => {
   const requestBodyChunks: Uint8Array[] = [];
 
   ctx.onRequestData(function (_ctx, chunk, callback) {
@@ -163,7 +158,7 @@ const getMimeType = (headers: Header[]): string | undefined => {
   return contentTypeHeader?.value;
 };
 
-const handleResponse = (request: ProxyRequest, ctx: IContext) => {
+const handleResponse = (request: ProxyRequest, ctx: Proxy.IContext) => {
   const responseBodyChunks: Uint8Array[] = [];
 
   ctx.onResponseData((_ctx, chunk, callback) => {
@@ -194,7 +189,7 @@ const handleResponse = (request: ProxyRequest, ctx: IContext) => {
   });
 };
 
-const getResponse = (ctx: IContext): ProxyResponse => {
+const getResponse = (ctx: Proxy.IContext): ProxyResponse => {
   const { headers, statusCode, statusMessage } = ctx.serverToProxyResponse;
   return {
     headers: toArrayHeaders(headers),
