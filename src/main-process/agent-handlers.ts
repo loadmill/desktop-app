@@ -101,21 +101,21 @@ const addOnAgentIsConnectedEvent = (): void => {
 };
 
 const pipeAgentStdout = () => {
-  agent.stdout.on(DATA, (data: string | Buffer) => {
-    handleAgentStd(data);
+  agent.stdout.on(DATA, async (data: string | Buffer) => {
+    await handleAgentStd(data);
   });
 };
 
 const pipeAgentStderr = () => {
-  agent.stderr.on(DATA, (data: string | Buffer) => {
-    handleAgentStd(data);
+  agent.stderr.on(DATA, async (data: string | Buffer) => {
+    await handleAgentStd(data);
   });
 };
 
-const handleAgentStd = (data: string | Buffer) => {
+const handleAgentStd = async (data: string | Buffer) => {
   const text = Buffer.from(data).toString();
   log.info('Agent:', text);
-  handleInvalidToken(text);
+  await handleInvalidToken(text);
   refreshConnectedStatus({ text });
   appendToAgentLog(text);
 };
@@ -233,9 +233,18 @@ const handleStopAgentEvent = () => {
   stopAgent();
 };
 
-const handleInvalidToken = (text: string) => {
+const handleInvalidToken = async (text: string) => {
   if (text.includes('Invalid token')) {
     log.info('Got Invalid token from agent, fetching new token from loadmill server');
-    createAndSaveToken();
+    const token = await createAndSaveToken();
+    if (!token) {
+      log.error('Token still does not exists / not valid, could not connect the agent');
+      return;
+    }
+
+    sendToAgentProcess({
+      data: { token: token.token },
+      type: START_AGENT,
+    });
   }
 };
