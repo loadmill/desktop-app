@@ -201,17 +201,17 @@ const handleStartAgentEvent = async () => {
     });
     return;
   }
-  let token = get(TOKEN) as string;
+  let token = get<Token>(TOKEN);
   if (!token) {
     log.info('Token does not exists, fetching new token from loadmill server');
     await createAndSaveToken();
-    token = get(TOKEN) as string;
+    token = get<Token>(TOKEN);
     if (!token) {
       log.info('Token still does not exists, could not connect the agent');
       return;
     }
   }
-  startAgent(token);
+  startAgent(token.token);
 };
 
 const subscribeToStopAgentFromRenderer = () => {
