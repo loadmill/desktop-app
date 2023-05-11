@@ -12,7 +12,6 @@ import {
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
   STOP_AGENT,
-  TOKEN
 } from '../universal/constants';
 
 import { appendToAgentLog } from './agent-log-file';
@@ -26,8 +25,9 @@ import {
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED
 } from './constants';
+import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './electron-store/constants';
+import { get, set } from './electron-store/store';
 import { subscribeToMainProcessMessage } from './main-events';
-import { get } from './store';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -44,6 +44,7 @@ export const startAgent = (token: string): void => {
         type: START_AGENT,
       });
     }
+    set(LAST_AGENT_ACTION, AgentActions.STARTED);
   }
 };
 
@@ -153,6 +154,10 @@ const handleSetIsUserSignedInEvent = async (_event: Electron.IpcMainEvent, { isS
 };
 
 const handleUserIsSignedIn = async () => {
+  if (!shouldStartAgent()) {
+    return;
+  }
+
   log.info('Checking if token exists...');
   const token = get<Token>(TOKEN);
   if (isValidToken(token) && await isCorrectUser(token.owner)) {
@@ -172,6 +177,18 @@ const handleUserIsSignedIn = async () => {
       log.info('Token still does not exists / not valid, could not connect the agent');
     }
   }
+};
+
+const shouldStartAgent = (): boolean => {
+  if (isAgentConnected()) {
+    return false;
+  }
+
+  const lastAgentAction = get<string>(LAST_AGENT_ACTION);
+  if (lastAgentAction === AgentActions.STOPPED) {
+    return false;
+  }
+  return true;
 };
 
 const handleUserIsSignedOut = () => {
@@ -231,6 +248,7 @@ const handleStopAgentEvent = () => {
     return;
   }
   stopAgent();
+  set(LAST_AGENT_ACTION, AgentActions.STOPPED);
 };
 
 const handleInvalidToken = async (text: string) => {

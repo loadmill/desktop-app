@@ -1,6 +1,6 @@
 import { ProxyEntry } from '../../types/proxy-entry';
-import { FILTER_REGEX } from '../../universal/constants';
-import { get, set } from '../store';
+import { FILTER_REGEX } from '../electron-store/constants';
+import { get, set } from '../electron-store/store';
 
 let filter = '';
 
