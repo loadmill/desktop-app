@@ -2,8 +2,8 @@ import log from '../log';
 import { Token } from '../types/token';
 
 import { callLoadmillApi } from './call-loadmill-api';
-import { TOKEN } from './electron-store/constants';
-import { set } from './electron-store/store';
+import { set } from './persistence-store';
+import { TOKEN } from './persistence-store/constants';
 import { getUser } from './user';
 
 export const isValidToken = (token: unknown): token is Token => (

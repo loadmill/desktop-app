@@ -25,9 +25,9 @@ import {
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED
 } from './constants';
-import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './electron-store/constants';
-import { get, set } from './electron-store/store';
 import { subscribeToMainProcessMessage } from './main-events';
+import { get, set } from './persistence-store';
+import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 

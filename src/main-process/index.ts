@@ -21,11 +21,11 @@ import {
 } from '../universal/constants';
 
 import { subscribeToAgentEventsFromRenderer } from './agent-handlers';
-import { initStore } from './electron-store/store';
 import './keybindings';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
 import './menu';
 import { setOpenLinksInBrowser } from './open-links';
+import { initStore } from './persistence-store';
 import { initProxyServer } from './proxy';
 import { createProxyView } from './proxy-view';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
