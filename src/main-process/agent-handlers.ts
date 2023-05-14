@@ -158,25 +158,12 @@ const handleUserIsSignedIn = async () => {
     return;
   }
 
-  log.info('Checking if token exists...');
-  const token = get<Token>(TOKEN);
-  if (isValidToken(token) && await isCorrectUser(token.owner)) {
-    log.info('Token exists && valid');
-    if (!isAgentConnected()) {
-      log.info('Agent not connected, connecting agent...');
-      startAgent(token.token);
-    }
-  } else {
-    log.info('Token does not exists / old format / of a different user');
-    log.info('Fetching new token from loadmill server');
-    await createAndSaveToken();
-    const token = get<Token>(TOKEN);
-    if (isValidToken(token)) {
-      startAgent(token.token);
-    } else {
-      log.info('Token still does not exists / not valid, could not connect the agent');
-    }
+  const token = await _getOrCreateToken();
+  if (!isValidToken(token)) {
+    log.info('Token still does not exists / not valid, could not connect the agent');
+    return;
   }
+  startAgent(token.token);
 };
 
 const shouldStartAgent = (): boolean => {
@@ -218,15 +205,10 @@ const handleStartAgentEvent = async () => {
     });
     return;
   }
-  let token = get<Token>(TOKEN);
-  if (!token) {
-    log.info('Token does not exists, fetching new token from loadmill server');
-    await createAndSaveToken();
-    token = get<Token>(TOKEN);
-    if (!token) {
-      log.info('Token still does not exists, could not connect the agent');
-      return;
-    }
+  const token = await _getOrCreateToken();
+  if (!isValidToken(token)) {
+    log.info('Token still does not exists / not valid, could not connect the agent');
+    return;
   }
   startAgent(token.token);
 };
@@ -265,4 +247,15 @@ const handleInvalidToken = async (text: string) => {
       type: START_AGENT,
     });
   }
+};
+
+const _getOrCreateToken = async (): Promise<Token | undefined> => {
+  const token = get<Token>(TOKEN);
+  if (isValidToken(token) && await isCorrectUser(token.owner)) {
+    return token;
+  }
+
+  log.info('Token does not exists / old format / of a different user');
+  log.info('Fetching new token from loadmill server');
+  return await createAndSaveToken();
 };
