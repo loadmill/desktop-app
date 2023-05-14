@@ -19,15 +19,15 @@ export const isCorrectUser = async (userId: string): Promise<boolean> => {
   return id === userId;
 };
 
-export const createAndSaveToken = async (): Promise<void> => {
+export const createAndSaveToken = async (): Promise<Token | undefined> => {
   try {
-    await _createAndSaveToken();
+    return await _createAndSaveToken();
   } catch (e) {
     log.error('Failed to create and save token', e);
   }
 };
 
-const _createAndSaveToken = async (): Promise<void> => {
+const _createAndSaveToken = async (): Promise<Token> => {
   const response = await callLoadmillApi('settings/tokens', {
     method: 'POST',
   });
@@ -39,6 +39,7 @@ const _createAndSaveToken = async (): Promise<void> => {
     token: hideToken(token.token),
   });
   set(TOKEN, token);
+  return token;
 };
 
 const hideToken = (token: string) => '*'.repeat(token.length - 4) + token.substring(token.length - 4);
