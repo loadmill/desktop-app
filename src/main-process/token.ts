@@ -1,9 +1,9 @@
 import log from '../log';
 import { Token } from '../types/token';
-import { TOKEN } from '../universal/constants';
 
 import { callLoadmillApi } from './call-loadmill-api';
-import { set } from './store';
+import { set } from './persistence-store';
+import { TOKEN } from './persistence-store/constants';
 import { getUser } from './user';
 
 export const isValidToken = (token: unknown): token is Token => (

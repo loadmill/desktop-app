@@ -1,6 +1,6 @@
 import ElectronStore from 'electron-store';
 
-import { Token } from '../types/token';
+import { Token } from '../../types/token';
 
 const Store = {
   _store: null as ElectronStore,

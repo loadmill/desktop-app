@@ -12,7 +12,6 @@ import {
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
   STOP_AGENT,
-  TOKEN
 } from '../universal/constants';
 
 import { appendToAgentLog } from './agent-log-file';
@@ -27,7 +26,8 @@ import {
   NODE_TLS_REJECT_UNAUTHORIZED
 } from './constants';
 import { subscribeToMainProcessMessage } from './main-events';
-import { get } from './store';
+import { get, set } from './persistence-store';
+import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -44,6 +44,7 @@ export const startAgent = (token: string): void => {
         type: START_AGENT,
       });
     }
+    set(LAST_AGENT_ACTION, AgentActions.STARTED);
   }
 };
 
@@ -153,25 +154,28 @@ const handleSetIsUserSignedInEvent = async (_event: Electron.IpcMainEvent, { isS
 };
 
 const handleUserIsSignedIn = async () => {
-  log.info('Checking if token exists...');
-  const token = get<Token>(TOKEN);
-  if (isValidToken(token) && await isCorrectUser(token.owner)) {
-    log.info('Token exists && valid');
-    if (!isAgentConnected()) {
-      log.info('Agent not connected, connecting agent...');
-      startAgent(token.token);
-    }
-  } else {
-    log.info('Token does not exists / old format / of a different user');
-    log.info('Fetching new token from loadmill server');
-    await createAndSaveToken();
-    const token = get<Token>(TOKEN);
-    if (isValidToken(token)) {
-      startAgent(token.token);
-    } else {
-      log.info('Token still does not exists / not valid, could not connect the agent');
-    }
+  if (!shouldStartAgent()) {
+    return;
   }
+
+  const token = await _getOrCreateToken();
+  if (!isValidToken(token)) {
+    log.info('Token still does not exists / not valid, could not connect the agent');
+    return;
+  }
+  startAgent(token.token);
+};
+
+const shouldStartAgent = (): boolean => {
+  if (isAgentConnected()) {
+    return false;
+  }
+
+  const lastAgentAction = get<string>(LAST_AGENT_ACTION);
+  if (lastAgentAction === AgentActions.STOPPED) {
+    return false;
+  }
+  return true;
 };
 
 const handleUserIsSignedOut = () => {
@@ -201,15 +205,10 @@ const handleStartAgentEvent = async () => {
     });
     return;
   }
-  let token = get<Token>(TOKEN);
-  if (!token) {
-    log.info('Token does not exists, fetching new token from loadmill server');
-    await createAndSaveToken();
-    token = get<Token>(TOKEN);
-    if (!token) {
-      log.info('Token still does not exists, could not connect the agent');
-      return;
-    }
+  const token = await _getOrCreateToken();
+  if (!isValidToken(token)) {
+    log.info('Token still does not exists / not valid, could not connect the agent');
+    return;
   }
   startAgent(token.token);
 };
@@ -231,6 +230,7 @@ const handleStopAgentEvent = () => {
     return;
   }
   stopAgent();
+  set(LAST_AGENT_ACTION, AgentActions.STOPPED);
 };
 
 const handleInvalidToken = async (text: string) => {
@@ -247,4 +247,15 @@ const handleInvalidToken = async (text: string) => {
       type: START_AGENT,
     });
   }
+};
+
+const _getOrCreateToken = async (): Promise<Token | undefined> => {
+  const token = get<Token>(TOKEN);
+  if (isValidToken(token) && await isCorrectUser(token.owner)) {
+    return token;
+  }
+
+  log.info('Token does not exists / old format / of a different user');
+  log.info('Fetching new token from loadmill server');
+  return await createAndSaveToken();
 };

@@ -1,6 +1,6 @@
 import { ProxyEntry } from '../../types/proxy-entry';
-import { FILTER_REGEX } from '../../universal/constants';
-import { get, set } from '../store';
+import { get, set } from '../persistence-store';
+import { FILTER_REGEX } from '../persistence-store/constants';
 
 let filter = '';
 

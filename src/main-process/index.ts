@@ -25,10 +25,10 @@ import './keybindings';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
 import './menu';
 import { setOpenLinksInBrowser } from './open-links';
+import { initStore } from './persistence-store';
 import { initProxyServer } from './proxy';
 import { createProxyView } from './proxy-view';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
-import { initStore } from './store';
 import { subscribeToSwitchView } from './switch-views';
 import { initUpdater } from './update-electron-app';
 
