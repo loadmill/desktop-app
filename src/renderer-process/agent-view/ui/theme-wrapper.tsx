@@ -4,12 +4,12 @@ import React from 'react';
 
 import { darkTheme } from '../../themes';
 
-import { ProxyDashboard } from './proxy-dashboard';
+import { AgentLogs } from './agent-logs';
 
 export const ThemeWrapper: React.FC<ThemeWrapperProps> = (): JSX.Element => (
   <ThemeProvider theme={ darkTheme }>
     <CssBaseline />
-    <ProxyDashboard />
+    <AgentLogs />
   </ThemeProvider>
 );
 

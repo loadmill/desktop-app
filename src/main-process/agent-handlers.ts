@@ -2,19 +2,23 @@ import { ChildProcessWithoutNullStreams, fork } from 'child_process';
 
 import '@loadmill/agent/dist/cli';
 
+import { sendFromMainToAgent } from '../inter-process-communication/main-to-agent';
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
 import { AgentMessage, MainMessage } from '../types/messaging';
 import { Token } from '../types/token';
 import {
   DATA,
+  INIT_AGENT_LOG,
   IS_AGENT_CONNECTED,
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
+  STDERR,
+  STDOUT,
   STOP_AGENT,
 } from '../universal/constants';
 
-import { appendToAgentLog } from './agent-log-file';
+import { appendToAgentLog, readAgentLog } from './agent-log-file';
 import {
   isAgentConnected,
   refreshConnectedStatus
@@ -103,21 +107,25 @@ const addOnAgentIsConnectedEvent = (): void => {
 
 const pipeAgentStdout = () => {
   agent.stdout.on(DATA, async (data: string | Buffer) => {
-    await handleAgentStd(data);
+    await handleAgentStd(data, STDOUT);
   });
 };
 
 const pipeAgentStderr = () => {
   agent.stderr.on(DATA, async (data: string | Buffer) => {
-    await handleAgentStd(data);
+    await handleAgentStd(data, STDERR);
   });
 };
 
-const handleAgentStd = async (data: string | Buffer) => {
+const handleAgentStd = async (
+  data: string | Buffer,
+  type: typeof STDOUT | typeof STDERR,
+) => {
   const text = Buffer.from(data).toString();
   log.info('Agent:', text);
   await handleInvalidToken(text);
   refreshConnectedStatus({ text });
+  sendFromMainToAgent({ data: { text }, type });
   appendToAgentLog(text);
 };
 
@@ -137,6 +145,7 @@ export const subscribeToAgentEventsFromRenderer = (): void => {
   subscribeToUserIsSignedInFromRenderer();
   subscribeToStartAgentFromRenderer();
   subscribeToStopAgentFromRenderer();
+  subscribeToInitAgentLogFromRenderer();
 };
 
 const subscribeToUserIsSignedInFromRenderer = () => {
@@ -265,4 +274,13 @@ export const killAgentProcess = (): void => {
     log.info('Killing agent process');
     agent.kill('SIGINT');
   }
+};
+
+const subscribeToInitAgentLogFromRenderer = () => {
+  subscribeToMainProcessMessage(INIT_AGENT_LOG, handleInitAgentLogEvent);
+};
+
+const handleInitAgentLogEvent = () => {
+  const lines = readAgentLog();
+  sendFromMainToAgent({ data: { lines }, type: INIT_AGENT_LOG });
 };

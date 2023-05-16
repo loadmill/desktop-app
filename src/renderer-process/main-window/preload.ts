@@ -68,4 +68,8 @@ subscribeToMainWindowMessages(IS_AGENT_CONNECTED, (_event: Electron.IpcRendererE
   window.postMessage({ data, type: IS_AGENT_CONNECTED });
 });
 
+subscribeToMainWindowMessages(SWITCH_VIEW, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+  window.postMessage({ data, type: SWITCH_VIEW });
+});
+
 contextBridge.exposeInMainWorld(DESKTOP_API, WINDOW_API);

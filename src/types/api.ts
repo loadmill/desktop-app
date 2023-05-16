@@ -13,6 +13,7 @@ import {
   GO_BACK,
   GO_FORWARD,
   IMPORT_HAR,
+  INIT_AGENT_LOG,
   INIT_FILTER_REGEX,
   IS_RECORDING,
   MARK_RELEVANT,
@@ -35,7 +36,7 @@ declare global {
   }
 }
 
-type DesktopApi = ApiForMainWindow & ApiForLoadmillBrowserView & ApiForLoadmillProxyWindow;
+type DesktopApi = ApiForMainWindow & ApiForLoadmillBrowserView & ApiForLoadmillProxyWindow & ApiForLoadmillAgentView;
 
 export type ApiForMainWindow = {
   [FIND_NEXT]: (toFind: string) => void;
@@ -70,4 +71,8 @@ export type ApiForLoadmillProxyWindow = {
   [REFRESH_ENTRIES]: () => void;
   [SET_FILTER_REGEX]: (filterRegex: string) => void;
   [SET_IS_RECORDING]: (isRecording: boolean) => void;
+};
+
+export type ApiForLoadmillAgentView = {
+  [INIT_AGENT_LOG]: () => void;
 };

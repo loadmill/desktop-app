@@ -19,6 +19,7 @@ import {
   GO_FORWARD,
   IMPORT_HAR,
   IMPORT_HAR_IS_IN_PROGRESS,
+  INIT_AGENT_LOG,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_AGENT_CONNECTED,
@@ -37,6 +38,8 @@ import {
   SET_IS_USER_SIGNED_IN,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
+  STDERR,
+  STDOUT,
   STOP_AGENT,
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
@@ -90,7 +93,9 @@ export abstract class RendererMessage implements IPCMessage {
     nav?: Navigation;
     proxy?: ProxyEntry;
     shouldShowFind?: boolean;
+    text?: string;
     token?: string;
+    view?: ViewValue;
   };
   type: RendererMessageTypes;
 }
@@ -114,6 +119,14 @@ export abstract class ProxyRendererMessage implements IPCMessage {
   type: ProxyRendererMessageTypes;
 }
 
+export abstract class AgentRendererMessage implements IPCMessage {
+  data?: {
+    lines?: string[];
+    text?: string;
+  };
+  type: AgentRendererMessageTypes;
+}
+
 export type AgentMessageTypes =
   typeof IS_AGENT_CONNECTED |
   typeof START_AGENT |
@@ -134,6 +147,7 @@ export type MainMessageTypes =
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof IMPORT_HAR |
+  typeof INIT_AGENT_LOG |
   typeof INIT_FILTER_REGEX |
   typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
@@ -155,7 +169,10 @@ export type RendererMessageTypes =
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
   typeof SAVED_TOKEN |
-  typeof SHOW_FIND_ON_PAGE;
+  typeof STDERR |
+  typeof STDOUT |
+  typeof SHOW_FIND_ON_PAGE |
+  typeof SWITCH_VIEW;
 
 export type LoadmillViewRendererMessageTypes =
   typeof GENERATE_TOKEN |
@@ -175,3 +192,8 @@ export type ProxyRendererMessageTypes =
   typeof UPDATED_SUITES |
   typeof PORT |
   typeof PROXY;
+
+export type AgentRendererMessageTypes =
+  typeof INIT_AGENT_LOG |
+  typeof STDOUT |
+  typeof STDERR;

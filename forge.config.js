@@ -78,7 +78,15 @@ module.exports = {
               'preload': {
                 'js': './src/renderer-process/proxy-window/preload.ts'
               }
-            }
+            },
+            {
+              'html': './src/renderer-process/agent-view/index.html',
+              'js': './src/renderer-process/agent-view/renderer.ts',
+              'name': 'agent_view',
+              'preload': {
+                'js': './src/renderer-process/agent-view/preload.ts'
+              }
+            },
           ]
         }
       }
