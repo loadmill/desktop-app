@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import fs from 'fs';
 
-import { app, shell } from 'electron';
+import { shell } from 'electron';
 
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import log from '../../log';
@@ -9,6 +9,7 @@ import { proxyEntriesToHar } from '../../proxy-to-har/proxy-to-har';
 import { MainMessage } from '../../types/messaging';
 import { EXPORT_AS_HAR, EXPORTED_AS_HAR_SUCCESS } from '../../universal/constants';
 import { toPrettyJsonString } from '../../universal/utils';
+import { DOWNLOADS_PATH } from '../constants';
 import { subscribeToMainProcessMessage } from '../main-events';
 
 import { getEntries } from './entries';
@@ -19,7 +20,7 @@ export const subscribeToExportAsHar = (): void => {
 
 const exportAsHar = (_event: Electron.IpcMainEvent, { entryIds }: MainMessage['data']): void => {
   const fileName = `loadmill-desktop-proxy-${randomUUID()}.har`;
-  const savePath = app.getPath('downloads') + `/${fileName}`;
+  const savePath = DOWNLOADS_PATH + `/${fileName}`;
   log.info('savePath', savePath);
   const harToSave = proxyEntriesToHar(getEntries().filter((entry) => entryIds.includes(entry.id)));
 

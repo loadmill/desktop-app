@@ -1,11 +1,12 @@
-.log-loader {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-}
-
 .scroll-to-bottom-button {
   position: fixed;
   bottom: 24px;
   right: 24px;
+}
+
+.download-agent-log-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
 }

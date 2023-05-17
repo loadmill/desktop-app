@@ -1,10 +1,8 @@
-import CircularProgress from '@mui/material/CircularProgress';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';
 import { AgentRendererMessage } from '../../../types/messaging';
 import {
-  INIT_AGENT_LOG,
   MESSAGE,
   STDERR,
   STDOUT
@@ -15,20 +13,12 @@ import { Console } from './console';
 
 export const AgentLogs = (): JSX.Element => {
   const [log, setLog] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onAgentStdoutMsg = ({ text }: AgentRendererMessage['data']) => {
     if (text && (text.includes('[INFO]') || text.includes('[ERROR]'))) {
       const lines = textToNonEmptyLines(text);
       setLog(prevLog => [...prevLog, ...lines]);
     }
-  };
-
-  const onInitAgentLogMsg = (data: AgentRendererMessage['data']) => {
-    if (data?.lines) {
-      setLog(data.lines);
-    }
-    setIsLoading(false);
   };
 
   const onPreloadMessage = (event: MessageEvent<AgentRendererMessage>) => {
@@ -39,9 +29,6 @@ export const AgentLogs = (): JSX.Element => {
         case STDERR:
           onAgentStdoutMsg(data);
           break;
-        case INIT_AGENT_LOG:
-          onInitAgentLogMsg(data);
-          break;
         default:
           break;
       }
@@ -49,8 +36,6 @@ export const AgentLogs = (): JSX.Element => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    window.desktopApi.initAgentLog();
     window.addEventListener(MESSAGE, onPreloadMessage);
 
     return () => {
@@ -67,19 +52,10 @@ export const AgentLogs = (): JSX.Element => {
   };
 
   return (
-    <>
-      {isLoading ? (
-        <CircularProgress
-          className='log-loader'
-          size={ 50 }
-        />
-      ) : (
-        <Console
-          log={ log }
-          scrollRef={ scrollRef }
-          scrollToBottom={ scrollToBottom }
-        />
-      )}
-    </>
+    <Console
+      log={ log }
+      scrollRef={ scrollRef }
+      scrollToBottom={ scrollToBottom }
+    />
   );
 };

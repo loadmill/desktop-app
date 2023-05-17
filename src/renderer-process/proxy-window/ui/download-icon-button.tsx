@@ -7,9 +7,10 @@ export const DownloadIconButton = ({
   color = 'primary',
   disabled = false,
   onDownload,
+  tooltip = '',
 }: DownloadIconButtonProps): JSX.Element => (
   <Tooltip
-    title='Save proxy as HAR'
+    title={ tooltip }
   >
     <IconButton
       className='fit-content'
@@ -26,4 +27,5 @@ export type DownloadIconButtonProps = {
   color?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
   disabled?: boolean;
   onDownload?: () => void;
+  tooltip?: string;
 };

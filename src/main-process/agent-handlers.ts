@@ -9,7 +9,6 @@ import { AgentMessage, MainMessage } from '../types/messaging';
 import { Token } from '../types/token';
 import {
   DATA,
-  INIT_AGENT_LOG,
   IS_AGENT_CONNECTED,
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
@@ -18,7 +17,7 @@ import {
   STOP_AGENT,
 } from '../universal/constants';
 
-import { appendToAgentLog, readAgentLog } from './agent-log-file';
+import { appendToAgentLog } from './agent-log-file';
 import {
   isAgentConnected,
   refreshConnectedStatus
@@ -145,7 +144,6 @@ export const subscribeToAgentEventsFromRenderer = (): void => {
   subscribeToUserIsSignedInFromRenderer();
   subscribeToStartAgentFromRenderer();
   subscribeToStopAgentFromRenderer();
-  subscribeToInitAgentLogFromRenderer();
 };
 
 const subscribeToUserIsSignedInFromRenderer = () => {
@@ -274,13 +272,4 @@ export const killAgentProcess = (): void => {
     log.info('Killing agent process');
     agent.kill('SIGINT');
   }
-};
-
-const subscribeToInitAgentLogFromRenderer = () => {
-  subscribeToMainProcessMessage(INIT_AGENT_LOG, handleInitAgentLogEvent);
-};
-
-const handleInitAgentLogEvent = () => {
-  const lines = readAgentLog();
-  sendFromMainToAgent({ data: { lines }, type: INIT_AGENT_LOG });
 };

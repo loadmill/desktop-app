@@ -5,6 +5,7 @@ import {
 } from 'electron';
 
 import { initMainToAgent } from '../../inter-process-communication/main-to-agent';
+import { subscribeToDownloadAgentLog } from '../agent/download-agent-log';
 
 import { createView } from './view-factory';
 
@@ -16,6 +17,7 @@ export const createAgentView = (
 ): BrowserView => {
   const agent = createView(mainWindow, AGENT_VIEW_PRELOAD_WEBPACK_ENTRY, AGENT_VIEW_WEBPACK_ENTRY);
   initMainToAgent(agent.webContents);
+  subscribeToDownloadAgentLog();
   if (!app.isPackaged) {
     agent.webContents.openDevTools();
   }

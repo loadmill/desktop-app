@@ -4,6 +4,7 @@ import {
   CREATE_TEST,
   DELETE_ENTRIES,
   DELETE_ENTRY,
+  DOWNLOAD_AGENT_LOG,
   DOWNLOAD_CERTIFICATE,
   EXPORT_AS_HAR,
   FETCH_SUITES,
@@ -13,7 +14,6 @@ import {
   GO_BACK,
   GO_FORWARD,
   IMPORT_HAR,
-  INIT_AGENT_LOG,
   INIT_FILTER_REGEX,
   IS_RECORDING,
   MARK_RELEVANT,
@@ -74,5 +74,5 @@ export type ApiForLoadmillProxyWindow = {
 };
 
 export type ApiForLoadmillAgentView = {
-  [INIT_AGENT_LOG]: () => void;
+  [DOWNLOAD_AGENT_LOG]: () => void;
 };

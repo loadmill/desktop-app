@@ -5,6 +5,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { Ref, useEffect, useState } from 'react';
 
+import { DownloadIconButton } from '../../proxy-window/ui/download-icon-button';
+
 export const Console: React.FC<ConsoleProps> = ({
   log,
   scrollToBottom,
@@ -30,6 +32,14 @@ export const Console: React.FC<ConsoleProps> = ({
 
   return (
     <>
+      <div className='download-agent-log-section'>
+        <p> To view former log entries download the agent log file</p>
+        <DownloadIconButton
+          onDownload={ window.desktopApi.downloadAgentLog }
+          tooltip='Download agent log file'
+        />
+      </div>
+
       <ScrollableList
         log={ log }
         scrollRef={ scrollRef }

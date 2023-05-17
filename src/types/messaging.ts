@@ -6,6 +6,7 @@ import {
   CREATE_TEST_COMPLETE,
   DELETE_ENTRIES,
   DELETE_ENTRY,
+  DOWNLOAD_AGENT_LOG,
   DOWNLOAD_CERTIFICATE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORT_AS_HAR,
@@ -19,7 +20,6 @@ import {
   GO_FORWARD,
   IMPORT_HAR,
   IMPORT_HAR_IS_IN_PROGRESS,
-  INIT_AGENT_LOG,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_AGENT_CONNECTED,
@@ -138,6 +138,7 @@ export type MainMessageTypes =
   typeof CREATE_TEST |
   typeof DELETE_ENTRIES |
   typeof DELETE_ENTRY |
+  typeof DOWNLOAD_AGENT_LOG |
   typeof DOWNLOAD_CERTIFICATE |
   typeof EXPORT_AS_HAR |
   typeof FETCH_SUITES |
@@ -147,7 +148,6 @@ export type MainMessageTypes =
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof IMPORT_HAR |
-  typeof INIT_AGENT_LOG |
   typeof INIT_FILTER_REGEX |
   typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
@@ -194,6 +194,5 @@ export type ProxyRendererMessageTypes =
   typeof PROXY;
 
 export type AgentRendererMessageTypes =
-  typeof INIT_AGENT_LOG |
   typeof STDOUT |
   typeof STDERR;
