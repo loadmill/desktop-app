@@ -2,7 +2,7 @@ import { ChildProcessWithoutNullStreams, fork } from 'child_process';
 
 import '@loadmill/agent/dist/cli';
 
-import { sendFromMainToAgent } from '../inter-process-communication/main-to-agent';
+import { sendFromMainToAgentRenderer } from '../inter-process-communication/main-to-agent';
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
 import { AgentMessage, MainMessage } from '../types/messaging';
@@ -124,7 +124,7 @@ const handleAgentStd = async (
   log.info('Agent:', text);
   await handleInvalidToken(text);
   refreshConnectedStatus({ text });
-  sendFromMainToAgent({ data: { text }, type });
+  sendFromMainToAgentRenderer({ data: { text }, type });
   appendToAgentLog(text);
 };
 

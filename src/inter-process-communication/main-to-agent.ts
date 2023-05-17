@@ -14,7 +14,7 @@ export const initMainToAgent = (agentWebContents: WebContents): void => {
   MainToAgent.agentWebContents = agentWebContents;
 };
 
-export const sendFromMainToAgent = ({ type, data }: AgentRendererMessage): void => {
+export const sendFromMainToAgentRenderer = ({ type, data }: AgentRendererMessage): void => {
   try {
     if (MainToAgent.agentWebContents) {
       log.debug('Sending to agent view', { data, type });

@@ -1,6 +1,6 @@
 import { BrowserView } from 'electron';
 
-export enum ViewValue {
+export enum ViewName {
   AGENT = 'agent',
   PROXY = 'proxy',
   WEB_PAGE = 'webPage'
@@ -8,6 +8,6 @@ export enum ViewValue {
 
 export type View = {
   id: number;
-  type: ViewValue;
+  name: ViewName;
   view: BrowserView;
 };

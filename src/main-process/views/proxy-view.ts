@@ -1,5 +1,4 @@
 import {
-  app,
   BrowserView,
   BrowserWindow,
 } from 'electron';
@@ -17,13 +16,14 @@ declare const PROXY_VIEW_PRELOAD_WEBPACK_ENTRY: string;
 export const createProxyView = (
   mainWindow: BrowserWindow,
 ): BrowserView => {
-  const proxyView = createView(mainWindow, PROXY_VIEW_PRELOAD_WEBPACK_ENTRY, PROXY_VIEW_WEBPACK_ENTRY);
+  const proxyView = createView(mainWindow, {
+    openDevTools: true,
+    preload: PROXY_VIEW_PRELOAD_WEBPACK_ENTRY,
+    url: PROXY_VIEW_WEBPACK_ENTRY,
+  });
   initProxyToRenderer(proxyView.webContents);
   subscribeToDownloadCertificate();
   subscribeToFindOnPageEvents(proxyView.webContents);
   subscribeToFetchSuites();
-  if (!app.isPackaged) {
-    proxyView.webContents.openDevTools();
-  }
   return proxyView;
 };

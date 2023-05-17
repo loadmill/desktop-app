@@ -20,7 +20,10 @@ declare const LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY: string; // webpack hack 😒
 export const createLoadmillWebView = (
   mainWindow: BrowserWindow,
 ): BrowserView => {
-  const loadmillWebView = createView(mainWindow, LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY, LOADMILL_WEB_APP_ORIGIN);
+  const loadmillWebView = createView(mainWindow, {
+    preload: LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY,
+    url: LOADMILL_WEB_APP_ORIGIN,
+  });
   sendToRenderer({
     data: { loadmillViewId: loadmillWebView.webContents.id },
     type: LOADMILL_VIEW_ID,

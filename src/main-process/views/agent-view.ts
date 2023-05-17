@@ -1,5 +1,4 @@
 import {
-  app,
   BrowserView,
   BrowserWindow,
 } from 'electron';
@@ -15,11 +14,13 @@ declare const AGENT_VIEW_PRELOAD_WEBPACK_ENTRY: string;
 export const createAgentView = (
   mainWindow: BrowserWindow,
 ): BrowserView => {
-  const agent = createView(mainWindow, AGENT_VIEW_PRELOAD_WEBPACK_ENTRY, AGENT_VIEW_WEBPACK_ENTRY);
+  const agent = createView(mainWindow, {
+    openDevTools: true,
+    preload: AGENT_VIEW_PRELOAD_WEBPACK_ENTRY,
+    url: AGENT_VIEW_WEBPACK_ENTRY,
+  });
+
   initMainToAgent(agent.webContents);
   subscribeToDownloadAgentLog();
-  if (!app.isPackaged) {
-    agent.webContents.openDevTools();
-  }
   return agent;
 };

@@ -10,7 +10,7 @@ import {
   sendToRenderer,
 } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
-import { View, ViewValue } from '../types/views';
+import { View, ViewName } from '../types/views';
 import {
   ACTIVATE,
   BEFORE_QUIT,
@@ -138,21 +138,21 @@ const setViews = (
   proxyView: BrowserView,
   agentView: BrowserView,
 ) => {
-  appendView(agentView, ViewValue.AGENT);
-  appendView(proxyView, ViewValue.PROXY);
-  appendView(loadmillWebView, ViewValue.WEB_PAGE);
+  appendView(agentView, ViewName.AGENT);
+  appendView(proxyView, ViewName.PROXY);
+  appendView(loadmillWebView, ViewName.WEB_PAGE);
 };
 
-const appendView = (view: BrowserView, type: ViewValue) => {
-  views.push({ id: view.webContents.id, type, view });
+const appendView = (view: BrowserView, name: ViewName) => {
+  views.push({ id: view.webContents.id, name, view });
 };
 
 export const switchToAgentView = (): void => {
-  const agentView = views.find((view) => view.type === ViewValue.AGENT);
+  const agentView = views.find((view) => view.name === ViewName.AGENT);
   if (agentView) {
     switchView(mainWindow, agentView.view);
     sendToRenderer({
-      data: { view: ViewValue.AGENT },
+      data: { view: ViewName.AGENT },
       type: SWITCH_VIEW,
     });
   } else {

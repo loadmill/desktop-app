@@ -50,7 +50,7 @@ import {
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
 import { SuiteOption } from './suite';
-import { ViewValue } from './views';
+import { ViewName } from './views';
 
 /**
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
@@ -80,7 +80,7 @@ export abstract class MainMessage implements IPCMessage {
     text?: string;
     toFind?: string;
     token?: string;
-    view?: ViewValue;
+    view?: ViewName;
   };
   type: MainMessageTypes;
 }
@@ -95,7 +95,7 @@ export abstract class RendererMessage implements IPCMessage {
     shouldShowFind?: boolean;
     text?: string;
     token?: string;
-    view?: ViewValue;
+    view?: ViewName;
   };
   type: RendererMessageTypes;
 }
@@ -169,9 +169,9 @@ export type RendererMessageTypes =
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
   typeof SAVED_TOKEN |
+  typeof SHOW_FIND_ON_PAGE |
   typeof STDERR |
   typeof STDOUT |
-  typeof SHOW_FIND_ON_PAGE |
   typeof SWITCH_VIEW;
 
 export type LoadmillViewRendererMessageTypes =

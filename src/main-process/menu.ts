@@ -80,7 +80,7 @@ const template = [
       { type: 'separator' },
       {
         click: () => switchToAgentView(),
-        label: 'Local Agent Logs',
+        label: 'Private Agent Log',
       },
     ]
   },

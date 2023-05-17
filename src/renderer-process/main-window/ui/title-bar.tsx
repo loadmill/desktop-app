@@ -6,7 +6,7 @@ import React, {
 
 import { isFromPreload } from '../../../inter-process-communication';
 import { RendererMessage } from '../../../types/messaging';
-import { ViewValue } from '../../../types/views';
+import { ViewName } from '../../../types/views';
 import {
   IS_AGENT_CONNECTED,
   MESSAGE,
@@ -24,7 +24,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
   const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
-  const [view, setView] = useState<ViewValue>(ViewValue.WEB_PAGE);
+  const [view, setView] = useState<ViewName>(ViewName.WEB_PAGE);
 
   useEffect(() => {
     window.addEventListener(MESSAGE, onPreloadMessage);
@@ -140,7 +140,7 @@ export const TitleBarActions = ({
   setView,
   view,
 }: TitleBarActionsProps): JSX.Element => {
-  const isNavigationDisabled = view !== ViewValue.WEB_PAGE;
+  const isNavigationDisabled = view !== ViewName.WEB_PAGE;
   return (
     <div
       className='title-bar-actn-btns'
