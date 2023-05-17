@@ -36,7 +36,7 @@ declare global {
   }
 }
 
-type DesktopApi = ApiForMainWindow & ApiForLoadmillBrowserView & ApiForLoadmillProxyWindow & ApiForLoadmillAgentView;
+type DesktopApi = ApiForMainWindow & ApiForLoadmillBrowserView & ApiForLoadmillProxyView & ApiForLoadmillAgentView;
 
 export type ApiForMainWindow = {
   [FIND_NEXT]: (toFind: string) => void;
@@ -53,7 +53,7 @@ export type ApiForLoadmillBrowserView = {
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => void;
 };
 
-export type ApiForLoadmillProxyWindow = {
+export type ApiForLoadmillProxyView = {
   [ANALYZE_REQUESTS]: () => void;
   [CLEAR_ALL_ENTRIES]: () => void;
   [CREATE_TEST]: (suiteId?: string) => void;

@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { Ref, useEffect, useState } from 'react';
 
-import { DownloadIconButton } from '../../proxy-window/ui/download-icon-button';
+import { DownloadIconButton } from '../../proxy-view/ui/download-icon-button';
 
 export const Console: React.FC<ConsoleProps> = ({
   log,

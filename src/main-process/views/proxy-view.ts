@@ -11,13 +11,13 @@ import { subscribeToFetchSuites } from '../suites';
 
 import { createView } from './view-factory';
 
-declare const PROXY_WINDOW_WEBPACK_ENTRY: string;
-declare const PROXY_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const PROXY_VIEW_WEBPACK_ENTRY: string;
+declare const PROXY_VIEW_PRELOAD_WEBPACK_ENTRY: string;
 
 export const createProxyView = (
   mainWindow: BrowserWindow,
 ): BrowserView => {
-  const proxyView = createView(mainWindow, PROXY_WINDOW_PRELOAD_WEBPACK_ENTRY, PROXY_WINDOW_WEBPACK_ENTRY);
+  const proxyView = createView(mainWindow, PROXY_VIEW_PRELOAD_WEBPACK_ENTRY, PROXY_VIEW_WEBPACK_ENTRY);
   initProxyToRenderer(proxyView.webContents);
   subscribeToDownloadCertificate();
   subscribeToFindOnPageEvents(proxyView.webContents);

@@ -15,7 +15,7 @@ export enum Renderer {
   AGENT_VIEW = 'agentView',
   LOADMILL_VIEW = 'loadmillView',
   MAIN_WINDOW = 'mainWindow',
-  PROXY_WINDOW = 'proxyView',
+  PROXY_VIEW = 'proxyView',
 }
 
 export const subscribeToMainWindowMessages = (
