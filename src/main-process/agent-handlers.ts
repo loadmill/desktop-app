@@ -259,3 +259,10 @@ const _getOrCreateToken = async (): Promise<Token | undefined> => {
   log.info('Fetching new token from loadmill server');
   return await createAndSaveToken();
 };
+
+export const killAgentProcess = (): void => {
+  if (agent) {
+    log.info('Killing agent process');
+    agent.kill('SIGINT');
+  }
+};
