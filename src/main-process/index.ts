@@ -20,7 +20,7 @@ import {
   WINDOW_ALL_CLOSED,
 } from '../universal/constants';
 
-import { subscribeToAgentEventsFromRenderer } from './agent-handlers';
+import { killAgentProcess, subscribeToAgentEventsFromRenderer } from './agent-handlers';
 import './keybindings';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
 import './menu';
@@ -79,14 +79,12 @@ const createWindow = () => {
 };
 
 app.on(BEFORE_QUIT, () => {
+  log.info('App is quitting');
+  killAgentProcess();
   forceQuit = true;
 });
 
 autoUpdater.on(BEFORE_QUIT_FOR_UPDATE, () => {
-  forceQuit = true;
-});
-
-app.on(BEFORE_QUIT, () => {
   forceQuit = true;
 });
 
