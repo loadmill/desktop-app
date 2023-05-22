@@ -1,10 +1,6 @@
-import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import React from 'react';
+import { createTheme } from '@mui/material';
 
-import { ProxyDashboard } from './proxy-dashboard';
-
-const darkTheme = createTheme({
+export const darkTheme = createTheme({
   palette: {
     action: {
       active: '#bdd2e7',
@@ -35,12 +31,3 @@ const darkTheme = createTheme({
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   },
 });
-
-export const ThemeWrapper: React.FC<ThemeWrapperProps> = (): JSX.Element => (
-  <ThemeProvider theme={ darkTheme }>
-    <CssBaseline />
-    <ProxyDashboard />
-  </ThemeProvider>
-);
-
-export type ThemeWrapperProps = {};

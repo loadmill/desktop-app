@@ -6,12 +6,13 @@ import React, {
 
 import { isFromPreload } from '../../../inter-process-communication';
 import { RendererMessage } from '../../../types/messaging';
-import { ViewValue } from '../../../types/views';
+import { ViewName } from '../../../types/views';
 import {
   IS_AGENT_CONNECTED,
   MESSAGE,
   NAVIGATION,
   SHOW_FIND_ON_PAGE,
+  SWITCH_VIEW,
 } from '../../../universal/constants';
 
 import { GoBackIconButton, GoForwardIconButton, RefreshIconButton, StartAgentIconButton, StopAgentIconButton } from './actions-icon-buttons';
@@ -23,7 +24,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
   const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
-  const [view, setView] = useState<ViewValue>(ViewValue.WEB_PAGE);
+  const [view, setView] = useState<ViewName>(ViewName.WEB_PAGE);
 
   useEffect(() => {
     window.addEventListener(MESSAGE, onPreloadMessage);
@@ -45,6 +46,9 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         case IS_AGENT_CONNECTED:
           onIsAgentConnectedMsg(data);
           break;
+        case SWITCH_VIEW:
+          onSwitchViewMsg(data);
+          break;
         default:
           break;
       }
@@ -58,6 +62,10 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
 
   const onIsAgentConnectedMsg = (data: RendererMessage['data']) => {
     setIsAgentConnected(!!data?.isAgentConnected);
+  };
+
+  const onSwitchViewMsg = (data: RendererMessage['data']) => {
+    setView(data?.view);
   };
 
   const onShowFindMsg = (data: RendererMessage['data']) => {
@@ -132,7 +140,7 @@ export const TitleBarActions = ({
   setView,
   view,
 }: TitleBarActionsProps): JSX.Element => {
-  const isNavigationDisabled = view === ViewValue.PROXY;
+  const isNavigationDisabled = view !== ViewName.WEB_PAGE;
   return (
     <div
       className='title-bar-actn-btns'

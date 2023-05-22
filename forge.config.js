@@ -72,13 +72,21 @@ module.exports = {
               }
             },
             {
-              'html': './src/renderer-process/proxy-window/index.html',
-              'js': './src/renderer-process/proxy-window/renderer.ts',
-              'name': 'proxy_window',
+              'html': './src/renderer-process/proxy-view/index.html',
+              'js': './src/renderer-process/proxy-view/renderer.ts',
+              'name': 'proxy_view',
               'preload': {
-                'js': './src/renderer-process/proxy-window/preload.ts'
+                'js': './src/renderer-process/proxy-view/preload.ts'
               }
-            }
+            },
+            {
+              'html': './src/renderer-process/agent-view/index.html',
+              'js': './src/renderer-process/agent-view/renderer.ts',
+              'name': 'agent_view',
+              'preload': {
+                'js': './src/renderer-process/agent-view/preload.ts'
+              }
+            },
           ]
         }
       }

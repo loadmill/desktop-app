@@ -6,6 +6,7 @@ import {
   CREATE_TEST_COMPLETE,
   DELETE_ENTRIES,
   DELETE_ENTRY,
+  DOWNLOAD_AGENT_LOG,
   DOWNLOAD_CERTIFICATE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORT_AS_HAR,
@@ -37,6 +38,8 @@ import {
   SET_IS_USER_SIGNED_IN,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
+  STDERR,
+  STDOUT,
   STOP_AGENT,
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
@@ -47,7 +50,7 @@ import {
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
 import { SuiteOption } from './suite';
-import { ViewValue } from './views';
+import { ViewName } from './views';
 
 /**
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
@@ -77,7 +80,7 @@ export abstract class MainMessage implements IPCMessage {
     text?: string;
     toFind?: string;
     token?: string;
-    view?: ViewValue;
+    view?: ViewName;
   };
   type: MainMessageTypes;
 }
@@ -90,7 +93,9 @@ export abstract class RendererMessage implements IPCMessage {
     nav?: Navigation;
     proxy?: ProxyEntry;
     shouldShowFind?: boolean;
+    text?: string;
     token?: string;
+    view?: ViewName;
   };
   type: RendererMessageTypes;
 }
@@ -114,6 +119,14 @@ export abstract class ProxyRendererMessage implements IPCMessage {
   type: ProxyRendererMessageTypes;
 }
 
+export abstract class AgentRendererMessage implements IPCMessage {
+  data?: {
+    lines?: string[];
+    text?: string;
+  };
+  type: AgentRendererMessageTypes;
+}
+
 export type AgentMessageTypes =
   typeof IS_AGENT_CONNECTED |
   typeof START_AGENT |
@@ -125,6 +138,7 @@ export type MainMessageTypes =
   typeof CREATE_TEST |
   typeof DELETE_ENTRIES |
   typeof DELETE_ENTRY |
+  typeof DOWNLOAD_AGENT_LOG |
   typeof DOWNLOAD_CERTIFICATE |
   typeof EXPORT_AS_HAR |
   typeof FETCH_SUITES |
@@ -155,7 +169,10 @@ export type RendererMessageTypes =
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
   typeof SAVED_TOKEN |
-  typeof SHOW_FIND_ON_PAGE;
+  typeof SHOW_FIND_ON_PAGE |
+  typeof STDERR |
+  typeof STDOUT |
+  typeof SWITCH_VIEW;
 
 export type LoadmillViewRendererMessageTypes =
   typeof GENERATE_TOKEN |
@@ -175,3 +192,7 @@ export type ProxyRendererMessageTypes =
   typeof UPDATED_SUITES |
   typeof PORT |
   typeof PROXY;
+
+export type AgentRendererMessageTypes =
+  typeof STDOUT |
+  typeof STDERR;

@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { sendToMain } from '../../inter-process-communication/renderer-to-main';
 import { ApiForMainWindow } from '../../types/api';
 import { RendererMessage } from '../../types/messaging';
-import { ViewValue } from '../../types/views';
+import { ViewName } from '../../types/views';
 import {
   DESKTOP_API,
   FIND_NEXT,
@@ -30,7 +30,7 @@ export const WINDOW_API: ApiForMainWindow = {
   [REFRESH_PAGE]: () => sendToMain(REFRESH_PAGE),
   [START_AGENT]: () => sendToMain(START_AGENT),
   [STOP_AGENT]: () => sendToMain(STOP_AGENT),
-  [SWITCH_VIEW]: (view?: ViewValue) => sendToMain(SWITCH_VIEW, { view }),
+  [SWITCH_VIEW]: (view?: ViewName) => sendToMain(SWITCH_VIEW, { view }),
   [TOGGLE_MAXIMIZE_WINDOW]: () => sendToMain(TOGGLE_MAXIMIZE_WINDOW),
 };
 
@@ -66,6 +66,10 @@ subscribeToMainWindowMessages(SHOW_FIND_ON_PAGE, (_event: Electron.IpcRendererEv
 
 subscribeToMainWindowMessages(IS_AGENT_CONNECTED, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
   window.postMessage({ data, type: IS_AGENT_CONNECTED });
+});
+
+subscribeToMainWindowMessages(SWITCH_VIEW, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+  window.postMessage({ data, type: SWITCH_VIEW });
 });
 
 contextBridge.exposeInMainWorld(DESKTOP_API, WINDOW_API);

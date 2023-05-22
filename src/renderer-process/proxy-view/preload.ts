@@ -1,7 +1,7 @@
 import { contextBridge } from 'electron';
 
 import { sendToMain } from '../../inter-process-communication/renderer-to-main';
-import { ApiForLoadmillProxyWindow } from '../../types/api';
+import { ApiForLoadmillProxyView } from '../../types/api';
 import { ProxyRendererMessage } from '../../types/messaging';
 import {
   ANALYZE_REQUESTS,
@@ -36,7 +36,7 @@ import {
 } from '../../universal/constants';
 import { subscribeToProxyViewMessages } from '../renderer-events';
 
-export const WINDOW_API: ApiForLoadmillProxyWindow = {
+export const WINDOW_API: ApiForLoadmillProxyView = {
   [ANALYZE_REQUESTS]: (): void => sendToMain(ANALYZE_REQUESTS),
   [CLEAR_ALL_ENTRIES]: (): void => sendToMain(CLEAR_ALL_ENTRIES),
   [CREATE_TEST]: (suiteId?: string): void => sendToMain(CREATE_TEST, { suiteId }),

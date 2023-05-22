@@ -2,7 +2,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import React from 'react';
 
-import { ViewValue } from '../../../types/views';
+import { ViewName } from '../../../types/views';
 
 const toggleButtonStyle = {
   cursor: 'default',
@@ -16,7 +16,7 @@ export const ViewsSwitch = ({
 
   const onSelectView = (
     _event: React.MouseEvent<HTMLElement>,
-    selectedView: ViewValue,
+    selectedView: ViewName,
   ) => {
     if (selectedView != null) {
       setView(selectedView);
@@ -38,13 +38,13 @@ export const ViewsSwitch = ({
     >
       <ToggleButton
         sx={ toggleButtonStyle }
-        value={ ViewValue.WEB_PAGE }
+        value={ ViewName.WEB_PAGE }
       >
         Loadmill
       </ToggleButton>
       <ToggleButton
         sx={ toggleButtonStyle }
-        value={ ViewValue.PROXY }
+        value={ ViewName.PROXY }
       >
         Proxy
       </ToggleButton>
@@ -53,6 +53,6 @@ export const ViewsSwitch = ({
 };
 
 export type ViewsSwitchProps = {
-  setView: (view: ViewValue) => void;
-  view: ViewValue;
+  setView: (view: ViewName) => void;
+  view: ViewName;
 };

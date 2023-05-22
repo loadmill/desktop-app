@@ -4,6 +4,7 @@ import {
   CREATE_TEST,
   DELETE_ENTRIES,
   DELETE_ENTRY,
+  DOWNLOAD_AGENT_LOG,
   DOWNLOAD_CERTIFICATE,
   EXPORT_AS_HAR,
   FETCH_SUITES,
@@ -27,7 +28,7 @@ import {
   TOGGLE_MAXIMIZE_WINDOW
 } from '../universal/constants';
 
-import { ViewValue } from './views';
+import { ViewName } from './views';
 
 declare global {
   interface Window {
@@ -35,7 +36,7 @@ declare global {
   }
 }
 
-type DesktopApi = ApiForMainWindow & ApiForLoadmillBrowserView & ApiForLoadmillProxyWindow;
+type DesktopApi = ApiForMainWindow & ApiForLoadmillBrowserView & ApiForLoadmillProxyView & ApiForLoadmillAgentView;
 
 export type ApiForMainWindow = {
   [FIND_NEXT]: (toFind: string) => void;
@@ -44,7 +45,7 @@ export type ApiForMainWindow = {
   [REFRESH_PAGE]: () => void;
   [START_AGENT]: () => void;
   [STOP_AGENT]: () => void;
-  [SWITCH_VIEW]: (view?: ViewValue) => void;
+  [SWITCH_VIEW]: (view?: ViewName) => void;
   [TOGGLE_MAXIMIZE_WINDOW]: () => void;
 };
 
@@ -52,7 +53,7 @@ export type ApiForLoadmillBrowserView = {
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => void;
 };
 
-export type ApiForLoadmillProxyWindow = {
+export type ApiForLoadmillProxyView = {
   [ANALYZE_REQUESTS]: () => void;
   [CLEAR_ALL_ENTRIES]: () => void;
   [CREATE_TEST]: (suiteId?: string) => void;
@@ -70,4 +71,8 @@ export type ApiForLoadmillProxyWindow = {
   [REFRESH_ENTRIES]: () => void;
   [SET_FILTER_REGEX]: (filterRegex: string) => void;
   [SET_IS_RECORDING]: (isRecording: boolean) => void;
+};
+
+export type ApiForLoadmillAgentView = {
+  [DOWNLOAD_AGENT_LOG]: () => void;
 };

@@ -2,6 +2,7 @@ import { ChildProcessWithoutNullStreams, fork } from 'child_process';
 
 import '@loadmill/agent/dist/cli';
 
+import { sendFromMainToAgentRenderer } from '../inter-process-communication/main-to-agent';
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
 import { AgentMessage, MainMessage } from '../types/messaging';
@@ -11,6 +12,8 @@ import {
   IS_AGENT_CONNECTED,
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
+  STDERR,
+  STDOUT,
   STOP_AGENT,
 } from '../universal/constants';
 
@@ -103,21 +106,25 @@ const addOnAgentIsConnectedEvent = (): void => {
 
 const pipeAgentStdout = () => {
   agent.stdout.on(DATA, async (data: string | Buffer) => {
-    await handleAgentStd(data);
+    await handleAgentStd(data, STDOUT);
   });
 };
 
 const pipeAgentStderr = () => {
   agent.stderr.on(DATA, async (data: string | Buffer) => {
-    await handleAgentStd(data);
+    await handleAgentStd(data, STDERR);
   });
 };
 
-const handleAgentStd = async (data: string | Buffer) => {
+const handleAgentStd = async (
+  data: string | Buffer,
+  type: typeof STDOUT | typeof STDERR,
+) => {
   const text = Buffer.from(data).toString();
   log.info('Agent:', text);
   await handleInvalidToken(text);
   refreshConnectedStatus({ text });
+  sendFromMainToAgentRenderer({ data: { text }, type });
   appendToAgentLog(text);
 };
 

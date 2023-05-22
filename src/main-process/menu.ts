@@ -4,6 +4,8 @@ import { READY } from '../universal/constants';
 
 import { checkForUpdates } from './updates';
 
+import { switchToAgentView } from '.';
+
 const isMac = process.platform === 'darwin';
 
 const template = [
@@ -74,7 +76,12 @@ const template = [
       { role: 'zoomIn' },
       { role: 'zoomOut' },
       { type: 'separator' },
-      { role: 'togglefullscreen' }
+      { role: 'togglefullscreen' },
+      { type: 'separator' },
+      {
+        click: () => switchToAgentView(),
+        label: 'Private Agent Log',
+      },
     ]
   },
   // { role: 'windowMenu' }
