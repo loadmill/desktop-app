@@ -7292,19 +7292,6 @@ http-headers-validation@^0.0.1:
   resolved "https://registry.yarnpkg.com/http-headers-validation/-/http-headers-validation-0.0.1.tgz#d3151b4c58d08f24934a76ca818548ccf05afb78"
   integrity sha512-9qMRkTh4/LxeKRdZKjp7M4Bn01dO9vHgeLRfmnMiq59szdKm5mVCa3hNdQhLxfXvG6EHNCQ5El1lnmBjLQrXQA==
 
-http-mitm-proxy@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/http-mitm-proxy/-/http-mitm-proxy-0.9.0.tgz#60d4bdafacbefbb2572f6e8e3b59277c0f1cab74"
-  integrity sha512-CQlJTrfhUTlUTVormSoOBdn3A7N4u6/8wvsKSI/CsHQ6ZzicukfkasZHYY8vpQELOnX7hOnj/aRim43wVc8whw==
-  dependencies:
-    async "^3.2.0"
-    debug "^4.1.0"
-    mkdirp "^0.5.1"
-    node-forge "^0.10.0"
-    semaphore "^1.1.0"
-    ws "^3.3.3"
-    yargs "^16.1.0"
-
 http-parser-js@>=0.5.1:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/http-parser-js/-/http-parser-js-0.5.6.tgz#2e02406ab2df8af8a7abfba62e0da01c62b95afd"
@@ -8569,6 +8556,19 @@ loader-utils@^2.0.0:
     big.js "^5.2.2"
     emojis-list "^3.0.0"
     json5 "^2.1.2"
+
+loadmill-http-mitm-proxy@0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/loadmill-http-mitm-proxy/-/loadmill-http-mitm-proxy-0.0.10.tgz#778d4012fb6ccd23b87aae73400e98e1869cb7ab"
+  integrity sha512-bDWs0crfh5aUnAEwh2OOZ/tYLKLIpavv9sCEW43QIZcW7okYR886K3b6FRW4Sss13ExGGZW1v+HGHmBOqyJaqA==
+  dependencies:
+    async "^3.2.0"
+    debug "^4.1.0"
+    mkdirp "^0.5.1"
+    node-forge "^0.10.0"
+    semaphore "^1.1.0"
+    ws "^3.3.3"
+    yargs "^16.1.0"
 
 locate-path@^2.0.0:
   version "2.0.0"

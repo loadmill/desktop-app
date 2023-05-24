@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import http from 'http';
 
 import async from 'async';
-import Proxy from 'http-mitm-proxy';
+import Proxy from 'loadmill-http-mitm-proxy';
 
 import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
 import log from '../../log';
@@ -92,7 +92,7 @@ const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
   return request;
 };
 
-const toRequest = (ctx: HttpMitmProxy.IContext): ProxyRequest => {
+const toRequest = (ctx: Proxy.IContext): ProxyRequest => {
   const protocol = 'http' + (ctx.isSSL ? 's' : '') + '://';
 
   const { headers, method, url } = ctx.clientToProxyRequest;
@@ -189,7 +189,7 @@ const handleResponse = (request: ProxyRequest, ctx: Proxy.IContext) => {
   });
 };
 
-const getResponse = (ctx: HttpMitmProxy.IContext): ProxyResponse => {
+const getResponse = (ctx: Proxy.IContext): ProxyResponse => {
   const { headers, statusCode, statusMessage } = ctx.serverToProxyResponse;
   return {
     headers: toArrayHeaders(headers),
