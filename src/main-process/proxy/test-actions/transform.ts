@@ -17,7 +17,10 @@ export const getTransformToken = async (key: string, path: string): Promise<stri
     body: JSON.stringify({
       channel,
       key,
-      options: { keepAllMimeTypes: true },
+      options: {
+        includeFailedRequests: true,
+        keepAllMimeTypes: true,
+      },
     }),
     headers: {
       'Content-Type': 'application/json',
