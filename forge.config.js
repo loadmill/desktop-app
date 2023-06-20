@@ -1,17 +1,24 @@
 require('dotenv').config();
 
+const isWindowsOS = process.platform === 'win32';
+
 module.exports = {
   makers: [
     {
       'config': {
-        'name': 'loadmill'
+        certificateFile: './cert.pfx',
+        certificatePassword: process.env.CERTIFICATE_PASSWORD,
+        iconUrl: 'https://loadmill.com/favicon.ico',
+        'name': 'loadmill',
+        setupIcon: './images/loadmill-icon-256-256.ico',
       },
       'name': '@electron-forge/maker-squirrel',
     },
     {
       'name': '@electron-forge/maker-zip',
       'platforms': [
-        'darwin'
+        'darwin',
+        'win32',
       ]
     },
     {
@@ -32,7 +39,9 @@ module.exports = {
     },
   ],
   packagerConfig: {
-    icon: './images/MyIcon',
+    icon: isWindowsOS ?
+      './images/loadmill-icon-256-256' :
+      './images/MyIcon',
     osxNotarize: {
       appleId: process.env.APPLE_ID,
       appleIdPassword: process.env.APPLE_APP_SPECIFIC_PASSWORD,

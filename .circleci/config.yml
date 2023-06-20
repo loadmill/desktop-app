@@ -1,4 +1,8 @@
 version: 2.1
+
+orbs:
+  win: circleci/windows@5.0
+
 jobs:
   build_macos:
     macos:
@@ -85,9 +89,174 @@ jobs:
             - run:
                 name: publish release
                 command: yarn forge-publish
+  build_windows:
+    executor:
+      name: win/default
+      size: medium
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Code Sign Setup - Create pfx file
+          command: |
+            # create cert.p12 file
+            echo ${KEYSTORE} | base64 --decode > cert.p12
+
+            # create pem files
+            openssl pkcs12 -in cert.p12 -out crt.pem -clcerts -nokeys -passin pass:${KEYCHAIN_PASSWORD}
+            openssl pkcs12 -in cert.p12 -out key.pem -nocerts -nodes -passin pass:${KEYCHAIN_PASSWORD}
+
+            # create a pfx file
+            openssl pkcs12 -export -out cert.pfx -inkey key.pem -in crt.pem -passout pass:${KEYCHAIN_PASSWORD}
+
+            # print out the certificate
+            openssl pkcs12 -info -in cert.pfx -passin pass:${KEYCHAIN_PASSWORD} -passout pass:${KEYCHAIN_PASSWORD} -nokeys
+      - run:
+          name: Install Node 14.18.0
+          command: nvm install 14.18.0 && nvm use 14.18.0
+      - run:
+          name: Install Yarn
+          command: npm install -g yarn
+      - restore_cache:
+          keys:
+            - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-windows-build-{{ .Branch }}-
+            - yarn-packages-windows-build-
+      - run:
+          name: Install dependencies
+          command: yarn install
+      - save_cache:
+          paths:
+            - node_modules/
+          key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run Tests
+          command: yarn test
+      - run:
+          name: Package Application
+          command: CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
+      - run:
+          name: Create distribution files
+          command: yarn only-make
+      - store_artifacts:
+          name: Store Artifacts
+          path: out/make/
+      - run:
+          name: Fetch Artifacts Metadata (Urls and paths)
+          command: |
+            ARTIFACTS=$(\
+              curl --fail-with-body -L \
+              --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM/artifacts" \
+              -H "Accept: application/json" \
+              -u "$CIRCLE_API_TOKEN:")
+
+            echo $ARTIFACTS | jq .
+            echo "export ARTIFACTS='${ARTIFACTS}'" >> $BASH_ENV
+      - when:
+          condition:
+              not:
+                equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Construct Artifacts URLs
+                command: |
+                  WINDOWS_INSTALLER_URL=$(echo $ARTIFACTS | jq -e -r '.items[0].url')
+                  WINDOWS_ZIP_URL=$(echo $ARTIFACTS | jq -e -r '.items[3].url')
+                  echo $WINDOWS_INSTALLER_URL
+                  echo $WINDOWS_ZIP_URL
+                  echo "export WINDOWS_INSTALLER_URL='${WINDOWS_INSTALLER_URL}'" >> $BASH_ENV
+                  echo "export WINDOWS_ZIP_URL='${WINDOWS_ZIP_URL}'" >> $BASH_ENV
+            - run:
+                name: Post Artifacts URLs to GitHub PR
+                command: |
+                  COMMENT="Windows Build: 1. [Setup.exe](${WINDOWS_INSTALLER_URL}) 2. [.zip](${WINDOWS_ZIP_URL})"
+                  echo $COMMENT
+                  PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
+                  echo $PR_NUMBER
+                  echo "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments"
+                  curl --fail-with-body -L \
+                    -X POST \
+                    -H "Accept: application/vnd.github+json" \
+                    -H "Authorization: Bearer ${GITHUB_API_TOKEN}"\
+                    -H "X-GitHub-Api-Version: 2022-11-28" \
+                    -d "{\"body\": \"$COMMENT\"}" \
+                    https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$PR_NUMBER/comments
+      - when:
+          condition:
+            equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Construct Artifacts Paths
+                command: |
+                  WINDOWS_INSTALLER_PATH=$(echo $ARTIFACTS | jq -e -r '.items[0].path')
+                  WINDOWS_ZIP_PATH=$(echo $ARTIFACTS | jq -e -r '.items[3].path')
+                  echo $WINDOWS_INSTALLER_PATH
+                  echo $WINDOWS_ZIP_PATH
+                  echo "export WINDOWS_INSTALLER_PATH='${WINDOWS_INSTALLER_PATH}'" >> $BASH_ENV
+                  echo "export WINDOWS_ZIP_PATH='${WINDOWS_ZIP_PATH}'" >> $BASH_ENV
+            - run:
+                name: Construct Artifacts File Names
+                command: |
+                  WINDOWS_INSTALLER_FILE_NAME=$(basename $WINDOWS_INSTALLER_PATH)
+                  WINDOWS_ZIP_FILE_NAME=$(basename $WINDOWS_ZIP_PATH)
+                  echo $WINDOWS_INSTALLER_FILE_NAME
+                  echo $WINDOWS_ZIP_FILE_NAME
+                  echo "export WINDOWS_INSTALLER_FILE_NAME='${WINDOWS_INSTALLER_FILE_NAME}'" >> $BASH_ENV
+                  echo "export WINDOWS_ZIP_FILE_NAME='${WINDOWS_ZIP_FILE_NAME}'" >> $BASH_ENV
+            - run:
+                name: Fetch the latest release on GitHub
+                command: |
+                  LATEST_RELEASE_URL="https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/latest"
+                  echo "LATEST_RELEASE_URL $LATEST_RELEASE_URL"
+                  LATEST_RELEASE_RESPONSE=$(curl --fail-with-body -L \
+                    -H "Accept: application/vnd.github+json" \
+                    -H "Authorization: Bearer $GITHUB_API_TOKEN"\
+                    -H "X-GitHub-Api-Version: 2022-11-28" \
+                    "$LATEST_RELEASE_URL")
+                  echo "LATEST_RELEASE_RESPONSE"
+                  echo "$LATEST_RELEASE_RESPONSE" | jq .
+                  echo "export LATEST_RELEASE_RESPONSE='${LATEST_RELEASE_RESPONSE}'" >> $BASH_ENV
+            - run:
+                name: Extract the release id
+                command: |
+                  RELEASE_ID=$(echo "$LATEST_RELEASE_RESPONSE" | jq -e -r '.id')
+                  echo "RELEASE_ID $RELEASE_ID"
+                  echo "export RELEASE_ID='${RELEASE_ID}'" >> $BASH_ENV
+            - run:
+                name: Upload the Installer artifact/asset to the release
+                command: |
+                  UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$RELEASE_ID/assets?name=$WINDOWS_INSTALLER_FILE_NAME"
+                  echo "UPLOAD_URL $UPLOAD_URL"
+                  UPLOAD_ASSET_RESPONSE=(\
+                    curl --fail-with-body -L \
+                      -H "Authorization: Bearer $GITHUB_API_TOKEN" \
+                      -H "Content-Type: $(file -b --mime-type $WINDOWS_INSTALLER_PATH)" \
+                      --data-binary @$WINDOWS_INSTALLER_PATH \
+                      "$UPLOAD_URL"
+                  )
+                  echo "UPLOAD_ASSET_RESPONSE"
+                  echo "$UPLOAD_ASSET_RESPONSE" | jq .
+            - run:
+                name: Upload the Zip artifact/asset to the release
+                command: |
+                  UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$RELEASE_ID/assets?name=$WINDOWS_ZIP_FILE_NAME"
+                  echo "UPLOAD_URL $UPLOAD_URL"
+                  UPLOAD_ASSET_RESPONSE=(\
+                    curl --fail-with-body -L \
+                      -H "Authorization: Bearer $GITHUB_API_TOKEN" \
+                      -H "Content-Type: $(file -b --mime-type $WINDOWS_ZIP_PATH)" \
+                      --data-binary @$WINDOWS_ZIP_PATH \
+                      "$UPLOAD_URL"
+                  )
+                  echo "UPLOAD_ASSET_RESPONSE"
+                  echo "$UPLOAD_ASSET_RESPONSE" | jq .
 
 workflows:
   version: 2
   build:
     jobs:
       - build_macos
+      - build_windows:
+          requires:
+            - build_macos
+
