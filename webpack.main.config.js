@@ -7,7 +7,6 @@ module.exports = {
   },
   externals: {
     _http_common: '_http_common',
-    formidable: 'formidable',
     vm2: 'vm2',
   },
   module: {
@@ -25,6 +24,7 @@ module.exports = {
   },
   resolve: {
     alias: {
+      formidable: false,
       type: 'type-component'
     },
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
