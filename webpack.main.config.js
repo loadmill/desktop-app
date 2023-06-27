@@ -7,6 +7,7 @@ module.exports = {
   },
   externals: {
     _http_common: '_http_common',
+    formidable: 'formidable',
     vm2: 'vm2',
   },
   module: {
