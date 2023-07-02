@@ -25,6 +25,7 @@ import {
 import {
   LOADMILL_AGENT_PATH,
   LOADMILL_AGENT_SERVER_URL,
+  LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED
 } from './constants';
@@ -71,6 +72,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   return fork(LOADMILL_AGENT_PATH, {
     env: {
       LOADMILL_AGENT_SERVER_URL,
+      LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
     },
