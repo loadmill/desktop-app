@@ -29,7 +29,6 @@ export const createView = (
   if (!app.isPackaged && openDevTools) {
     view.webContents.openDevTools();
   }
-  view.webContents.openDevTools();
   return view;
 };
 
