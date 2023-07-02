@@ -2637,28 +2637,28 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@loadmill/agent@^0.1.84":
-  version "0.1.84"
-  resolved "https://registry.yarnpkg.com/@loadmill/agent/-/agent-0.1.84.tgz#facac2dd14f9a68c209921c164ac7e9a599d4a0c"
-  integrity sha512-9sC7JY2tFnkbSHzzvHedFiuWM/YcvocOALmHfezlgJe+Ulmlh0H5o9ME1dohPFlqYzWrgv0xOTUh5hB5h2bvLw==
+"@loadmill/agent@^0.1.85":
+  version "0.1.85"
+  resolved "https://registry.yarnpkg.com/@loadmill/agent/-/agent-0.1.85.tgz#2267c49c8705f7c1b2607e9452a76791166ff0eb"
+  integrity sha512-0kh6gC7tICGTxY2ujLMp9dR3szwIb+vUwa5l27MHttXwgybL8hvTaJ3zZg/HEwfo5SqBE+jDSkp1UQSvet2s6g==
   dependencies:
-    "@loadmill/executer" "0.1.82"
-    "@loadmill/universal" "0.3.76"
+    "@loadmill/executer" "0.1.83"
+    "@loadmill/universal" "0.3.77"
     commander "^6.1.0"
     js-yaml "^3.14.0"
     socket.io-client "^3.1.3"
     superagent "^8.0.9"
     uuid "^3.0.1"
 
-"@loadmill/core@0.3.81":
-  version "0.3.81"
-  resolved "https://registry.yarnpkg.com/@loadmill/core/-/core-0.3.81.tgz#2d777a05f97710d7028402f5746453a2c62c31f7"
-  integrity sha512-xeTdJiEQaPA85soZL1b53ZTjmnetvAxmOxXmxg+GdAVN4j0VjHbERkkaRsctzmTvfltvmSqr3psltbgGbIwWYg==
+"@loadmill/core@0.3.82":
+  version "0.3.82"
+  resolved "https://registry.yarnpkg.com/@loadmill/core/-/core-0.3.82.tgz#a09209b3103e0b57c2dbac03597ad3a734d24b15"
+  integrity sha512-+tnwbN6KyuPCx7zFgM8NpHkITwBhYVQuvEakyvuxAOpLqanOIWggwIzx7dBuGdGW3CAawk/zrXSYXSkKNC04rg==
   dependencies:
     "@aws-sdk/client-cognito-identity" "^3.58.0"
     "@aws-sdk/client-firehose" "^3.58.0"
     "@aws-sdk/types" "^3.55.0"
-    "@loadmill/universal" "0.3.76"
+    "@loadmill/universal" "0.3.77"
     cheerio "^0.22.0"
     crypto-js "^4.1.1"
     http-headers-validation "^0.0.1"
@@ -2673,13 +2673,13 @@
     urijs "^1.18.1"
     validator "^13.7.0"
 
-"@loadmill/executer@0.1.82":
-  version "0.1.82"
-  resolved "https://registry.yarnpkg.com/@loadmill/executer/-/executer-0.1.82.tgz#84ae0f1c7cd3ba0377888c5ca024cabd4b30208d"
-  integrity sha512-VLE6swnEXEWUQZtivoXhkrFmDzZUimN7z1XGk70itNkI4rrfoD7+JQnVjJyQ+dKK3O7O+duxtlPilchXbohTiA==
+"@loadmill/executer@0.1.83":
+  version "0.1.83"
+  resolved "https://registry.yarnpkg.com/@loadmill/executer/-/executer-0.1.83.tgz#26cd09f6d35c1dc42d1cefef1079e4a9ab307381"
+  integrity sha512-QoLICHsbPa8YcTlGiZPVSp/UAal1cRIlaRU8jSX/WMxxX+LFpwIUKqB+PNmd4644OMXLCkYl5V1omZkRtzeByw==
   dependencies:
-    "@loadmill/core" "0.3.81"
-    "@loadmill/universal" "0.3.76"
+    "@loadmill/core" "0.3.82"
+    "@loadmill/universal" "0.3.77"
     "@types/estree" "^0.0.50"
     acorn "^8.4.1"
     agentkeepalive "^4.1.3"
@@ -2691,10 +2691,10 @@
     urijs "^1.18.1"
     vm2 "^3.9.6"
 
-"@loadmill/universal@0.3.76":
-  version "0.3.76"
-  resolved "https://registry.yarnpkg.com/@loadmill/universal/-/universal-0.3.76.tgz#8e73dae1dd84319c0c11f4f69993325265ceb844"
-  integrity sha512-2rk7YCkgH3AMVbU/yR7Z5WARqejW5kB8bEmz+p+ctLwd5gSj/gAVFB1CXhSto32kjUPh/Flmx0c09yvTSKzuyg==
+"@loadmill/universal@0.3.77":
+  version "0.3.77"
+  resolved "https://registry.yarnpkg.com/@loadmill/universal/-/universal-0.3.77.tgz#13a30ca73a7b353430748f9b0548f92bef49f772"
+  integrity sha512-7LsnX83eKZwP5piak2KDzc4aM7xOonZ6385ibI8NiaLRgxjtmgrZuw6IuKgK8AZqjFn7lE5gS7KBr99LOnYtiw==
   dependencies:
     chalk "^4.1.0"
     circular-json "^0.5.1"
