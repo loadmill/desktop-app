@@ -15,26 +15,13 @@ export const subscribeToToggleMaximizeWindow = (mainWindow: BrowserWindow): void
 };
 
 const TITLE_BAR_HEIGHT = 44;
-
-/*
-Try to use this logic:
-
-// Get the bounds of the parent window's content area
-    const { x, y, width, height } = mainWindow.getContentBounds()
-    const topSpace = TITLE_BAR_HEIGHT
-    const bottomSpace = TITLE_BAR_HEIGHT
-
-    // Subtract the top and bottom space from the height
-    const viewHeight = height - topSpace - bottomSpace
-
-    view.setBounds({ x, y: y + topSpace, width, height: viewHeight })
-*/
+const HEIGHT_OFFSET = process.platform === 'win32' ? (TITLE_BAR_HEIGHT * 2) : TITLE_BAR_HEIGHT;
 
 export const setBrowserViewSize = (view: BrowserView, bounds: Electron.Rectangle): void => {
   const { width, height } = bounds;
-  const boundsHeight = process.platform === 'win32' ? height - (TITLE_BAR_HEIGHT * 2) : height - TITLE_BAR_HEIGHT;
+
   view.setBounds({
-    height: boundsHeight,
+    height: height - HEIGHT_OFFSET,
     width,
     x: 0,
     y: TITLE_BAR_HEIGHT,
