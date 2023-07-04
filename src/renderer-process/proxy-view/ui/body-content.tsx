@@ -68,7 +68,8 @@ type BodyContentTextProps = {
   prettyText: string;
 };
 
-const getBodyContentProps = ({ mimeType = '', text = '' }: Body, shouldDecode = false): BodyContentTextProps => {
+const getBodyContentProps = ({ mimeType = '', text }: Body, shouldDecode = false): BodyContentTextProps => {
+  text ||= '';
   text = shouldDecode ? atob(text) : text;
   if (isJSON(mimeType, text)) {
     return {

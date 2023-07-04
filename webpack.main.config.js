@@ -25,7 +25,7 @@ module.exports = {
   resolve: {
     alias: {
       formidable: false,
-      type: 'type-component'
+      type: 'type-component',
     },
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
   },
