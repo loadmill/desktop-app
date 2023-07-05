@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const isWindowsOS = process.platform === 'win32';
 
+const version = require('./package.json').version;
+
 module.exports = {
   makers: [
     {
@@ -10,6 +12,7 @@ module.exports = {
         certificatePassword: process.env.CERTIFICATE_PASSWORD,
         iconUrl: 'https://loadmill.com/favicon.ico',
         'name': 'loadmill',
+        setupExe: `loadmill-windows-setup-${version}.exe`,
         setupIcon: './images/loadmill-icon-256-256.ico',
       },
       'name': '@electron-forge/maker-squirrel',
