@@ -91,8 +91,7 @@ jobs:
                 command: yarn forge-publish
   build_windows:
     executor:
-      name: win/default
-      size: medium
+      name: win/server-2022
       shell: bash.exe
     steps:
       - checkout
