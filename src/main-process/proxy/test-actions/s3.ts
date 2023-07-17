@@ -1,7 +1,8 @@
 import FormData from 'form-data';
-import fetch from 'node-fetch';
 
+import log from '../../../log';
 import { callLoadmillApi } from '../../call-loadmill-api';
+import { fetch } from '../../fetch';
 
 export async function uploadToS3(har: string): Promise<string> {
   const { data, key, url } = await getUploadPolicy();
@@ -9,6 +10,7 @@ export async function uploadToS3(har: string): Promise<string> {
     body: toForm(har, data),
     method: 'POST',
   });
+  log.info('Uploaded HAR to S3', { key });
 
   return key;
 }
@@ -18,6 +20,7 @@ const getUploadPolicy = async (): Promise<S3UploadPolicy> => {
     method: 'GET',
   });
   const policy = await res.json();
+  log.info('Got S3 upload policy', { policy });
   return policy as S3UploadPolicy;
 };
 
