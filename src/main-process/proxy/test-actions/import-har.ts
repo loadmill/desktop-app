@@ -6,7 +6,9 @@ import { getTransformToken } from './transform';
 
 export const importHar = async (har: string, suiteId: string): Promise<string> => {
   const key = await uploadToS3(har);
-  const token = await getTransformToken(key, `api/test-suites/${suiteId}/import`);
+  const token = await getTransformToken(key, `api/test-suites/${suiteId}/import`, {
+    keepAllMimeTypes: true,
+  });
   return token;
 };
 

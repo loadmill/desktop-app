@@ -14,6 +14,7 @@ export type Har = {
 
 export type HarEntry = {
   request: Request & {
+    id: string;
     postData?: PostData;
     queryString: QueryString[];
   },

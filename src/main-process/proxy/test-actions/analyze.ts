@@ -6,6 +6,7 @@ import { subscribeToMainProcessMessage } from '../../main-events';
 import { getEntries } from '../entries';
 
 import { entriesToHarString } from './entries-to-har-string';
+import { handleNotSignedInError } from './error';
 import { getTransformResult, isTransformResult, LoadmillRequest, transform, TransformStatus } from './transform';
 
 export const subscribeToAnalyzeRequests = (): void => {
@@ -13,9 +14,20 @@ export const subscribeToAnalyzeRequests = (): void => {
 };
 
 const onAnalyzeRequests = async (): Promise<void> => {
-  const harAsString = entriesToHarString();
-  const token = await transform(harAsString, 'api/orca/transform');
-  await pollTransformStatus(token);
+  try {
+    const harAsString = entriesToHarString();
+    const token = await transform(harAsString, 'api/orca/analyze-requests', {
+      options: {
+        filterIrrelevantRequests: true,
+        keepAllMimeTypes: true,
+        removeIrrelevantRequests: false,
+      },
+    });
+    await pollTransformStatus(token);
+  } catch (err) {
+    log.error('Error analyzing requests', err);
+    handleNotSignedInError(err, ANALYZE_REQUESTS_COMPLETE);
+  }
 };
 
 const pollTransformStatus = async (token: string): Promise<void> => {
@@ -48,16 +60,11 @@ const pollTransformStatus = async (token: string): Promise<void> => {
       if (isTransformResult(details)) {
         const requests = details.conf.requests;
         const entries = getEntries();
-        if (requests.length === entries.length) {
-          markIrrelevantRequests(entries, requests);
-          sendFromProxyToRenderer({
-            data: { proxies: getEntries() },
-            type: UPDATED_ENTRIES,
-          });
-        } else {
-          log.error('Number of proxy entries and conf requests do not match', { entries, requests });
-          data = { error: 'Analyze failed' };
-        }
+        markIrrelevantRequests(entries, requests);
+        sendFromProxyToRenderer({
+          data: { proxies: getEntries() },
+          type: UPDATED_ENTRIES,
+        });
       }
     }
     clearInterval(intervalId);
@@ -69,15 +76,14 @@ const pollTransformStatus = async (token: string): Promise<void> => {
 };
 
 const markIrrelevantRequests = (entries: ProxyEntry[], requests: LoadmillRequest[]): void => {
-  entries.forEach((entry, index) => {
-    const isLastEntry = index === entries.length - 1;
-    const request = requests[index];
-    if (!isLastEntry && isIrrelevantRequest(request)) {
+  for (const entry of entries) {
+    if (shouldMarkEntryAsIrrelevant(entry, requests)) {
       entry.irrelevant = true;
     }
-  });
+  }
 };
 
-const isIrrelevantRequest = (request: LoadmillRequest): boolean => {
-  return request.method === 'GET' && (!request.extract || request.extract.length === 0);
+const shouldMarkEntryAsIrrelevant = (entry: ProxyEntry, requests: LoadmillRequest[]): boolean => {
+  const request = requests.find(request => request.id === entry.id);
+  return !request || request.irrelevant;
 };

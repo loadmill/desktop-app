@@ -5,22 +5,27 @@ import { callLoadmillApi } from '../../call-loadmill-api';
 
 import { uploadToS3 } from './s3';
 
-export const transform = async (har: string, path: string): Promise<string> => {
+export const transform = async (
+  har: string,
+  path: string,
+  options: TransformOptions = { options: {} },
+): Promise<string> => {
   const key = await uploadToS3(har);
-  const token = await getTransformToken(key, path);
+  const token = await getTransformToken(key, path, options);
   return token;
 };
 
-export const getTransformToken = async (key: string, path: string): Promise<string> => {
+export const getTransformToken = async (
+  key: string,
+  path: string,
+  restOfBody: { [key: string]: unknown } = {},
+): Promise<string> => {
   const channel = randomUUID();
   const res = await callLoadmillApi(path, {
     body: JSON.stringify({
       channel,
       key,
-      options: {
-        includeFailedRequests: true,
-        keepAllMimeTypes: true,
-      },
+      ...restOfBody,
     }),
     headers: {
       'Content-Type': 'application/json',
@@ -76,8 +81,13 @@ export const getTransformResult = async (
 };
 
 export type Extraction = { [parameter: string]: string | object };
-export type LoadmillRequest = { extract: Extraction[]; method: string; };
+export type LoadmillRequest = { extract: Extraction[]; id: string; irrelevant?: boolean; method: string; };
 export type TransformResult = { conf: { requests: LoadmillRequest[] } };
+export type TransformOptions = { options: {
+  filterIrrelevantRequests?: boolean;
+  keepAllMimeTypes?: boolean;
+  removeIrrelevantRequests?: boolean;
+} };
 
 export const isTransformResult = (result?: unknown): result is TransformResult => {
   return !!(result as TransformResult)?.conf?.requests;

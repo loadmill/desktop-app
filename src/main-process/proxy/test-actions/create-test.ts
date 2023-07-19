@@ -6,6 +6,7 @@ import { callLoadmillApi } from '../../call-loadmill-api';
 import { subscribeToMainProcessMessage } from '../../main-events';
 
 import { entriesToHarString } from './entries-to-har-string';
+import { handleNotSignedInError } from './error';
 import { getImportStatus, importHar } from './import-har';
 
 export const subscribeToCreateTest = (): void => {
@@ -13,12 +14,17 @@ export const subscribeToCreateTest = (): void => {
 };
 
 const onCreateTest = async (_event: Electron.IpcMainEvent, { suiteId }: MainMessage['data']): Promise<void> => {
-  if (!suiteId) {
-    suiteId = await createTestSuite();
+  try {
+    if (!suiteId) {
+      suiteId = await createTestSuite();
+    }
+    const harAsString = entriesToHarString({ onlyRelevant: true });
+    const token = await importHar(harAsString, suiteId);
+    await pollImportStatus(token);
+  } catch (err) {
+    log.error('Error creating test', err);
+    handleNotSignedInError(err, CREATE_TEST_COMPLETE);
   }
-  const harAsString = entriesToHarString({ onlyRelevant: true });
-  const token = await importHar(harAsString, suiteId);
-  await pollImportStatus(token);
 };
 
 const pollImportStatus = async (token: string): Promise<void> => {
