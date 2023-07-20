@@ -20,7 +20,6 @@ const onAnalyzeRequests = async (): Promise<void> => {
       options: {
         filterIrrelevantRequests: true,
         keepAllMimeTypes: true,
-        removeIrrelevantRequests: false,
       },
     });
     await pollTransformStatus(token);
