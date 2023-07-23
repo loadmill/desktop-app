@@ -107,6 +107,7 @@ export abstract class LoadmillViewRendererMessage implements IPCMessage {
 
 export abstract class ProxyRendererMessage implements IPCMessage {
   data?: {
+    canceledAction?: boolean;
     error?: string;
     filterRegex?: string;
     ipAddress?: string;

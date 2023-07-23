@@ -9,6 +9,7 @@ export const proxyEntryToHarEntry = (proxyEntry: ProxyEntry): HarEntry => {
   return {
     request: {
       headers: request.headers,
+      id: proxyEntry.id,
       method: request.method,
       postData: request.body,
       queryString: urlPathToQueryString(request.url),

@@ -52,5 +52,12 @@ const onImportHar = () => {
         type: IMPORT_HAR,
       });
     }
+  } else {
+    sendFromProxyToRenderer({
+      data: {
+        canceledAction: true,
+      },
+      type: IMPORT_HAR,
+    });
   }
 };

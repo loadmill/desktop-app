@@ -1,5 +1,6 @@
 import https from 'https';
 
+import { app } from 'electron';
 import fetch, { RequestInit, Response } from 'node-fetch';
 
 const httpsAgent = new https.Agent({
@@ -8,7 +9,7 @@ const httpsAgent = new https.Agent({
 
 const _fetch = async (path: string, reqInit: RequestInit = {}): Promise<Response> => {
   const response = await fetch(path, {
-    agent: httpsAgent,
+    agent: app.isPackaged && httpsAgent,
     ...reqInit,
   });
   return response;

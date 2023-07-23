@@ -37,6 +37,7 @@ export const harEntry: HarEntry = {
       { name: 'User-Agent', value: 'curl/7.64.1' },
       { name: 'Accept', value: '*/*' }
     ],
+    id: '5f9f1b9b-9c9c-4b9c-9b9b-9c9c9b9c9b9c',
     method: 'GET',
     postData: {
       mimeType: 'text/plain',

@@ -140,13 +140,15 @@ export const ProxyDashboard = (): JSX.Element => {
   };
 
   const onImportHar = (data: ProxyRendererMessage['data']) => {
-    if (data?.error) {
-      setSnackBarMessage('Importing HAR file failed: ' + data?.error);
-      setSeverity('error');
-    } else {
-      setSnackBarMessage('Imported HAR file successfully');
+    if (!data?.canceledAction) {
+      if (data?.error) {
+        setSnackBarMessage('Importing HAR file failed: ' + data?.error);
+        setSeverity('error');
+      } else {
+        setSnackBarMessage('Imported HAR file successfully');
+      }
+      setOpenSnackBar(true);
     }
-    setOpenSnackBar(true);
     setIsImportHarInProgress(false);
     setIsImportHarDisabled(false);
   };
