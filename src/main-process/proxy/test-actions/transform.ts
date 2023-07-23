@@ -83,11 +83,12 @@ export const getTransformResult = async (
 export type Extraction = { [parameter: string]: string | object };
 export type LoadmillRequest = { extract: Extraction[]; id: string; irrelevant?: boolean; method: string; };
 export type TransformResult = { conf: { requests: LoadmillRequest[] } };
-export type TransformOptions = { options: {
-  filterIrrelevantRequests?: boolean;
-  keepAllMimeTypes?: boolean;
-  removeIrrelevantRequests?: boolean;
-} };
+export type TransformOptions = {
+  options: {
+    filterIrrelevantRequests?: boolean;
+    keepAllMimeTypes?: boolean;
+  };
+};
 
 export const isTransformResult = (result?: unknown): result is TransformResult => {
   return !!(result as TransformResult)?.conf?.requests;

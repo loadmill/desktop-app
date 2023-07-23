@@ -42,6 +42,7 @@ const onImportHar = () => {
         },
         type: UPDATED_ENTRIES,
       });
+      sendFromProxyToRenderer({ type: IMPORT_HAR });
     } catch (e) {
       log.error('Error while parsing HAR file', e);
       sendFromProxyToRenderer({
@@ -51,11 +52,12 @@ const onImportHar = () => {
         type: IMPORT_HAR,
       });
     }
+  } else {
+    sendFromProxyToRenderer({
+      data: {
+        canceledAction: true,
+      },
+      type: IMPORT_HAR,
+    });
   }
-  sendFromProxyToRenderer({
-    data: {
-      canceledAction: true,
-    },
-    type: IMPORT_HAR,
-  });
 };
