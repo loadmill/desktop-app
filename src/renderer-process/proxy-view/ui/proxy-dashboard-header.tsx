@@ -21,11 +21,13 @@ export const ProxyDashboardHeader = ({
   isRecording,
   onImportHarClick,
   port,
-  selectedSuiteId,
+  selectedSuite,
   setFilterRegex,
   setIsDownloadInProgress,
-  setSelectedSuiteId,
+  setSelectedSuite,
   suites,
+  isFetchingSuites,
+  onSearchSuites,
 }: ProxyDashboardHeaderProps): JSX.Element => (
   <div
     className='proxy-dashboard-header'
@@ -76,8 +78,10 @@ export const ProxyDashboardHeader = ({
         setFilterRegex={ setFilterRegex }
       />
       <SuitesAutocomplete
-        selectedSuiteId={ selectedSuiteId }
-        setSelectedSuiteId={ setSelectedSuiteId }
+        isFetchingSuites={ isFetchingSuites }
+        onSearchSuites={ onSearchSuites }
+        selectedSuite={ selectedSuite }
+        setSelectedSuite={ setSelectedSuite }
         suites={ suites }
       />
     </div>
@@ -89,14 +93,16 @@ export type ProxyDashboardHeaderProps = {
   ipAddress?: string;
   isClearAllDisabled?: boolean;
   isDownloadInProgress?: boolean;
+  isFetchingSuites: boolean;
   isImportHarDisabled?: boolean;
   isImportHarInProgress?: boolean;
   isRecording?: boolean;
   onImportHarClick?: () => void;
+  onSearchSuites: (search: string) => void;
   port?: number;
-  selectedSuiteId?: string;
+  selectedSuite: SuiteOption | null;
   setFilterRegex?: (filterRegex: string) => void;
   setIsDownloadInProgress?: (isInProgress: boolean) => void;
-  setSelectedSuiteId?: (suiteId: string) => void;
-  suites?: SuiteOption[];
+  setSelectedSuite?: (suite: SuiteOption | null) => void;
+  suites: SuiteOption[];
 };

@@ -1,17 +1,33 @@
-import Autocomplete, { AutocompleteRenderInputParams } from '@mui/material/Autocomplete';
+import Autocomplete, { AutocompleteInputChangeReason, AutocompleteRenderInputParams } from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { SuiteOption } from '../../../types/suite';
 
 export const SuitesAutocomplete = ({
   suites = [],
-  selectedSuiteId,
-  setSelectedSuiteId,
+  selectedSuite,
+  setSelectedSuite,
+  isFetchingSuites,
+  onSearchSuites,
 }: SuitesAutocompleteProps): JSX.Element => {
+  const [suiteOptions, setSuiteOptions] = React.useState<SuiteOption[]>([]);
+
+  useEffect(() => {
+    setSuiteOptions(suites);
+  }, [suites]);
 
   const onChange = (_event: React.SyntheticEvent, newValue: SuiteOption) => {
-    setSelectedSuiteId(newValue.id);
+    setSelectedSuite(newValue);
+  };
+
+  const onSearch = (_event: React.SyntheticEvent, search: string, reason: AutocompleteInputChangeReason) => {
+    // Don't search when the user selects an option
+    if (reason === 'reset') {
+      return;
+    }
+
+    onSearchSuites(search);
   };
 
   const onRenderInput = (params: AutocompleteRenderInputParams) => {
@@ -24,25 +40,40 @@ export const SuitesAutocomplete = ({
     );
   };
 
+  const onRenderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SuiteOption) => {
+    return (
+      <li
+        { ...props }
+        key={ option.id }
+      >
+        {option.id ? option.description : `Create "${option.description}"`}
+      </li>
+    );
+  };
+
   return (
     <Autocomplete
       autoComplete
       disablePortal
       getOptionLabel={ (option: SuiteOption) => option.description }
+      loading={ isFetchingSuites }
       onChange={ onChange }
-      onOpen={ window.desktopApi.fetchSuites }
-      options={ suites }
+      onInputChange={ onSearch }
+      options={ suiteOptions }
       renderInput={ onRenderInput }
+      renderOption={ onRenderOption }
       sx={ {
         width: 240,
       } }
-      value={ selectedSuiteId }
+      value={ selectedSuite || null }
     />
   );
 };
 
 export type SuitesAutocompleteProps = {
-  selectedSuiteId?: string;
-  setSelectedSuiteId?: (suiteId: string) => void;
-  suites?: SuiteOption[];
+  isFetchingSuites: boolean;
+  onSearchSuites: (search: string) => void;
+  selectedSuite: SuiteOption | null;
+  setSelectedSuite: (selectedSuite: SuiteOption | null) => void;
+  suites: SuiteOption[];
 };

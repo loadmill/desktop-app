@@ -56,7 +56,7 @@ import { ViewName } from './views';
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] };
+  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | null };
   type: string;
 }
 
@@ -76,7 +76,8 @@ export abstract class MainMessage implements IPCMessage {
     isConnected?: boolean;
     isRecording?: boolean;
     isSignedIn?: boolean;
-    suiteId?: string;
+    search?: string;
+    suite?: SuiteOption | null;
     text?: string;
     toFind?: string;
     token?: string;

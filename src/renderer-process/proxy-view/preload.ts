@@ -3,6 +3,7 @@ import { contextBridge } from 'electron';
 import { sendToMain } from '../../inter-process-communication/renderer-to-main';
 import { ApiForLoadmillProxyView } from '../../types/api';
 import { ProxyRendererMessage } from '../../types/messaging';
+import { SuiteOption } from '../../types/suite';
 import {
   ANALYZE_REQUESTS,
   ANALYZE_REQUESTS_COMPLETE,
@@ -39,12 +40,12 @@ import { subscribeToProxyViewMessages } from '../renderer-events';
 export const WINDOW_API: ApiForLoadmillProxyView = {
   [ANALYZE_REQUESTS]: (): void => sendToMain(ANALYZE_REQUESTS),
   [CLEAR_ALL_ENTRIES]: (): void => sendToMain(CLEAR_ALL_ENTRIES),
-  [CREATE_TEST]: (suiteId?: string): void => sendToMain(CREATE_TEST, { suiteId }),
+  [CREATE_TEST]: (suite: SuiteOption): void => sendToMain(CREATE_TEST, { suite }),
   [DELETE_ENTRIES]: (entryIds: string[]): void => sendToMain(DELETE_ENTRIES, { entryIds }),
   [DELETE_ENTRY]: (entryId: string): void => sendToMain(DELETE_ENTRY, { entryId }),
   [DOWNLOAD_CERTIFICATE]: (): void => sendToMain(DOWNLOAD_CERTIFICATE),
   [EXPORT_AS_HAR]: (entryIds: string[]): void => sendToMain(EXPORT_AS_HAR, { entryIds }),
-  [FETCH_SUITES]: (): void => sendToMain(FETCH_SUITES),
+  [FETCH_SUITES]: (search?: string): void => sendToMain(FETCH_SUITES, { search }),
   [GET_IP_ADDRESS]: (ipvFamily?: 'IPv4' | 'IPv6'): void => sendToMain(GET_IP_ADDRESS, { ipvFamily }),
   [GET_PORT]: (): void => sendToMain(GET_PORT),
   [IMPORT_HAR]: (): void => sendToMain(IMPORT_HAR),

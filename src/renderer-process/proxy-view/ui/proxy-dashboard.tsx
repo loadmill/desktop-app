@@ -27,17 +27,21 @@ import { ProxyDashboardHeader } from './proxy-dashboard-header';
 import { ProxyEntries } from './proxy-entries';
 import { CustomizedSnackbars } from './snack-bar';
 
+const searchSuitesDelay = 500;
+let searchSuitesTimeout: NodeJS.Timeout;
+
 export const ProxyDashboard = (): JSX.Element => {
   const [shouldShowEntries, setShouldShowEntries] = useState<boolean>(false);
   const [entries, setEntries] = useState<ProxyEntry[]>([]);
   const [filterRegex, setFilterRegex] = useState<string>('');
   const [suites, setSuites] = useState<SuiteOption[]>([]);
+  const [isFetchingSuites, setIsFetchingSuites] = React.useState(false);
   const [isDownloadInProgress, setIsDownloadInProgress] = React.useState(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
   const [port, setPort] = useState<number>(0);
   const [loadingEntries, setLoadingEntries] = useState<boolean>(true);
-  const [selectedSuiteId, setSelectedSuiteId] = useState<string>();
+  const [selectedSuite, setSelectedSuite] = useState<SuiteOption>();
   const [isLoadingCreateTest, setIsLoadingCreateTest] = useState<boolean>(false);
   const [severity, setSeverity] = useState<'error' | 'success'>('success');
   const [isLoadingAnalyze, setIsLoadingAnalyze] = useState<boolean>(false);
@@ -195,11 +199,22 @@ export const ProxyDashboard = (): JSX.Element => {
 
   const onUpdatedSuites = ({ suites }: ProxyRendererMessage['data']) => {
     setSuites(suites);
+    setIsFetchingSuites(false);
   };
 
   const onCreateTest = () => {
     setIsLoadingCreateTest(true);
-    window.desktopApi.createTest(selectedSuiteId);
+    window.desktopApi.createTest(selectedSuite);
+  };
+
+  const onSearchSuites = (search: string) => {
+    setSuites([]);
+    setIsFetchingSuites(true);
+
+    clearTimeout(searchSuitesTimeout);
+    searchSuitesTimeout = setTimeout(() => {
+      window.desktopApi.fetchSuites(search);
+    }, searchSuitesDelay);
   };
 
   const onAnalyze = () => {
@@ -229,15 +244,17 @@ export const ProxyDashboard = (): JSX.Element => {
         ipAddress={ ipAddress }
         isClearAllDisabled={ isClearAllDisabled }
         isDownloadInProgress={ isDownloadInProgress }
+        isFetchingSuites={ isFetchingSuites }
         isImportHarDisabled={ isImportHarDisabled }
         isImportHarInProgress={ isImportHarInProgress }
         isRecording={ isRecording }
         onImportHarClick={ onImportHarClick }
+        onSearchSuites={ onSearchSuites }
         port={ port }
-        selectedSuiteId={ selectedSuiteId }
+        selectedSuite={ selectedSuite }
         setFilterRegex={ setFilterRegex }
         setIsDownloadInProgress={ setIsDownloadInProgress }
-        setSelectedSuiteId={ setSelectedSuiteId }
+        setSelectedSuite={ setSelectedSuite }
         suites={ suites }
       />
       <div

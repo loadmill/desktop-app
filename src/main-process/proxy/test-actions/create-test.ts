@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 import { sendFromProxyToRenderer } from '../../../inter-process-communication/proxy-to-render';
 import log from '../../../log';
 import { MainMessage } from '../../../types/messaging';
@@ -13,10 +15,11 @@ export const subscribeToCreateTest = (): void => {
   subscribeToMainProcessMessage(CREATE_TEST, onCreateTest);
 };
 
-const onCreateTest = async (_event: Electron.IpcMainEvent, { suiteId }: MainMessage['data']): Promise<void> => {
+const onCreateTest = async (_event: Electron.IpcMainEvent, { suite }: MainMessage['data']): Promise<void> => {
   try {
+    let suiteId = suite?.id;
     if (!suiteId) {
-      suiteId = await createTestSuite();
+      suiteId = await createTestSuite(suite?.description);
     }
     const harAsString = entriesToHarString({ onlyRelevant: true });
     const token = await importHar(harAsString, suiteId);
@@ -56,10 +59,18 @@ const pollImportStatus = async (token: string): Promise<void> => {
   }, POLLING_INTERVAL_MS);
 };
 
-const createTestSuite = async (): Promise<string> => {
+const createTestSuite = async (
+  description: string = getTestSuiteDescription(),
+): Promise<string> => {
   const res = await callLoadmillApi('api/test-suites', {
+    body: JSON.stringify({ meta: { description } }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
     method: 'POST',
   });
   const { testSuiteId } = await res.json() as { testSuiteId: string };
   return testSuiteId;
 };
+
+const getTestSuiteDescription = () => 'Composed Test Suite - ' + dayjs().format('MMM DD');
