@@ -35,7 +35,7 @@ export const ProxyDashboard = (): JSX.Element => {
   const [entries, setEntries] = useState<ProxyEntry[]>([]);
   const [filterRegex, setFilterRegex] = useState<string>('');
   const [suites, setSuites] = useState<SuiteOption[]>([]);
-  const [isFetchingSuites, setIsFetchingSuites] = React.useState(false);
+  const [isFetchingSuites, setIsFetchingSuites] = React.useState(true);
   const [isDownloadInProgress, setIsDownloadInProgress] = React.useState(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
