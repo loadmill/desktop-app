@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { isFromPreload } from '../../../inter-process-communication';
 import { ProxyRendererMessage } from '../../../types/messaging';
 import { ProxyEntry } from '../../../types/proxy-entry';
-import { SuiteOption } from '../../../types/suite';
+import { SuiteOption, TestSuite } from '../../../types/suite';
 import {
   ANALYZE_REQUESTS_COMPLETE,
   CREATE_TEST_COMPLETE,
@@ -197,8 +197,8 @@ export const ProxyDashboard = (): JSX.Element => {
     setLoadingEntries(false);
   };
 
-  const onUpdatedSuites = ({ suites }: ProxyRendererMessage['data']) => {
-    setSuites(suites);
+  const onUpdatedSuites = ({ suites, search }: ProxyRendererMessage['data']) => {
+    setSuites(toSuiteOptions(suites, search));
     setIsFetchingSuites(false);
   };
 
@@ -210,11 +210,7 @@ export const ProxyDashboard = (): JSX.Element => {
   const onSearchSuites = (search: string) => {
     setSuites([]);
     setIsFetchingSuites(true);
-
-    clearTimeout(searchSuitesTimeout);
-    searchSuitesTimeout = setTimeout(() => {
-      window.desktopApi.fetchSuites(search);
-    }, searchSuitesDelay);
+    debounceSearchSuites(search);
   };
 
   const onAnalyze = () => {
@@ -300,6 +296,26 @@ export const ProxyDashboard = (): JSX.Element => {
       }
     </div>
   );
+};
+
+const toSuiteOptions = (testSuites: TestSuite[], search: string): SuiteOption[] => {
+  const suiteOptions: SuiteOption[] = testSuites.map(({ description, id }) => ({ description, id }));
+  appendNewSuiteOptionIfNotExists(suiteOptions, search);
+  return suiteOptions;
+};
+
+const appendNewSuiteOptionIfNotExists = (suiteOptions: SuiteOption[], search?: string) => {
+  const isExists = suiteOptions.some(({ description }) => description === search);
+  if (search && !isExists) {
+    suiteOptions.push({ description: search, id: '' });
+  }
+};
+
+const debounceSearchSuites = (search: string) => {
+  clearTimeout(searchSuitesTimeout);
+  searchSuitesTimeout = setTimeout(() => {
+    window.desktopApi.fetchSuites(search);
+  }, searchSuitesDelay);
 };
 
 export type ProxyDashboardProps = {};

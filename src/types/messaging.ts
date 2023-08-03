@@ -116,6 +116,7 @@ export abstract class ProxyRendererMessage implements IPCMessage {
     port?: number;
     proxies?: ProxyEntry[];
     proxy?: ProxyEntry;
+    search?: string;
     suites?: SuiteOption[];
   };
   type: ProxyRendererMessageTypes;
