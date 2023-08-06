@@ -107,7 +107,8 @@ module.exports = {
       '@timfish/forge-externals-plugin',
       {
         'externals': [
-          'vm2'
+          'vm2',
+          'jsonpath',
         ],
         'includeDeps': true
       }

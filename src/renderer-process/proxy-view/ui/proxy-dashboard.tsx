@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { isFromPreload } from '../../../inter-process-communication';
 import { ProxyRendererMessage } from '../../../types/messaging';
 import { ProxyEntry } from '../../../types/proxy-entry';
-import { SuiteOption } from '../../../types/suite';
+import { SuiteOption, TestSuite } from '../../../types/suite';
 import {
   ANALYZE_REQUESTS_COMPLETE,
   CREATE_TEST_COMPLETE,
@@ -27,17 +27,21 @@ import { ProxyDashboardHeader } from './proxy-dashboard-header';
 import { ProxyEntries } from './proxy-entries';
 import { CustomizedSnackbars } from './snack-bar';
 
+const searchSuitesDelay = 500;
+let searchSuitesTimeout: NodeJS.Timeout;
+
 export const ProxyDashboard = (): JSX.Element => {
   const [shouldShowEntries, setShouldShowEntries] = useState<boolean>(false);
   const [entries, setEntries] = useState<ProxyEntry[]>([]);
   const [filterRegex, setFilterRegex] = useState<string>('');
   const [suites, setSuites] = useState<SuiteOption[]>([]);
+  const [isFetchingSuites, setIsFetchingSuites] = React.useState(true);
   const [isDownloadInProgress, setIsDownloadInProgress] = React.useState(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [ipAddress, setIpAddress] = useState<string>('');
   const [port, setPort] = useState<number>(0);
   const [loadingEntries, setLoadingEntries] = useState<boolean>(true);
-  const [selectedSuiteId, setSelectedSuiteId] = useState<string>();
+  const [selectedSuite, setSelectedSuite] = useState<SuiteOption>();
   const [isLoadingCreateTest, setIsLoadingCreateTest] = useState<boolean>(false);
   const [severity, setSeverity] = useState<'error' | 'success'>('success');
   const [isLoadingAnalyze, setIsLoadingAnalyze] = useState<boolean>(false);
@@ -193,13 +197,20 @@ export const ProxyDashboard = (): JSX.Element => {
     setLoadingEntries(false);
   };
 
-  const onUpdatedSuites = ({ suites }: ProxyRendererMessage['data']) => {
-    setSuites(suites);
+  const onUpdatedSuites = ({ suites, search }: ProxyRendererMessage['data']) => {
+    setSuites(toSuiteOptions(suites, search));
+    setIsFetchingSuites(false);
   };
 
   const onCreateTest = () => {
     setIsLoadingCreateTest(true);
-    window.desktopApi.createTest(selectedSuiteId);
+    window.desktopApi.createTest(selectedSuite);
+  };
+
+  const onSearchSuites = (search: string) => {
+    setSuites([]);
+    setIsFetchingSuites(true);
+    debounceSearchSuites(search);
   };
 
   const onAnalyze = () => {
@@ -229,15 +240,17 @@ export const ProxyDashboard = (): JSX.Element => {
         ipAddress={ ipAddress }
         isClearAllDisabled={ isClearAllDisabled }
         isDownloadInProgress={ isDownloadInProgress }
+        isFetchingSuites={ isFetchingSuites }
         isImportHarDisabled={ isImportHarDisabled }
         isImportHarInProgress={ isImportHarInProgress }
         isRecording={ isRecording }
         onImportHarClick={ onImportHarClick }
+        onSearchSuites={ onSearchSuites }
         port={ port }
-        selectedSuiteId={ selectedSuiteId }
+        selectedSuite={ selectedSuite }
         setFilterRegex={ setFilterRegex }
         setIsDownloadInProgress={ setIsDownloadInProgress }
-        setSelectedSuiteId={ setSelectedSuiteId }
+        setSelectedSuite={ setSelectedSuite }
         suites={ suites }
       />
       <div
@@ -283,6 +296,26 @@ export const ProxyDashboard = (): JSX.Element => {
       }
     </div>
   );
+};
+
+const toSuiteOptions = (testSuites: TestSuite[], search: string): SuiteOption[] => {
+  const suiteOptions: SuiteOption[] = testSuites.map(({ description, id }) => ({ description, id }));
+  appendNewSuiteOptionIfNotExists(suiteOptions, search);
+  return suiteOptions;
+};
+
+const appendNewSuiteOptionIfNotExists = (suiteOptions: SuiteOption[], search?: string) => {
+  const isExists = suiteOptions.some(({ description }) => description === search);
+  if (search && !isExists) {
+    suiteOptions.push({ description: search, id: '' });
+  }
+};
+
+const debounceSearchSuites = (search: string) => {
+  clearTimeout(searchSuitesTimeout);
+  searchSuitesTimeout = setTimeout(() => {
+    window.desktopApi.fetchSuites(search);
+  }, searchSuitesDelay);
 };
 
 export type ProxyDashboardProps = {};

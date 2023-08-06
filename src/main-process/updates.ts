@@ -51,8 +51,8 @@ const showNoUpdatesDialog = async (): Promise<void> => {
 
     const noUpdatesDialogOpts: Electron.MessageBoxOptions = {
       buttons: ['OK'],
-      detail: 'You’ve got the latest version of Loadmill Desktop Agent',
-      message: 'Your agent is up to date',
+      detail: 'You’ve got the latest version of Loadmill Desktop App',
+      message: 'Your app is up to date',
       type: 'info',
     };
 

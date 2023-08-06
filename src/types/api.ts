@@ -28,6 +28,7 @@ import {
   TOGGLE_MAXIMIZE_WINDOW
 } from '../universal/constants';
 
+import { SuiteOption } from './suite';
 import { ViewName } from './views';
 
 declare global {
@@ -56,12 +57,12 @@ export type ApiForLoadmillBrowserView = {
 export type ApiForLoadmillProxyView = {
   [ANALYZE_REQUESTS]: () => void;
   [CLEAR_ALL_ENTRIES]: () => void;
-  [CREATE_TEST]: (suiteId?: string) => void;
+  [CREATE_TEST]: (suite: SuiteOption | null) => void;
   [DELETE_ENTRIES]: (entryIds: string[]) => void;
   [DELETE_ENTRY]: (entryId: string) => void;
   [DOWNLOAD_CERTIFICATE]: () => void;
   [EXPORT_AS_HAR]: (entryIds: string[]) => void;
-  [FETCH_SUITES]: () => void;
+  [FETCH_SUITES]: (search?: string) => void;
   [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
   [GET_PORT]: () => void;
   [IMPORT_HAR]: () => void;
