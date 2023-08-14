@@ -160,8 +160,8 @@ jobs:
             - run:
                 name: Construct Artifacts URLs
                 command: |
-                  WINDOWS_INSTALLER_URL=$(echo $ARTIFACTS | jq -e -r '.items[0].url')
-                  WINDOWS_ZIP_URL=$(echo $ARTIFACTS | jq -e -r '.items[3].url')
+                  WINDOWS_INSTALLER_URL=$(echo $ARTIFACTS | jq -e -r '.items[] | select(.url | endswith(".exe")) | .url')
+                  WINDOWS_ZIP_URL=$(echo $ARTIFACTS | jq -e -r '.items[] | select(.url | endswith(".zip")) | .url')
                   echo $WINDOWS_INSTALLER_URL
                   echo $WINDOWS_ZIP_URL
                   echo "export WINDOWS_INSTALLER_URL='${WINDOWS_INSTALLER_URL}'" >> $BASH_ENV
@@ -188,8 +188,8 @@ jobs:
             - run:
                 name: Construct Artifacts Paths
                 command: |
-                  WINDOWS_INSTALLER_PATH=$(echo $ARTIFACTS | jq -e -r '.items[0].path')
-                  WINDOWS_ZIP_PATH=$(echo $ARTIFACTS | jq -e -r '.items[3].path')
+                  WINDOWS_INSTALLER_PATH=$(echo $ARTIFACTS | jq -e -r '.items[] | select(.path | endswith(".exe")) | .path')
+                  WINDOWS_ZIP_PATH=$(echo $ARTIFACTS | jq -e -r '.items[] | select(.path | endswith(".zip")) | .path')
                   echo $WINDOWS_INSTALLER_PATH
                   echo $WINDOWS_ZIP_PATH
                   echo "export WINDOWS_INSTALLER_PATH='${WINDOWS_INSTALLER_PATH}'" >> $BASH_ENV
