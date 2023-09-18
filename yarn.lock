@@ -2637,28 +2637,29 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@loadmill/agent@^0.1.90":
-  version "0.1.90"
-  resolved "https://registry.yarnpkg.com/@loadmill/agent/-/agent-0.1.90.tgz#efd46d2523d19b6fcf85dc88b13c5a4dafe9f209"
-  integrity sha512-wHwir4Gi2iTed4Yx/CJZLZcZrSxGvekt36xUukEAoaSyAEeXlyDIl2uQ9G5YoSOFt7wuigozWFe7rYKF7L1JLw==
+"@loadmill/agent@^0.1.91":
+  version "0.1.91"
+  resolved "https://registry.yarnpkg.com/@loadmill/agent/-/agent-0.1.91.tgz#b8473b02fe1b5e2640222141f0baed1132a2f226"
+  integrity sha512-GNjVH2s+Nn9Sj6OQ5CiLonRyIKtLaEsu6A/Fb4hVGmmwcVKNp8ElOUN+a2Ok+ChzYzx06Yawsouo0czUB4ANGw==
   dependencies:
-    "@loadmill/executer" "0.1.88"
-    "@loadmill/universal" "0.3.82"
+    "@loadmill/executer" "0.1.89"
+    "@loadmill/universal" "0.3.83"
     commander "^6.1.0"
     js-yaml "^3.14.0"
     socket.io-client "^3.1.3"
     superagent "^8.0.9"
     uuid "^3.0.1"
 
-"@loadmill/core@0.3.87":
-  version "0.3.87"
-  resolved "https://registry.yarnpkg.com/@loadmill/core/-/core-0.3.87.tgz#f2caa2b7ae79a8ef2b704c4f0892f32659bb85be"
-  integrity sha512-AJB0HpQpsGDc4JgDTkH/WWOCEJCoJ8GqkjNegCIQzYIzTmcIsqSoCAkjagnxcURsUV9CfSWNZds+prGTMRtoNQ==
+"@loadmill/core@0.3.88":
+  version "0.3.88"
+  resolved "https://registry.yarnpkg.com/@loadmill/core/-/core-0.3.88.tgz#7bab4655f39669ae64346dfd1aebc325e4613e68"
+  integrity sha512-+thWMh2cpjpwV1koyfhPg54FkpS/cA9lTQlRPMpoRFOUMjK64mwZPidYRYlku033r2IjlF6tE+bpL2XAJWoqvw==
   dependencies:
     "@aws-sdk/client-cognito-identity" "^3.58.0"
     "@aws-sdk/client-firehose" "^3.58.0"
     "@aws-sdk/types" "^3.55.0"
-    "@loadmill/universal" "0.3.82"
+    "@loadmill/universal" "0.3.83"
+    "@xmldom/xmldom" "^0.8.10"
     cheerio "^0.22.0"
     crypto-js "^4.1.1"
     http-headers-validation "^0.0.1"
@@ -2672,14 +2673,15 @@
     seedrandom "3.0.5"
     urijs "^1.18.1"
     validator "^13.7.0"
+    xpath "^0.0.32"
 
-"@loadmill/executer@0.1.88":
-  version "0.1.88"
-  resolved "https://registry.yarnpkg.com/@loadmill/executer/-/executer-0.1.88.tgz#3f92a587c0c4f47b51144f192d0817a092f180f9"
-  integrity sha512-769H1oh2uKhNHrUHUaOBiqPk/ar2qbsJL6IXDxzwZKO7MfMYtX0egd4ky7ae5EZUky7Ctzwb46e94f3GjN1jrg==
+"@loadmill/executer@0.1.89":
+  version "0.1.89"
+  resolved "https://registry.yarnpkg.com/@loadmill/executer/-/executer-0.1.89.tgz#3f89a977dd182382bd8e3dcfd68827d8fda939b7"
+  integrity sha512-h7Z/Ao1nrBNMNStPX/ZaHi8KndJwas5pZlxhSlAWE8G+njh8rxtGvkyDeSmuzMwrEmqiPAFIsrkNCApN184y+A==
   dependencies:
-    "@loadmill/core" "0.3.87"
-    "@loadmill/universal" "0.3.82"
+    "@loadmill/core" "0.3.88"
+    "@loadmill/universal" "0.3.83"
     "@types/estree" "^0.0.50"
     acorn "^8.4.1"
     agentkeepalive "^4.1.3"
@@ -2691,10 +2693,10 @@
     urijs "^1.18.1"
     vm2 "^3.9.6"
 
-"@loadmill/universal@0.3.82":
-  version "0.3.82"
-  resolved "https://registry.yarnpkg.com/@loadmill/universal/-/universal-0.3.82.tgz#4d706b71e38da18e02773959a8a73e401d8ea64b"
-  integrity sha512-6p1glq9iIzTAgdprzXasYTe2lrwU0R6gCWwkvFoCcYBs8eYZnSvWjqK+zN1+sXwWB6f8RVK84vau3NzBq2Qz3w==
+"@loadmill/universal@0.3.83":
+  version "0.3.83"
+  resolved "https://registry.yarnpkg.com/@loadmill/universal/-/universal-0.3.83.tgz#2ac8b0af745ee734f3aba605e52a14f6af6fb925"
+  integrity sha512-G4eyGY4bofDcKoCwj4JksIUBZK4myi/q7DtzqZ+T9glK9FevT8bGJNS0mk/um3c8VwJXwBPGtV9SWOpaUczPyg==
   dependencies:
     chalk "^4.1.0"
     circular-json "^0.5.1"
@@ -3660,6 +3662,11 @@
   dependencies:
     "@webassemblyjs/ast" "1.11.1"
     "@xtuc/long" "4.2.2"
+
+"@xmldom/xmldom@^0.8.10":
+  version "0.8.10"
+  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.10.tgz#a1337ca426aa61cef9fe15b5b28e340a72f6fa99"
+  integrity sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -12123,6 +12130,11 @@ xmlhttprequest-ssl@~1.6.2:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.6.3.tgz#03b713873b01659dfa2c1c5d056065b27ddc2de6"
   integrity sha512-3XfeQE/wNkvrIktn2Kf0869fC0BN6UpydVasGIeSm2B1Llihf7/0UfZM+eCkOw3P7bP4+qPgqhm7ZoxuJtFU0Q==
+
+xpath@^0.0.32:
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/xpath/-/xpath-0.0.32.tgz#1b73d3351af736e17ec078d6da4b8175405c48af"
+  integrity sha512-rxMJhSIoiO8vXcWvSifKqhvV96GjiD5wYb8/QHdoRyQvraTpp4IEv944nhGausZZ3u7dhQXteZuZbaqfpB7uYw==
 
 xtend@^4.0.0:
   version "4.0.2"
