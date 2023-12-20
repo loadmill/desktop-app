@@ -33,7 +33,7 @@ const onCreateTest = async (_event: Electron.IpcMainEvent, { suite }: MainMessag
 const pollImportStatus = async (token: string): Promise<void> => {
   log.info('Polling import status');
   const POLLING_INTERVAL_MS = 2000;
-  const MAX_POLLING_ATTEMPTS = 10;
+  const MAX_POLLING_ATTEMPTS = 100;
   let pollingAttempts = 0;
 
   const intervalId = setInterval(async () => {
