@@ -25,7 +25,7 @@ import {
   START_AGENT,
   STOP_AGENT,
   SWITCH_VIEW,
-  TOGGLE_MAXIMIZE_WINDOW
+  TOGGLE_MAXIMIZE_WINDOW,
 } from '../universal/constants';
 
 import { SuiteOption } from './suite';

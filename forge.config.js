@@ -22,7 +22,7 @@ module.exports = {
       'platforms': [
         'darwin',
         'win32',
-      ]
+      ],
     },
     {
       config: {
@@ -31,8 +31,8 @@ module.exports = {
             size: {
               height: 460,
               width: 650,
-            }
-          }
+            },
+          },
         },
         background: './images/dmg-background.png',
         format: 'ULFO',
@@ -72,36 +72,36 @@ module.exports = {
               'js': './src/renderer-process/main-window/renderer.ts',
               'name': 'main_window',
               'preload': {
-                'js': './src/renderer-process/main-window/preload.ts'
-              }
+                'js': './src/renderer-process/main-window/preload.ts',
+              },
             },
             {
               'html': './src/renderer-process/loadmill-view/index.html',
               'js': './src/renderer-process/loadmill-view/renderer.ts',
               'name': 'loadmill_view',
               'preload': {
-                'js': './src/renderer-process/loadmill-view/preload.ts'
-              }
+                'js': './src/renderer-process/loadmill-view/preload.ts',
+              },
             },
             {
               'html': './src/renderer-process/proxy-view/index.html',
               'js': './src/renderer-process/proxy-view/renderer.ts',
               'name': 'proxy_view',
               'preload': {
-                'js': './src/renderer-process/proxy-view/preload.ts'
-              }
+                'js': './src/renderer-process/proxy-view/preload.ts',
+              },
             },
             {
               'html': './src/renderer-process/agent-view/index.html',
               'js': './src/renderer-process/agent-view/renderer.ts',
               'name': 'agent_view',
               'preload': {
-                'js': './src/renderer-process/agent-view/preload.ts'
-              }
+                'js': './src/renderer-process/agent-view/preload.ts',
+              },
             },
-          ]
-        }
-      }
+          ],
+        },
+      },
     ],
     [
       '@timfish/forge-externals-plugin',
@@ -110,9 +110,9 @@ module.exports = {
           'vm2',
           'jsonpath',
         ],
-        'includeDeps': true
-      }
-    ]
+        'includeDeps': true,
+      },
+    ],
   ],
   publishers: [
     {
@@ -126,6 +126,6 @@ module.exports = {
         },
       },
       name: '@electron-forge/publisher-github',
-    }
+    },
   ],
 };

@@ -44,7 +44,7 @@ import {
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
   UPDATED_ENTRIES,
-  UPDATED_SUITES
+  UPDATED_SUITES,
 } from '../universal/constants';
 
 import { Navigation } from './navigation';

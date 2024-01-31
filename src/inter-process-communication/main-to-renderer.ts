@@ -21,7 +21,7 @@ export const sendToRenderer = ({ type, data }: RendererMessage): void => {
       MainToRender.mainWindow.webContents.send(type, data);
     } else {
       log.warn('Cannot send from Main process to Renderer Process. Reason: No mainWindow on MainToRender object.', {
-        data, type
+        data, type,
       });
     }
   } catch (e) {

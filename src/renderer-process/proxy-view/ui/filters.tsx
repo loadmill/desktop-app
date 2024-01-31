@@ -11,7 +11,7 @@ export const FilterRegex = ({
     debounce((filterRegex: string) => {
       window.desktopApi.setFilterRegex(filterRegex);
     }, 250),
-    []
+    [],
   );
 
   const onChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {

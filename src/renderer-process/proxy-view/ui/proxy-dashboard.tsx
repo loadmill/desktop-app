@@ -19,7 +19,7 @@ import {
   PORT,
   PROXY,
   UPDATED_ENTRIES,
-  UPDATED_SUITES
+  UPDATED_SUITES,
 } from '../../../universal/constants';
 
 import { ProxyDashboardFooter } from './proxy-dashboard-footer';

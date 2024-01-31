@@ -16,7 +16,7 @@ const showUpdateAndRestartDialog = (
   releaseNotes: string,
   releaseName: string,
   releaseDate: Date,
-  updateURL: string
+  updateURL: string,
 ): void => {
   log.info(UPDATE_DOWNLOADED, { event, releaseDate, releaseName, releaseNotes, updateURL });
 

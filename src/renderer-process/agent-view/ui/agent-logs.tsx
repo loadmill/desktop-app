@@ -5,7 +5,7 @@ import { AgentRendererMessage } from '../../../types/messaging';
 import {
   MESSAGE,
   STDERR,
-  STDOUT
+  STDOUT,
 } from '../../../universal/constants';
 import { textToNonEmptyLines } from '../../../universal/utils';
 

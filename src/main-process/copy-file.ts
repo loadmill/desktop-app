@@ -5,7 +5,7 @@ import log from '../log';
 export const copyFile = (
   source: string,
   target: string,
-  onSuccess: () => void
+  onSuccess: () => void,
 ): void => {
   log.info('savePath', target);
   const fileData = fs.readFileSync(source);

@@ -7,7 +7,7 @@ import {
   GO_BACK,
   GO_FORWARD,
   NAVIGATION,
-  REFRESH_PAGE
+  REFRESH_PAGE,
 } from '../universal/constants';
 
 import { subscribeToMainProcessMessage } from './main-events';

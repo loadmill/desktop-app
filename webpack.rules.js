@@ -10,8 +10,8 @@ module.exports = [
     parser: {
       amd: false,
       javascript: {
-        commonjsMagicComments: true
-      }
+        commonjsMagicComments: true,
+      },
     },
     test: /\.(m?js|node)$/,
     use: {

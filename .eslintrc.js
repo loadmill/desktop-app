@@ -19,7 +19,7 @@ module.exports = {
       files: ['*.ts', '*.tsx'],
       rules: {
         '@typescript-eslint/explicit-module-boundary-types': 'error',
-      }
+      },
     },
     {
       files: ['*.tsx'],
@@ -51,7 +51,7 @@ module.exports = {
       rules: {
         'no-console': 'off',
       },
-    }
+    },
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -96,7 +96,11 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': ['error'],
     '@typescript-eslint/no-var-requires': 'off',
     'brace-style': ['error'],
-    'comma-spacing': ['error', { 'after': true, 'before': false, }],
+    'comma-dangle': ['error', 'always-multiline'],
+    'comma-spacing': ['error', {
+      'after': true,
+      'before': false,
+    }],
     'comma-style': ['error', 'last'],
     'curly': ['error'],
     'eol-last': ['error'],
@@ -111,7 +115,7 @@ module.exports = {
       'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
       'newlines-between': 'always',
       'warnOnUnassignedImports': true,
-    }
+    },
     ],
     'indent': ['error', 2, { 'SwitchCase': 1 }],
     'jsx-quotes': ['error', 'prefer-single'],
@@ -127,7 +131,7 @@ module.exports = {
     'no-use-before-define': 'off',
     'no-var': 'error',
     'object-curly-spacing': ['error', 'always'],
-    'prefer-const': ['error', { destructuring: 'all', },],
+    'prefer-const': ['error', { destructuring: 'all' }],
     'quotes': ['error', 'single'],
     'react-hooks/exhaustive-deps': 'off',
     'react/boolean-prop-naming': ['error', {
@@ -141,8 +145,8 @@ module.exports = {
     'react/jsx-curly-newline': ['error',
       {
         multiline: 'consistent',
-        singleline: 'consistent'
-      }
+        singleline: 'consistent',
+      },
     ],
     'react/jsx-curly-spacing': [
       'error',
@@ -152,7 +156,7 @@ module.exports = {
       },
     ],
     'react/jsx-equals-spacing': 'error',
-    'react/jsx-first-prop-new-line': ['error', 'multiline',],
+    'react/jsx-first-prop-new-line': ['error', 'multiline'],
     'react/jsx-fragments': 'error',
     'react/jsx-indent': ['error', 2],
     'react/jsx-key': 'off',
@@ -188,7 +192,7 @@ module.exports = {
         ignoreDeclarationSort: true,
       // ignoreMemberSort: true,
       // allowSeparatedGroups: true
-      }
+      },
     ],
     'sort-keys': 'error',
     'sort-vars': 'error',

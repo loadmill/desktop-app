@@ -25,15 +25,15 @@ const template = [
       { role: 'hideOthers' },
       { role: 'unhide' },
       { type: 'separator' },
-      { role: 'quit' }
-    ]
+      { role: 'quit' },
+    ],
   }] : []),
   // { role: 'fileMenu' }
   {
     label: 'File',
     submenu: [
-      isMac ? { role: 'close' } : { role: 'quit' }
-    ]
+      isMac ? { role: 'close' } : { role: 'quit' },
+    ],
   },
   // { role: 'editMenu' }
   {
@@ -54,15 +54,15 @@ const template = [
           label: 'Speech',
           submenu: [
             { role: 'startSpeaking' },
-            { role: 'stopSpeaking' }
-          ]
-        }
+            { role: 'stopSpeaking' },
+          ],
+        },
       ] : [
         { role: 'delete' },
         { type: 'separator' },
-        { role: 'selectAll' }
-      ])
-    ]
+        { role: 'selectAll' },
+      ]),
+    ],
   },
   // { role: 'viewMenu' }
   {
@@ -82,7 +82,7 @@ const template = [
         click: () => switchToAgentView(),
         label: 'Private Agent Log',
       },
-    ]
+    ],
   },
   // { role: 'windowMenu' }
   {
@@ -94,11 +94,11 @@ const template = [
         { type: 'separator' },
         { role: 'front' },
         { type: 'separator' },
-        { role: 'window' }
+        { role: 'window' },
       ] : [
-        { role: 'close' }
-      ])
-    ]
+        { role: 'close' },
+      ]),
+    ],
   },
   {
     role: 'help',
@@ -109,9 +109,9 @@ const template = [
           await shell.openExternal('https://loadmill.com');
         },
         label: 'Learn More',
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];
 
 const menu = Menu.buildFromTemplate(template as Electron.MenuItemConstructorOptions[]);

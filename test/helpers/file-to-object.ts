@@ -5,7 +5,7 @@ export const importJSONResource = <T>(relativePath: string): T => {
   return JSON.parse(
     fs.readFileSync(
       path.join(
-        __dirname, relativePath)
-    ).toString()
+        __dirname, relativePath),
+    ).toString(),
   );
 };

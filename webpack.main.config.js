@@ -14,10 +14,10 @@ module.exports = {
     rules: require('./webpack.rules'),
   },
   node: {
-    __dirname: true
+    __dirname: true,
   },
   optimization: {
-    minimize: true
+    minimize: true,
   },
   output: {
     filename:'[name].js',
