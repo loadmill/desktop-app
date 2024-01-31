@@ -9,6 +9,7 @@ export const proxyEntry: ProxyEntry = {
       mimeType: 'text/plain',
       text: 'Hello, World!'
     },
+    description: 'GET /?foo=bar&baz=qux&baz=quux&corge=',
     headers: [
       { name: 'User-Agent', value: 'curl/7.64.1' },
       { name: 'Accept', value: '*/*' }
@@ -33,6 +34,7 @@ export const proxyEntry: ProxyEntry = {
 
 export const harEntry: HarEntry = {
   request: {
+    description: 'GET /?foo=bar&baz=qux&baz=quux&corge=',
     headers: [
       { name: 'User-Agent', value: 'curl/7.64.1' },
       { name: 'Accept', value: '*/*' }

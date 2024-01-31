@@ -81,7 +81,14 @@ export const getTransformResult = async (
 };
 
 export type Extraction = { [parameter: string]: string | object };
-export type LoadmillRequest = { extract: Extraction[]; id: string; irrelevant?: boolean; method: string; };
+export type LoadmillRequest = {
+  description: string;
+  extract: Extraction[];
+  id: string;
+  irrelevant?: boolean;
+  method: string;
+  url: string;
+};
 export type TransformResult = { conf: { requests: LoadmillRequest[] } };
 export type TransformOptions = {
   options: {

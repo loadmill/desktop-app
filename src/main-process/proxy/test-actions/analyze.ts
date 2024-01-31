@@ -4,6 +4,7 @@ import { ProxyEntry } from '../../../types/proxy-entry';
 import { ANALYZE_REQUESTS, ANALYZE_REQUESTS_COMPLETE, UPDATED_ENTRIES } from '../../../universal/constants';
 import { subscribeToMainProcessMessage } from '../../main-events';
 import { getEntries } from '../entries';
+import { assignRequestDescriptions } from '../request-description';
 
 import { entriesToHarString } from './entries-to-har-string';
 import { handleNotSignedInError } from './error';
@@ -60,6 +61,7 @@ const pollTransformStatus = async (token: string): Promise<void> => {
         const requests = details.conf.requests;
         const entries = getEntries();
         markIrrelevantRequests(entries, requests);
+        assignRequestDescriptions(entries, requests);
         sendFromProxyToRenderer({
           data: { proxies: getEntries() },
           type: UPDATED_ENTRIES,

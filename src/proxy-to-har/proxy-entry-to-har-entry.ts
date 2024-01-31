@@ -8,6 +8,7 @@ export const proxyEntryToHarEntry = (proxyEntry: ProxyEntry): HarEntry => {
 
   return {
     request: {
+      description: request.description,
       headers: request.headers,
       id: proxyEntry.id,
       method: request.method,

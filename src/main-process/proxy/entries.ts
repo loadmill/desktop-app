@@ -2,6 +2,10 @@ import log from '../../log';
 import { ProxyEntry } from '../../types/proxy-entry';
 
 import { filterEntries } from './filters';
+import {
+  setRequestDescription,
+  setRequestDescriptions,
+} from './request-description';
 
 const MAX_ENTRIES = 1000;
 
@@ -24,10 +28,12 @@ export const getEntries = ({ filter = true, onlyRelevant = false }: GetEntriesOp
 };
 
 export const appendEntries = (newEntries: ProxyEntry[]): void => {
+  setRequestDescriptions(newEntries);
   entries.push(...newEntries);
 };
 
 export const addEntry = (entry: ProxyEntry): void => {
+  setRequestDescription(entry.request);
   entries.push(entry);
   if (entries.length > MAX_ENTRIES) {
     entries.shift();
