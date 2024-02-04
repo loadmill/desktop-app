@@ -1,20 +1,17 @@
+import { LoadmillRequest } from '../../types/loadmill-types';
 import { ProxyEntry } from '../../types/proxy-entry';
 
-import { LoadmillRequest } from './test-actions/transform';
+import { iterateEntries } from './entries';
 
-export const assignRequestDescriptions = (entries: ProxyEntry[], requests: LoadmillRequest[]): void => {
-  entries.forEach(entry => assignRequestDescription(entry, requests));
-};
-
-const assignRequestDescription = (entry: ProxyEntry, requests: LoadmillRequest[]): void => {
+export const assignRequestDescription = (entry: ProxyEntry, requests: LoadmillRequest[]): void => {
   const request = requests.find(request => request.id === entry.id);
   if (request) {
-    entry.request.description = request.description;
+    entry.request.description = request.description || getDefaultRequestDescription(entry.request);
   }
 };
 
 export const setRequestDescriptions = (entries: ProxyEntry[]): void => {
-  entries.forEach(({ request }) => setRequestDescription(request));
+  iterateEntries(entries, (entry: ProxyEntry) => setRequestDescription(entry.request));
 };
 
 export const setRequestDescription = (request: ProxyEntry['request']): void => {

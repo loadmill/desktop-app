@@ -60,3 +60,10 @@ export const deleteEntries = (ids: ProxyEntry['id'][]): void => {
   }
   ids.forEach(id => deleteEntry(id));
 };
+
+export const iterateEntries = (
+  entries: ProxyEntry[],
+  callback: (entry: ProxyEntry) => void,
+): void => {
+  entries.forEach(callback);
+};

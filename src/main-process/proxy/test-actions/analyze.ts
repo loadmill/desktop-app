@@ -1,14 +1,15 @@
 import { sendFromProxyToRenderer } from '../../../inter-process-communication/proxy-to-render';
 import log from '../../../log';
+import { LoadmillRequest } from '../../../types/loadmill-types';
 import { ProxyEntry } from '../../../types/proxy-entry';
 import { ANALYZE_REQUESTS, ANALYZE_REQUESTS_COMPLETE, UPDATED_ENTRIES } from '../../../universal/constants';
 import { subscribeToMainProcessMessage } from '../../main-events';
-import { getEntries } from '../entries';
-import { assignRequestDescriptions } from '../request-description';
+import { getEntries, iterateEntries } from '../entries';
+import { assignRequestDescription } from '../request-description';
 
 import { entriesToHarString } from './entries-to-har-string';
 import { handleNotSignedInError } from './error';
-import { getTransformResult, isTransformResult, LoadmillRequest, transform, TransformStatus } from './transform';
+import { getTransformResult, isTransformResult, transform, TransformStatus } from './transform';
 
 export const subscribeToAnalyzeRequests = (): void => {
   subscribeToMainProcessMessage(ANALYZE_REQUESTS, onAnalyzeRequests);
@@ -60,8 +61,7 @@ const pollTransformStatus = async (token: string): Promise<void> => {
       if (isTransformResult(details)) {
         const requests = details.conf.requests;
         const entries = getEntries();
-        markIrrelevantRequests(entries, requests);
-        assignRequestDescriptions(entries, requests);
+        prepareEntries(entries, requests);
         sendFromProxyToRenderer({
           data: { proxies: getEntries() },
           type: UPDATED_ENTRIES,
@@ -76,11 +76,18 @@ const pollTransformStatus = async (token: string): Promise<void> => {
   }, POLLING_INTERVAL_MS);
 };
 
-const markIrrelevantRequests = (entries: ProxyEntry[], requests: LoadmillRequest[]): void => {
-  for (const entry of entries) {
-    if (shouldMarkEntryAsIrrelevant(entry, requests)) {
-      entry.irrelevant = true;
-    }
+const prepareEntries = (entries: ProxyEntry[], requests: LoadmillRequest[]): void => {
+  iterateEntries(entries, entry => prepareEntry(entry, requests));
+};
+
+const prepareEntry = (entry: ProxyEntry, requests: LoadmillRequest[]): void => {
+  markIrrelevantRequest(entry, requests);
+  assignRequestDescription(entry, requests);
+};
+
+const markIrrelevantRequest = (entry: ProxyEntry, requests: LoadmillRequest[]): void => {
+  if (shouldMarkEntryAsIrrelevant(entry, requests)) {
+    entry.irrelevant = true;
   }
 };
 
