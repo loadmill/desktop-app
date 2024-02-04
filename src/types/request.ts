@@ -2,7 +2,9 @@ import { Body } from './body';
 import { Header } from './header';
 
 export type Request = {
+  description?: string;
   headers: Header[];
+  id?: string;
   method: string;
   url: string;
 };

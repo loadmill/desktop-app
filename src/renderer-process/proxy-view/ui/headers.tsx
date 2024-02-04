@@ -12,7 +12,7 @@ import { Header } from '../../../types/header';
 import { StyledTableCell, StyledTableRow } from './table-row-cell';
 
 export const Headers = ({
-  headers
+  headers,
 }: HeadersProps): JSX.Element => {
   if (headers.length === 0) {
     return (

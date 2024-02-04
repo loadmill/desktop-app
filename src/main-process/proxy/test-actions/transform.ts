@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 
 import log from '../../../log';
+import { TransformOptions, TransformResult } from '../../../types/loadmill-types';
 import { callLoadmillApi } from '../../call-loadmill-api';
 
 import { uploadToS3 } from './s3';
@@ -78,16 +79,6 @@ export const getTransformResult = async (
       status: TransformStatus.ERROR,
     };
   }
-};
-
-export type Extraction = { [parameter: string]: string | object };
-export type LoadmillRequest = { extract: Extraction[]; id: string; irrelevant?: boolean; method: string; };
-export type TransformResult = { conf: { requests: LoadmillRequest[] } };
-export type TransformOptions = {
-  options: {
-    filterIrrelevantRequests?: boolean;
-    keepAllMimeTypes?: boolean;
-  };
 };
 
 export const isTransformResult = (result?: unknown): result is TransformResult => {

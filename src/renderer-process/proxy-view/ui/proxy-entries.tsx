@@ -149,29 +149,43 @@ export const ProxyEntries = ({
               rowCount={ entries.length }
             />
             <TableBody>
-              {entries
-                .map((entry, index) => {
-                  const { id, irrelevant, request: { method, url }, response: { status }, timestamp } = entry;
+              {
+                entries
+                  .map((entry, index) => {
+                    const {
+                      id,
+                      irrelevant,
+                      request: {
+                        description = '',
+                        method,
+                        url,
+                      },
+                      response: {
+                        status,
+                      },
+                      timestamp,
+                    } = entry;
 
-                  return (
-                    <ProxyEntryRow
-                      id={ id }
-                      index={ index }
-                      isActiveEntry={ activeEntry?.id === id }
-                      isIrrelevant={ irrelevant }
-                      isItemSelected={ isSelected(id as string) }
-                      key={ id }
-                      method={ method }
-                      onActiveEntryChange={ onActiveEntryChange }
-                      onKeyDown={ onKeyDown }
-                      onSelectEntry={ onSelectEntry }
-                      status={ String(status) }
-                      timestamp={ new Date(timestamp).toISOString().replace('T', ' ').substring(0, 23) }
-                      url={ url }
-                    />
-                  );
-                }
-                )}
+                    return (
+                      <ProxyEntryRow
+                        description={ description }
+                        id={ id }
+                        index={ index }
+                        isActiveEntry={ activeEntry?.id === id }
+                        isIrrelevant={ irrelevant }
+                        isItemSelected={ isSelected(id as string) }
+                        key={ id }
+                        method={ method }
+                        onActiveEntryChange={ onActiveEntryChange }
+                        onKeyDown={ onKeyDown }
+                        onSelectEntry={ onSelectEntry }
+                        status={ String(status) }
+                        timestamp={ new Date(timestamp).toISOString().replace('T', ' ').substring(0, 23) }
+                        url={ url }
+                      />
+                    );
+                  })
+              }
 
             </TableBody>
           </Table>
@@ -223,7 +237,7 @@ const EnhancedTableToolbar = ({
     <Toolbar
       sx={ {
         pl: { sm: 2 },
-        pr: { sm: 1, xs: 1, },
+        pr: { sm: 1, xs: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
             alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
@@ -324,6 +338,10 @@ type EnhancedTableHeadProps = {
 
 const proxyEntriesHeadCells: readonly ProxyEntriesHeadCell[] = [
   {
+    id: 'description',
+    label: 'Description',
+  },
+  {
     id: 'status',
     label: 'Status',
   },
@@ -347,6 +365,7 @@ type ProxyEntriesHeadCell = {
 }
 
 const ProxyEntryRow = ({
+  description,
   id,
   index,
   isActiveEntry,
@@ -374,7 +393,7 @@ const ProxyEntryRow = ({
       sx={ {
         bgcolor: (theme) => getRowBackgroundColor({ isActiveEntry }, theme),
         cursor: 'pointer',
-        textDecoration: isIrrelevant ? 'line-through 0.13rem' : 'none',
+        opacity: isIrrelevant ? 0.5 : 1,
       } }
       tabIndex={ -1 }
     >
@@ -390,24 +409,33 @@ const ProxyEntryRow = ({
         />
       </StyledTableCell>
       <StyledTableCell
+        sx={ {
+          textDecoration: isIrrelevant ? 'line-through 0.13rem' : 'none',
+          width: '35%',
+        } }
+      >
+        {description}
+      </StyledTableCell>
+      <StyledTableCell
         component='th'
         id={ labelId }
         scope='row'
         sx={ {
           color: (theme) => colorStatus(Number(status), theme),
-          width: '5%'
+          width: '5%',
         } }
       >
         {status}
       </StyledTableCell>
       <StyledTableCell sx={ { width: '5%' } }>{method}</StyledTableCell>
-      <StyledTableCell sx={ { width: '70%' } }>{url}</StyledTableCell>
-      <StyledTableCell sx={ { width: '20%' } }>{timestamp}</StyledTableCell>
+      <StyledTableCell sx={ { width: '40%' } }>{url}</StyledTableCell>
+      <StyledTableCell sx={ { width: '15%' } }>{timestamp}</StyledTableCell>
     </StyledTableRow>
   );
 };
 
 type ProxyEntryRowProps = {
+  description: string;
   id: string;
   index: number;
   isActiveEntry: boolean;

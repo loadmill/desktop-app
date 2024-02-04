@@ -1,11 +1,11 @@
 import { shell } from 'electron';
 
 import {
-  sendFromProxyToRenderer
+  sendFromProxyToRenderer,
 } from '../../inter-process-communication/proxy-to-render';
 import {
   DOWNLOAD_CERTIFICATE,
-  DOWNLOADED_CERTIFICATE_SUCCESS
+  DOWNLOADED_CERTIFICATE_SUCCESS,
 } from '../../universal/constants';
 import {
   PROXY_CERTIFICATE_PATH,

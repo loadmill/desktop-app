@@ -1,7 +1,7 @@
 import { shell } from 'electron';
 
 import {
-  DOWNLOAD_AGENT_LOG
+  DOWNLOAD_AGENT_LOG,
 } from '../../universal/constants';
 import {
   AGENT_LOG_SAVE_PATH,

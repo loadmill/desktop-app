@@ -2,8 +2,8 @@
 module.exports = {
   globals: {
     'ts-jest': {
-      isolatedModules: true
-    }
+      isolatedModules: true,
+    },
   },
   moduleNameMapper: {
     'electron': '<rootDir>/test/__mocks__/electron.ts',

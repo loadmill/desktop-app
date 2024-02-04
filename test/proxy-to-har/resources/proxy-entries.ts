@@ -7,11 +7,12 @@ export const proxyEntry: ProxyEntry = {
   request: {
     body: {
       mimeType: 'text/plain',
-      text: 'Hello, World!'
+      text: 'Hello, World!',
     },
+    description: 'GET /?foo=bar&baz=qux&baz=quux&corge=',
     headers: [
       { name: 'User-Agent', value: 'curl/7.64.1' },
-      { name: 'Accept', value: '*/*' }
+      { name: 'Accept', value: '*/*' },
     ],
     method: 'GET',
     url: 'https://example.com?foo=bar&baz=qux&baz=quux&corge=',
@@ -19,11 +20,11 @@ export const proxyEntry: ProxyEntry = {
   response: {
     body: {
       mimeType: 'text/plain',
-      text: 'Hello, World!'
+      text: 'Hello, World!',
     },
     headers: [
       { name: 'Content-Type', value: 'text/plain' },
-      { name: 'Content-Length', value: '13' }
+      { name: 'Content-Length', value: '13' },
     ],
     status: 200,
     statusText: 'OK',
@@ -33,15 +34,16 @@ export const proxyEntry: ProxyEntry = {
 
 export const harEntry: HarEntry = {
   request: {
+    description: 'GET /?foo=bar&baz=qux&baz=quux&corge=',
     headers: [
       { name: 'User-Agent', value: 'curl/7.64.1' },
-      { name: 'Accept', value: '*/*' }
+      { name: 'Accept', value: '*/*' },
     ],
     id: '5f9f1b9b-9c9c-4b9c-9b9b-9c9c9b9c9b9c',
     method: 'GET',
     postData: {
       mimeType: 'text/plain',
-      text: 'Hello, World!'
+      text: 'Hello, World!',
     },
     queryString: [{ name: 'foo', value: 'bar' }, { name: 'baz', value: 'qux' }, { name: 'baz', value: 'quux' }, { name: 'corge', value: '' }],
     url: 'https://example.com?foo=bar&baz=qux&baz=quux&corge=',
@@ -53,7 +55,7 @@ export const harEntry: HarEntry = {
     },
     headers: [
       { name: 'Content-Type', value: 'text/plain' },
-      { name: 'Content-Length', value: '13' }
+      { name: 'Content-Length', value: '13' },
     ],
     status: 200,
   },
@@ -76,5 +78,5 @@ export const harLog: Har = {
       harEntry,
     ],
     version: '1.2',
-  }
+  },
 };

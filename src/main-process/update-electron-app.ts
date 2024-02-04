@@ -2,7 +2,7 @@ import updater from 'update-electron-app';
 
 import {
   overrideOnUpdateDownloadedListener,
-  overrideOnUpdateNotAvailableListener
+  overrideOnUpdateNotAvailableListener,
 } from './updates';
 
 export const initUpdater = (onUpdateDownloaded: () => void): void => {

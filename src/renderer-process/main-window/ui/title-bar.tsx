@@ -1,7 +1,7 @@
 import React, {
   MouseEvent,
   useEffect,
-  useState
+  useState,
 } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';

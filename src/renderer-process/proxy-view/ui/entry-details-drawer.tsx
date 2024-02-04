@@ -76,7 +76,7 @@ export const EntryDetailsDrawer = ({
       <div
         style={ {
           flex: 1,
-          ...titleAndContentParentStyle
+          ...titleAndContentParentStyle,
         } }
       >
         <TitleAndContent
@@ -108,7 +108,7 @@ export const EntryDetailsDrawer = ({
         maxWidth={ '99.99%' }
         minWidth={ '0.01%' }
         style={ {
-          ...titleAndContentParentStyle
+          ...titleAndContentParentStyle,
         } }
       >
         <TitleAndContent
@@ -199,7 +199,7 @@ export const BasicTabs = ({
           alignItems: 'center',
           borderBottom: 1,
           borderColor: 'divider',
-          paddingLeft: '8px'
+          paddingLeft: '8px',
         } }
       >
         <Typography

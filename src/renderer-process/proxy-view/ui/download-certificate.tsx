@@ -22,7 +22,7 @@ export const DownloadCertificate = ({
         onClick={ onDownloadClick }
         size='small'
         sx={ {
-          borderRadius: 'inherit'
+          borderRadius: 'inherit',
         } }
         variant='outlined'
       />

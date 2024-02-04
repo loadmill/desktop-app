@@ -116,7 +116,7 @@ const toArrayHeaders = (headers: http.IncomingHttpHeaders): Header[] => {
     .forEach(([name, value]) => {
       result.push({
         name,
-        value: stringOrArrayToString(value)
+        value: stringOrArrayToString(value),
       });
     });
 
@@ -153,7 +153,7 @@ const setBody = (rOr: ProxyRequest | ProxyResponse, chunks: Uint8Array[]) => {
 
 const getMimeType = (headers: Header[]): string | undefined => {
   const contentTypeHeader = headers.find((header) =>
-    header.name?.toLowerCase() === 'content-type'
+    header.name?.toLowerCase() === 'content-type',
   );
   return contentTypeHeader?.value;
 };

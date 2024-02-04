@@ -20,14 +20,14 @@ import {
 import { appendToAgentLog } from './agent-log-file';
 import {
   isAgentConnected,
-  refreshConnectedStatus
+  refreshConnectedStatus,
 } from './connected-status';
 import {
   LOADMILL_AGENT_PATH,
   LOADMILL_AGENT_SERVER_URL,
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
-  NODE_TLS_REJECT_UNAUTHORIZED
+  NODE_TLS_REJECT_UNAUTHORIZED,
 } from './constants';
 import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';

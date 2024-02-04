@@ -8,7 +8,7 @@ import {
   ProxyRendererMessage,
   ProxyRendererMessageTypes,
   RendererMessage,
-  RendererMessageTypes
+  RendererMessageTypes,
 } from '../types/messaging';
 
 export enum Renderer {
