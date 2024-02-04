@@ -255,9 +255,8 @@ workflows:
   version: 2
   build:
     jobs:
-      # - build_macos
-      # - build_windows:
-      #     requires:
-      #       - build_macos
-      - build_windows
+      - build_macos
+      - build_windows:
+          requires:
+            - build_macos
 
