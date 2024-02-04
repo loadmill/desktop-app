@@ -103,8 +103,8 @@ jobs:
             echo ${KEYSTORE} | base64 --decode > cert.p12
 
             # create pem files
-            openssl pkcs12 -in cert.p12 -out crt.pem -clcerts -nokeys -passin pass:${KEYCHAIN_PASSWORD}
-            openssl pkcs12 -in cert.p12 -out key.pem -nocerts -nodes -passin pass:${KEYCHAIN_PASSWORD}
+            openssl pkcs12 -in cert.p12 -legacy -out crt.pem -clcerts -nokeys -passin pass:${KEYCHAIN_PASSWORD}
+            openssl pkcs12 -in cert.p12 -legacy -out key.pem -nocerts -nodes -passin pass:${KEYCHAIN_PASSWORD}
 
             # create a pfx file
             openssl pkcs12 -export -out cert.pfx -inkey key.pem -in crt.pem -passout pass:${KEYCHAIN_PASSWORD}
@@ -255,8 +255,9 @@ workflows:
   version: 2
   build:
     jobs:
-      - build_macos
-      - build_windows:
-          requires:
-            - build_macos
+      # - build_macos
+      # - build_windows:
+      #     requires:
+      #       - build_macos
+      - build_windows
 
