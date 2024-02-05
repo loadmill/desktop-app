@@ -227,7 +227,7 @@ jobs:
                 command: |
                   UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$RELEASE_ID/assets?name=$WINDOWS_INSTALLER_FILE_NAME"
                   echo "UPLOAD_URL $UPLOAD_URL"
-                  UPLOAD_ASSET_RESPONSE=(\
+                  UPLOAD_ASSET_RESPONSE=$(\
                     curl --fail-with-body -L \
                       -H "Authorization: Bearer $GITHUB_API_TOKEN" \
                       -H "Content-Type: $(file -b --mime-type $WINDOWS_INSTALLER_PATH)" \
@@ -241,7 +241,7 @@ jobs:
                 command: |
                   UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$RELEASE_ID/assets?name=$WINDOWS_ZIP_FILE_NAME"
                   echo "UPLOAD_URL $UPLOAD_URL"
-                  UPLOAD_ASSET_RESPONSE=(\
+                  UPLOAD_ASSET_RESPONSE=$(\
                     curl --fail-with-body -L \
                       -H "Authorization: Bearer $GITHUB_API_TOKEN" \
                       -H "Content-Type: $(file -b --mime-type $WINDOWS_ZIP_PATH)" \
@@ -250,50 +250,12 @@ jobs:
                   )
                   echo "UPLOAD_ASSET_RESPONSE"
                   echo "$UPLOAD_ASSET_RESPONSE" | jq .
-  upload_from_windows_to_github_release:
-    executor:
-      name: win/server-2022
-      shell: bash.exe
-    steps:
-      - checkout
-
-      - run:
-          name: Create binary file
-          command: |
-            echo -n $'\x01' > binary.dat
-            echo -n $'\x02' >> binary.dat
-            echo -n $'\x03' >> binary.dat
-            echo -n $'\x04' >> binary.dat
-
-      - run:
-          name: Set file name as binary.dat
-          command: echo "export FILE_NAME=binary.dat" >> $BASH_ENV
-
-      - run:
-          name: Set release id as 139806797
-          command: echo "export RELEASE_ID=139806797" >> $BASH_ENV
-
-      - run:
-          name: Upload the binary file to the release
-          command: |
-            UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$RELEASE_ID/assets?name=$FILE_NAME"
-            echo "UPLOAD_URL $UPLOAD_URL"
-            UPLOAD_ASSET_RESPONSE=$(\
-              curl --fail-with-body -L \
-                -H "Authorization: Bearer $GITHUB_API_TOKEN" \
-                -H "Content-Type: $(file -b --mime-type $FILE_NAME)" \
-                --data-binary @binary.dat \
-                "$UPLOAD_URL"
-            )
-            echo "UPLOAD_ASSET_RESPONSE"
-            echo "$UPLOAD_ASSET_RESPONSE"
 workflows:
   version: 2
   build:
     jobs:
-      # - build_macos
-      # - build_windows:
-      #     requires:
-      #       - build_macos
-      - upload_from_windows_to_github_release
+      - build_macos
+      - build_windows:
+          requires:
+            - build_macos
 
