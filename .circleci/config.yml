@@ -227,7 +227,7 @@ jobs:
                 command: |
                   UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$RELEASE_ID/assets?name=$WINDOWS_INSTALLER_FILE_NAME"
                   echo "UPLOAD_URL $UPLOAD_URL"
-                  UPLOAD_ASSET_RESPONSE=(\
+                  UPLOAD_ASSET_RESPONSE=$(\
                     curl --fail-with-body -L \
                       -H "Authorization: Bearer $GITHUB_API_TOKEN" \
                       -H "Content-Type: $(file -b --mime-type $WINDOWS_INSTALLER_PATH)" \
@@ -241,7 +241,7 @@ jobs:
                 command: |
                   UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$RELEASE_ID/assets?name=$WINDOWS_ZIP_FILE_NAME"
                   echo "UPLOAD_URL $UPLOAD_URL"
-                  UPLOAD_ASSET_RESPONSE=(\
+                  UPLOAD_ASSET_RESPONSE=$(\
                     curl --fail-with-body -L \
                       -H "Authorization: Bearer $GITHUB_API_TOKEN" \
                       -H "Content-Type: $(file -b --mime-type $WINDOWS_ZIP_PATH)" \
@@ -250,7 +250,6 @@ jobs:
                   )
                   echo "UPLOAD_ASSET_RESPONSE"
                   echo "$UPLOAD_ASSET_RESPONSE" | jq .
-
 workflows:
   version: 2
   build:
