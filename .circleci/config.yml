@@ -276,9 +276,9 @@ jobs:
       - run:
           name: Upload the binary file to the release
           command: |
-            UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/RELEASE_ID/assets?name=$FILE_NAME"
+            UPLOAD_URL="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$RELEASE_ID/assets?name=$FILE_NAME"
             echo "UPLOAD_URL $UPLOAD_URL"
-            UPLOAD_ASSET_RESPONSE=(\
+            UPLOAD_ASSET_RESPONSE=$(\
               curl --fail-with-body -L \
                 -H "Authorization: Bearer $GITHUB_API_TOKEN" \
                 -H "Content-Type: $(file -b --mime-type $FILE_NAME)" \
