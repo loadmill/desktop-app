@@ -2,23 +2,23 @@ require('dotenv').config();
 
 const isWindowsOS = process.platform === 'win32';
 
+const { name, version } = require('./package.json');
+
 module.exports = {
   makers: [
     {
-      'config': {
+      config: {
         certificateFile: './cert.pfx',
         certificatePassword: process.env.CERTIFICATE_PASSWORD,
         iconUrl: 'https://loadmill.com/favicon.ico',
+        setupExe: `${name}-${version}-Setup.exe`,
         setupIcon: './images/loadmill-icon-256-256.ico',
       },
-      'name': '@electron-forge/maker-squirrel',
+      name: '@electron-forge/maker-squirrel',
     },
     {
-      'name': '@electron-forge/maker-zip',
-      'platforms': [
-        'darwin',
-        'win32',
-      ],
+      name: '@electron-forge/maker-zip',
+      platforms: ['darwin', 'win32'],
     },
     {
       config: {
@@ -38,9 +38,7 @@ module.exports = {
     },
   ],
   packagerConfig: {
-    icon: isWindowsOS ?
-      './images/loadmill-icon-256-256' :
-      './images/MyIcon',
+    icon: isWindowsOS ? './images/loadmill-icon-256-256' : './images/MyIcon',
     osxNotarize: {
       appleId: process.env.APPLE_ID,
       appleIdPassword: process.env.APPLE_APP_SPECIFIC_PASSWORD,
@@ -59,40 +57,40 @@ module.exports = {
     [
       '@electron-forge/plugin-webpack',
       {
-        'mainConfig': './webpack.main.config.js',
-        'renderer': {
-          'config': './webpack.renderer.config.js',
-          'entryPoints': [
+        mainConfig: './webpack.main.config.js',
+        renderer: {
+          config: './webpack.renderer.config.js',
+          entryPoints: [
             {
-              'html': './src/renderer-process/main-window/index.html',
-              'js': './src/renderer-process/main-window/renderer.ts',
-              'name': 'main_window',
-              'preload': {
-                'js': './src/renderer-process/main-window/preload.ts',
+              html: './src/renderer-process/main-window/index.html',
+              js: './src/renderer-process/main-window/renderer.ts',
+              name: 'main_window',
+              preload: {
+                js: './src/renderer-process/main-window/preload.ts',
               },
             },
             {
-              'html': './src/renderer-process/loadmill-view/index.html',
-              'js': './src/renderer-process/loadmill-view/renderer.ts',
-              'name': 'loadmill_view',
-              'preload': {
-                'js': './src/renderer-process/loadmill-view/preload.ts',
+              html: './src/renderer-process/loadmill-view/index.html',
+              js: './src/renderer-process/loadmill-view/renderer.ts',
+              name: 'loadmill_view',
+              preload: {
+                js: './src/renderer-process/loadmill-view/preload.ts',
               },
             },
             {
-              'html': './src/renderer-process/proxy-view/index.html',
-              'js': './src/renderer-process/proxy-view/renderer.ts',
-              'name': 'proxy_view',
-              'preload': {
-                'js': './src/renderer-process/proxy-view/preload.ts',
+              html: './src/renderer-process/proxy-view/index.html',
+              js: './src/renderer-process/proxy-view/renderer.ts',
+              name: 'proxy_view',
+              preload: {
+                js: './src/renderer-process/proxy-view/preload.ts',
               },
             },
             {
-              'html': './src/renderer-process/agent-view/index.html',
-              'js': './src/renderer-process/agent-view/renderer.ts',
-              'name': 'agent_view',
-              'preload': {
-                'js': './src/renderer-process/agent-view/preload.ts',
+              html: './src/renderer-process/agent-view/index.html',
+              js: './src/renderer-process/agent-view/renderer.ts',
+              name: 'agent_view',
+              preload: {
+                js: './src/renderer-process/agent-view/preload.ts',
               },
             },
           ],
@@ -102,11 +100,8 @@ module.exports = {
     [
       '@timfish/forge-externals-plugin',
       {
-        'externals': [
-          'vm2',
-          'jsonpath',
-        ],
-        'includeDeps': true,
+        externals: ['vm2', 'jsonpath'],
+        includeDeps: true,
       },
     ],
   ],

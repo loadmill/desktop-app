@@ -333,7 +333,7 @@ jobs:
       - run:
           name: Construct Artifacts File Names
           command: |
-            WINDOWS_INSTALLER_FILE_NAME="${WINDOWS_INSTALLER_PATH##*/}"
+            WINDOWS_INSTALLER_FILE_NAME=$(basename $WINDOWS_INSTALLER_PATH)
             echo $WINDOWS_INSTALLER_FILE_NAME
             echo "export WINDOWS_INSTALLER_FILE_NAME='${WINDOWS_INSTALLER_FILE_NAME}'" >> $BASH_ENV
 
