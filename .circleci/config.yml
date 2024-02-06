@@ -76,7 +76,7 @@ jobs:
             - run:
                 name: Post Artifacts URLs to GitHub PR
                 command: |
-                  COMMENT="## 🏗 Build Artifacts are available here👇 \\n\\n${ARTIFACTS_URLS}"
+                  COMMENT="## 🏗 MacOS Build Artifacts are available here👇 \\n\\n${ARTIFACTS_URLS}"
                   PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
                   curl -X POST \
                       -H "Authorization: token ${GITHUB_API_TOKEN}" \
@@ -169,7 +169,11 @@ jobs:
             - run:
                 name: Post Artifacts URLs to GitHub PR
                 command: |
-                  COMMENT="Windows Build: 1. [Setup.exe](${WINDOWS_INSTALLER_URL}) 2. [.zip](${WINDOWS_ZIP_URL})"
+                  WIN_INSTALLER_LINK="### 1. [🪟 Setup.exe](${WINDOWS_INSTALLER_URL})"
+                  echo $WIN_INSTALLER_LINK
+                  WIN_ZIP_LINK="### 2. [🤐 .zip](${WINDOWS_ZIP_URL})"
+                  echo $WIN_ZIP_LINK
+                  COMMENT="## 🏠 Windows build Artifacts are available here👇 \\n\\n${WIN_INSTALLER_LINK}\\n${WIN_ZIP_LINK}"
                   echo $COMMENT
                   PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
                   echo $PR_NUMBER
