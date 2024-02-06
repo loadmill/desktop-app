@@ -367,14 +367,6 @@ jobs:
             RELEASE_ID=$(echo "$LATEST_RELEASE_RESPONSE" | jq -e -r '.id')
             echo "RELEASE_ID $RELEASE_ID"
             echo "export RELEASE_ID='${RELEASE_ID}'" >> $BASH_ENV
-      ### 👇 START OF DELETE THIS LATER 👇 ###
-      - run:
-          name: Override to the release id of app version 3.2.1
-          command: |
-            RELEASE_ID=139806797
-            echo "RELEASE_ID $RELEASE_ID"
-            echo "export RELEASE_ID='${RELEASE_ID}'" >> $BASH_ENV
-      ### 👆 END OF DELETE THIS LATER 👆 ###
       - run:
           name: Upload the Installer artifact/asset to the release
           command: |
