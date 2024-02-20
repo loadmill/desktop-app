@@ -21,6 +21,7 @@ export const createLoadmillWebView = (
   mainWindow: BrowserWindow,
 ): BrowserView => {
   const loadmillWebView = createView(mainWindow, {
+    openDevTools: true,
     preload: LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY,
     url: LOADMILL_WEB_APP_ORIGIN,
   });

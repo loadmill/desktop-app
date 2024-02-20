@@ -28,6 +28,7 @@ import {
   MAIN_WINDOW_ID,
   MARK_RELEVANT,
   NAVIGATION,
+  OAUTH_LOADMILL_LOGIN_TOKEN,
   PORT,
   PROXY,
   REFRESH_ENTRIES,
@@ -102,7 +103,9 @@ export abstract class RendererMessage implements IPCMessage {
 }
 
 export abstract class LoadmillViewRendererMessage implements IPCMessage {
-  data?: {};
+  data?: {
+    token?: string;
+  };
   type: LoadmillViewRendererMessageTypes;
 }
 
@@ -171,6 +174,7 @@ export type RendererMessageTypes =
   typeof LOADMILL_VIEW_ID |
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
+  typeof OAUTH_LOADMILL_LOGIN_TOKEN |
   typeof SAVED_TOKEN |
   typeof SHOW_FIND_ON_PAGE |
   typeof STDERR |
@@ -179,6 +183,7 @@ export type RendererMessageTypes =
 
 export type LoadmillViewRendererMessageTypes =
   typeof GENERATE_TOKEN |
+  typeof OAUTH_LOADMILL_LOGIN_TOKEN |
   typeof SAVED_TOKEN;
 
 export type ProxyRendererMessageTypes =

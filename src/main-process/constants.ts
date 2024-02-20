@@ -23,3 +23,5 @@ export const PROXY_CERTIFICATE_SAVE_PATH = DOWNLOADS_PATH + '/loadmill-proxy-cer
 export const AGENT_LOG_FILENAME = 'agent.log';
 export const FULL_AGENT_LOG_PATH = `${USER_DATA_PATH}/${AGENT_LOG_FILENAME}`;
 export const AGENT_LOG_SAVE_PATH = DOWNLOADS_PATH + '/loadmill-private-agent.log';
+
+export const LOADMILL_DESKTOP_APP_PROTOCOL = 'loadmill-desktop-app';

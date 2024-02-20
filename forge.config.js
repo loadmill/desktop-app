@@ -105,6 +105,12 @@ module.exports = {
       },
     ],
   ],
+  protocols: [
+    {
+      name: 'Loadmill Desktop App',
+      schemes: ['loadmill-desktop-app'],
+    },
+  ],
   publishers: [
     {
       config: {

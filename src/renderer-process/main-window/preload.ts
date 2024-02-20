@@ -13,6 +13,7 @@ import {
   IS_AGENT_CONNECTED,
   LOADMILL_VIEW_ID,
   NAVIGATION,
+  OAUTH_LOADMILL_LOGIN_TOKEN,
   REFRESH_PAGE,
   SAVED_TOKEN,
   SHOW_FIND_ON_PAGE,
@@ -43,6 +44,12 @@ const isFromMainProcess = ({ senderId }: Electron.IpcRendererEvent) => {
 subscribeToMainWindowMessages(GENERATE_TOKEN, (event: Electron.IpcRendererEvent) => {
   if (isFromMainProcess(event)) {
     ipcRenderer.sendTo(loadmillViewId, GENERATE_TOKEN);
+  }
+});
+
+subscribeToMainWindowMessages(OAUTH_LOADMILL_LOGIN_TOKEN, (event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+  if (isFromMainProcess(event)) {
+    ipcRenderer.sendTo(loadmillViewId, OAUTH_LOADMILL_LOGIN_TOKEN, data);
   }
 });
 
