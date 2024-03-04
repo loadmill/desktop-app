@@ -5,12 +5,14 @@ import {
   BrowserWindow,
 } from 'electron';
 
-import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
 import log from '../log';
-import { OAUTH_LOADMILL_LOGIN_TOKEN } from '../universal/constants';
 
+import { handleAuthEvent } from './authentication';
 import { LOADMILL_DESKTOP_APP_PROTOCOL } from './constants';
-import { isUserSignedIn } from './user-signed-in-status';
+
+enum HOST {
+  AUTH = 'auth',
+}
 
 log.info('Setting up deep link handling');
 
@@ -43,17 +45,24 @@ if (!gotTheLock) {
 
   app.on('open-url', (_event: Electron.Event, url: string) => {
     log.info('Received open-url event', { url });
-    if (!isUserSignedIn()) {
-      const token = getTokenFromUrl(url);
-      sendToRenderer({
-        data: { token },
-        type: OAUTH_LOADMILL_LOGIN_TOKEN,
-      });
+    const host = extractHost(url);
+    switch (host) {
+      case HOST.AUTH:
+        handleAuthEvent(url);
+        break;
+      default:
+        log.error('Unknown host', { host });
+        break;
     }
   });
 }
 
-const getTokenFromUrl = (url: string): string => {
+const extractHost = (url: string): HOST | undefined => {
   const urlObj = new URL(url);
-  return urlObj.searchParams.get('token');
+  switch (urlObj.host) {
+    case 'auth':
+      return HOST.AUTH;
+    default:
+      return;
+  }
 };

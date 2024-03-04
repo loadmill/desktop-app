@@ -9,7 +9,6 @@ import {
   EXPORT_AS_HAR,
   FETCH_SUITES,
   FIND_NEXT,
-  GET_CLIENT_SECRET,
   GET_IP_ADDRESS,
   GET_PORT,
   GO_BACK,
@@ -52,7 +51,6 @@ export type ApiForMainWindow = {
 };
 
 export type ApiForLoadmillBrowserView = {
-  [GET_CLIENT_SECRET]: () => string;
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => void;
 };
 

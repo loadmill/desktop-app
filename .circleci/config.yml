@@ -56,7 +56,7 @@ jobs:
           steps:
             - run:
                 name: package application
-                command: LOADMILL_CLIENT_SECRET=$LOADMILL_CLIENT_SECRET yarn package
+                command: yarn package
             - run:
                 name: create distribution files
                 command: yarn only-make
@@ -89,7 +89,7 @@ jobs:
           steps:
             - run:
                 name: publish release
-                command: LOADMILL_CLIENT_SECRET=$LOADMILL_CLIENT_SECRET yarn forge-publish
+                command: yarn forge-publish
   build_windows:
     executor:
       name: win/server-2022
@@ -134,7 +134,7 @@ jobs:
           command: yarn test
       - run:
           name: Package Application
-          command: LOADMILL_CLIENT_SECRET=$LOADMILL_CLIENT_SECRET CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
+          command: CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
       - run:
           name: Create distribution files
           command: yarn only-make

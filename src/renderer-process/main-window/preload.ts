@@ -12,8 +12,8 @@ import {
   GO_FORWARD,
   IS_AGENT_CONNECTED,
   LOADMILL_VIEW_ID,
+  MAGIC_TOKEN,
   NAVIGATION,
-  OAUTH_LOADMILL_LOGIN_TOKEN,
   REFRESH_PAGE,
   SAVED_TOKEN,
   SHOW_FIND_ON_PAGE,
@@ -47,9 +47,9 @@ subscribeToMainWindowMessages(GENERATE_TOKEN, (event: Electron.IpcRendererEvent)
   }
 });
 
-subscribeToMainWindowMessages(OAUTH_LOADMILL_LOGIN_TOKEN, (event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(MAGIC_TOKEN, (event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
   if (isFromMainProcess(event)) {
-    ipcRenderer.sendTo(loadmillViewId, OAUTH_LOADMILL_LOGIN_TOKEN, data);
+    ipcRenderer.sendTo(loadmillViewId, MAGIC_TOKEN, data);
   }
 });
 
