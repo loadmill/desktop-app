@@ -12,6 +12,7 @@ import {
   GO_FORWARD,
   IS_AGENT_CONNECTED,
   LOADMILL_VIEW_ID,
+  MAGIC_TOKEN,
   NAVIGATION,
   REFRESH_PAGE,
   SAVED_TOKEN,
@@ -43,6 +44,12 @@ const isFromMainProcess = ({ senderId }: Electron.IpcRendererEvent) => {
 subscribeToMainWindowMessages(GENERATE_TOKEN, (event: Electron.IpcRendererEvent) => {
   if (isFromMainProcess(event)) {
     ipcRenderer.sendTo(loadmillViewId, GENERATE_TOKEN);
+  }
+});
+
+subscribeToMainWindowMessages(MAGIC_TOKEN, (event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+  if (isFromMainProcess(event)) {
+    ipcRenderer.sendTo(loadmillViewId, MAGIC_TOKEN, data);
   }
 });
 

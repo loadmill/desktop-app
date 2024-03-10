@@ -35,6 +35,7 @@ export const
   IS_RECORDING = 'isRecording',
   LOADMILL_DESKTOP = 'loadmillDesktop',
   LOADMILL_VIEW_ID = 'loadmillViewId',
+  MAGIC_TOKEN = 'magicToken',
   MAIN_WINDOW_ID = 'mainWindowId',
   MARK_RELEVANT = 'markRelevant',
   MESSAGE = 'message',

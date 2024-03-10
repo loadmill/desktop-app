@@ -24,6 +24,7 @@ import {
 } from '../universal/constants';
 
 import { killAgentProcess, subscribeToAgentEventsFromRenderer } from './agent-handlers';
+import './deep-link';
 import './keybindings';
 import './menu';
 import { setOpenLinksInBrowser } from './open-links';
