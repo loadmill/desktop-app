@@ -42,25 +42,31 @@ if (!gotTheLock) {
     }
     log.info('Received second-instance event', { commandLine, event, workingDirectory });
 
-    const url = commandLine ? commandLine[commandLine.length - 1] : '';
+    const url = commandLine && commandLine.length > 0 ?
+      commandLine[commandLine.length - 1] :
+      '';
     handleIncomingDeepLinkEvent(url);
   });
 
-  app.on('open-url', (_event: Electron.Event, url: string) => {
-    log.info('Received open-url event', { url });
+  app.on('open-url', (event: Electron.Event, url: string) => {
+    log.info('Received open-url event', { event, url });
     handleIncomingDeepLinkEvent(url);
   });
 }
 
 const handleIncomingDeepLinkEvent = (url: string) => {
-  const host = extractHost(url);
-  switch (host) {
-    case HOST.AUTH:
-      handleAuthEvent(url);
-      break;
-    default:
-      log.error('Unknown host', { host });
-      break;
+  try {
+    const host = extractHost(url);
+    switch (host) {
+      case HOST.AUTH:
+        handleAuthEvent(url);
+        break;
+      default:
+        log.error('Unknown host', { host });
+        break;
+    }
+  } catch (error) {
+    log.error('There was a problem handling incoming deep link', error);
   }
 };
 
