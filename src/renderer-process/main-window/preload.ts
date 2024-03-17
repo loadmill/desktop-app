@@ -16,6 +16,7 @@ import {
   NAVIGATION,
   REFRESH_PAGE,
   SAVED_TOKEN,
+  SHOW_AUTH_TOKEN_INPUT,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
   STOP_AGENT,
@@ -50,6 +51,12 @@ subscribeToMainWindowMessages(GENERATE_TOKEN, (event: Electron.IpcRendererEvent)
 subscribeToMainWindowMessages(MAGIC_TOKEN, (event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
   if (isFromMainProcess(event)) {
     ipcRenderer.sendTo(loadmillViewId, MAGIC_TOKEN, data);
+  }
+});
+
+subscribeToMainWindowMessages(SHOW_AUTH_TOKEN_INPUT, (event: Electron.IpcRendererEvent) => {
+  if (isFromMainProcess(event)) {
+    ipcRenderer.sendTo(loadmillViewId, SHOW_AUTH_TOKEN_INPUT);
   }
 });
 

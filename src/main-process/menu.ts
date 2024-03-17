@@ -2,6 +2,7 @@ import { app, Menu } from 'electron';
 
 import { READY } from '../universal/constants';
 
+import { showAuthTokenInput } from './authentication';
 import { checkForUpdates } from './updates';
 
 import { switchToAgentView } from '.';
@@ -81,6 +82,10 @@ const template = [
       {
         click: () => switchToAgentView(),
         label: 'Private Agent Log',
+      },
+      {
+        click: () => showAuthTokenInput(),
+        label: 'Enter authentication token',
       },
     ],
   },

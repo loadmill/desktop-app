@@ -9,6 +9,7 @@ import {
   MAGIC_TOKEN,
   SAVED_TOKEN,
   SET_IS_USER_SIGNED_IN,
+  SHOW_AUTH_TOKEN_INPUT,
 } from '../../universal/constants';
 import { subscribeToLoadmillViewMessages } from '../renderer-events';
 
@@ -33,6 +34,12 @@ subscribeToLoadmillViewMessages(MAGIC_TOKEN,
     }
   },
 );
+
+subscribeToLoadmillViewMessages(SHOW_AUTH_TOKEN_INPUT, (event: Electron.IpcRendererEvent) => {
+  if (!isFromMainProcess(event)) {
+    window.postMessage({ type: SHOW_AUTH_TOKEN_INPUT });
+  }
+});
 
 subscribeToLoadmillViewMessages(SAVED_TOKEN, (event: Electron.IpcRendererEvent) => {
   if (!isFromMainProcess(event)) {

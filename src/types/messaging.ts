@@ -37,6 +37,7 @@ import {
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
+  SHOW_AUTH_TOKEN_INPUT,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
   STDERR,
@@ -176,6 +177,7 @@ export type RendererMessageTypes =
   typeof NAVIGATION |
   typeof MAGIC_TOKEN |
   typeof SAVED_TOKEN |
+  typeof SHOW_AUTH_TOKEN_INPUT |
   typeof SHOW_FIND_ON_PAGE |
   typeof STDERR |
   typeof STDOUT |
@@ -184,7 +186,8 @@ export type RendererMessageTypes =
 export type LoadmillViewRendererMessageTypes =
   typeof GENERATE_TOKEN |
   typeof MAGIC_TOKEN |
-  typeof SAVED_TOKEN;
+  typeof SAVED_TOKEN |
+  typeof SHOW_AUTH_TOKEN_INPUT;
 
 export type ProxyRendererMessageTypes =
   typeof ANALYZE_REQUESTS_COMPLETE |
