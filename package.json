@@ -1,7 +1,7 @@
 {
   "name": "desktop-app",
   "productName": "Loadmill",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "The Loadmill desktop app",
   "author": {
     "name": "Gilad Gur Andelman",

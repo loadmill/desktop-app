@@ -51,6 +51,7 @@ export const
   SET_FILTER_REGEX = 'setFilterRegex',
   SET_IS_RECORDING = 'setIsRecording',
   SET_IS_USER_SIGNED_IN = 'setIsUserSignedIn',
+  SHOW_AUTH_TOKEN_INPUT = 'showAuthTokenInput',
   SHOW_FIND_ON_PAGE = 'showFindOnPage',
   START_AGENT = 'startAgent',
   STDERR = 'stderr',
