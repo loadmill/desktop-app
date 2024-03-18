@@ -1,11 +1,11 @@
 {
   "name": "desktop-app",
   "productName": "Loadmill",
-  "version": "3.3.4",
+  "version": "3.3.5",
   "description": "The Loadmill desktop app",
   "author": {
-    "name": "Gilad Gur Andelman",
-    "email": "gilad@loadmill.com"
+    "name": "Loadmill Ltd.",
+    "email": "support@loadmill.com"
   },
   "main": ".webpack/main",
   "scripts": {
