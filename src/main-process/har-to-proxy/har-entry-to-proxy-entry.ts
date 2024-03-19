@@ -3,6 +3,8 @@ import { randomUUID } from 'crypto';
 import { HarEntry } from '../../types/har';
 import { ProxyEntry } from '../../types/proxy-entry';
 
+import { toTimestamp } from './timestamp';
+
 export const HarEntryToProxyEntry = (entry: HarEntry): ProxyEntry => {
   return {
     id: randomUUID(),
@@ -17,6 +19,6 @@ export const HarEntryToProxyEntry = (entry: HarEntry): ProxyEntry => {
       headers: entry.response.headers,
       status: entry.response.status,
     },
-    timestamp: new Date(entry.startedDateTime).getTime(),
+    timestamp: toTimestamp(entry.startedDateTime),
   };
 };
