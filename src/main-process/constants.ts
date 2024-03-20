@@ -11,6 +11,7 @@ export const NODE_OPTIONS = process.env.NODE_OPTIONS || '--http-parser=legacy  -
 
 export const DOWNLOADS_PATH = app.getPath('downloads');
 export const USER_DATA_PATH = app.getPath('userData');
+export const LOGS_PATH = app.getPath('logs');
 
 export const PACKED_RELATIVE_PATH = app.getAppPath() + '/.webpack/main/';
 export const LOADMILL_AGENT = 'loadmill-agent';
@@ -23,5 +24,9 @@ export const PROXY_CERTIFICATE_SAVE_PATH = DOWNLOADS_PATH + '/loadmill-proxy-cer
 export const AGENT_LOG_FILENAME = 'agent.log';
 export const FULL_AGENT_LOG_PATH = `${USER_DATA_PATH}/${AGENT_LOG_FILENAME}`;
 export const AGENT_LOG_SAVE_PATH = DOWNLOADS_PATH + '/loadmill-private-agent.log';
+
+export const APP_LOG_FILENAME = 'main.log';
+export const FULL_APP_LOG_PATH = `${LOGS_PATH}/${APP_LOG_FILENAME}`;
+export const APP_LOG_SAVE_PATH = DOWNLOADS_PATH + '/loadmill-app.log';
 
 export const LOADMILL_DESKTOP_APP_PROTOCOL = 'loadmill-desktop-app';
