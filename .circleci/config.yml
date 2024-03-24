@@ -78,7 +78,9 @@ jobs:
                 command: |
                   COMMENT="## 🏗 MacOS Build Artifacts are available here👇 \\n\\n${ARTIFACTS_URLS}"
                   PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
-                  curl -X POST \
+                  echo PR_NUMBER $PR_NUMBER
+                  curl --fail-with-body -L \
+                      -X POST \
                       -H "Authorization: token ${GITHUB_API_TOKEN}" \
                       -H "Content-Type: application/json" \
                       -d "{\"body\": \"$COMMENT\"}" \
