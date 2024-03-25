@@ -3,6 +3,7 @@ import { app, Menu } from 'electron';
 import { READY } from '../universal/constants';
 
 import { showAuthTokenInput } from './authentication';
+import { downloadAppLog } from './download-logs';
 import { checkForUpdates } from './updates';
 
 import { switchToAgentView } from '.';
@@ -108,6 +109,10 @@ const template = [
   {
     role: 'help',
     submenu: [
+      {
+        click: () => downloadAppLog(),
+        label: 'Download App Logs',
+      },
       {
         click: async () => {
           const { shell } = require('electron');
