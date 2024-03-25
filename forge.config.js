@@ -114,7 +114,7 @@ module.exports = {
   publishers: [
     {
       config: {
-        authToken: process.env.GITHUB_TOKEN,
+        authToken: process.env.GITHUB_API_TOKEN,
         draft: false,
         prerelease: false,
         repository: {
