@@ -307,7 +307,15 @@ workflows:
   version: 2
   build:
     jobs:
-      - build_macos
+      - build_macos:
+          filters:
+            branches:
+              ignore:
+                - /agent-version-.*/
       - build_windows:
+          filters:
+            branches:
+              ignore:
+                - /agent-version-.*/
           requires:
             - build_macos
