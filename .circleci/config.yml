@@ -7,7 +7,7 @@ jobs:
   build_macos:
     macos:
       xcode: "14.1.0"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
@@ -56,19 +56,19 @@ jobs:
           steps:
             - run:
                 name: package application
-                command: yarn package
+                command: yarn package-mac
             - run:
                 name: create distribution files
-                command: yarn only-make
+                command: yarn only-make-mac
             - store_artifacts:
                 path: out/make/
             - run:
                 name: Fetch Artifacts URLs
                 command: |
-                  ARTIFACTS_URLS=$(curl -s \
-                    --header 'authorization: Basic ${CIRCLECI_API_TOKEN}' \
-                    --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM/artifacts" \
-                    | python3 -c 'import sys, json; \
+                  RAW_ARTIFACTS_URLS=$(curl --fail-with-body -L \
+                    --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM/artifacts")
+                  ARTIFACTS_URLS=$(echo $RAW_ARTIFACTS_URLS |
+                    python3 -c 'import sys, json; \
                     artifacts = json.load(sys.stdin)["items"]; \
                     print("\\n\\n".join([ "### 1. [🍏 .dmg]" + "(" + artifacts[0]["url"] + ")", "### 2. [🤐 .zip]" + "(" + artifacts[1]["url"] + ")"])); \
                     ')
