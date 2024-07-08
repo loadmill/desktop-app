@@ -1,7 +1,7 @@
 {
   "name": "desktop-app",
   "productName": "Loadmill",
-  "version": "3.3.17",
+  "version": "3.3.18",
   "description": "The Loadmill desktop app",
   "author": {
     "name": "Loadmill Ltd.",
@@ -14,7 +14,9 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --color",
     "make": "electron-forge make",
     "only-make": "electron-forge make --skip-package=true",
+    "only-make-mac": "electron-forge make --skip-package=true --arch=x64",
     "package": "electron-forge package",
+    "package-mac": "electron-forge package --arch=x64",
     "lint-and-test": "concurrently --raw 'yarn lint' 'yarn test'",
     "start": "electron-forge start",
     "test": "jest"
