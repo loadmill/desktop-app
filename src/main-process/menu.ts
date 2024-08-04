@@ -1,9 +1,9 @@
 import { app, Menu } from 'electron';
 
+import { downloadMainLog } from '../log/download-logs';
 import { READY } from '../universal/constants';
 
 import { showAuthTokenInput } from './authentication';
-import { downloadAppLog } from './download-logs';
 import { checkForUpdates } from './updates';
 
 import { switchToAgentView } from '.';
@@ -110,7 +110,7 @@ const template = [
     role: 'help',
     submenu: [
       {
-        click: () => downloadAppLog(),
+        click: () => downloadMainLog(),
         label: 'Download App Logs',
       },
       {
