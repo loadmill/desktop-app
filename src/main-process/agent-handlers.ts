@@ -1,6 +1,8 @@
 import { ChildProcessWithoutNullStreams, fork } from 'child_process';
+import path from 'path';
 
 import '@loadmill/agent/dist/cli';
+import { app } from 'electron';
 
 import { sendFromMainToAgentRenderer } from '../inter-process-communication/main-to-agent';
 import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
@@ -17,13 +19,12 @@ import {
   STOP_AGENT,
 } from '../universal/constants';
 
-import { appendToAgentLog } from './agent-log-file';
+import { agentLogger } from './agent/agent-logger';
 import {
   isAgentConnected,
   refreshConnectedStatus,
 } from './connected-status';
 import {
-  LOADMILL_AGENT_PATH,
   LOADMILL_AGENT_SERVER_URL,
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
@@ -63,6 +64,10 @@ const initAgent = () => {
     pipeAgentStderr();
   }
 };
+
+const PACKED_RELATIVE_PATH = path.join(app.getAppPath(), '.webpack', 'main');
+const LOADMILL_AGENT = 'loadmill-agent';
+const LOADMILL_AGENT_PATH = path.join(PACKED_RELATIVE_PATH, LOADMILL_AGENT);
 
 const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   log.info('Creating agent process with env vars', {
@@ -127,7 +132,7 @@ const handleAgentStd = async (
   await handleInvalidToken(text);
   refreshConnectedStatus({ text });
   sendFromMainToAgentRenderer({ data: { text }, type });
-  appendToAgentLog(text);
+  agentLogger.info(text);
 };
 
 const stopAgent = (): void => {

@@ -9,9 +9,9 @@ import log from '../../log';
 import { Header } from '../../types/header';
 import { ProxyEntry, ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
 import { PROXY } from '../../universal/constants';
-import { PROXY_CERTIFICATES_DIR_PATH } from '../constants';
 
 import { subscribeToClearEntriesEvents } from './clear-entries-handlers';
+import { PROXY_CERTIFICATES_DIR_PATH } from './constants';
 import { getEncoding } from './encoding';
 import { addEntry } from './entries';
 import { subscribeToExportAsHar } from './export-as-har';

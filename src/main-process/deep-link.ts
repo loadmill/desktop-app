@@ -8,7 +8,8 @@ import {
 import log from '../log';
 
 import { handleAuthEvent } from './authentication';
-import { LOADMILL_DESKTOP_APP_PROTOCOL } from './constants';
+
+const LOADMILL_DESKTOP_APP_PROTOCOL = 'loadmill-desktop-app';
 
 enum HOST {
   AUTH = 'auth',
