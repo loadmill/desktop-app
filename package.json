@@ -10,7 +10,8 @@
   "main": ".webpack/main",
   "scripts": {
     "clean": "rm -rf .webpack/ out/",
-    "forge-publish": "electron-forge publish --dry-run --arch=x64",
+    "forge-publish": "electron-forge publish --arch=x64",
+    "forge-publish-dry-run": "electron-forge publish --dry-run --arch=x64",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --color",
     "make": "electron-forge make",
     "only-make": "electron-forge make --skip-package=true",
