@@ -3,7 +3,6 @@ import {
   BrowserWindow,
 } from 'electron';
 
-import { initMainToAgent } from '../../inter-process-communication/main-to-agent';
 import { subscribeToDownloadAgentLog } from '../agent/download-agent-log';
 
 import { createView } from './view-factory';
@@ -20,7 +19,6 @@ export const createAgentView = (
     url: AGENT_VIEW_WEBPACK_ENTRY,
   });
 
-  initMainToAgent(agent.webContents);
   subscribeToDownloadAgentLog();
   return agent;
 };

@@ -1,4 +1,6 @@
-import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
+import {
+  sendFromMainWindowToRenderer,
+} from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
 import {
   MAGIC_TOKEN,
@@ -14,7 +16,7 @@ export const handleAuthEvent = (url: string): void => {
       log.error('No magic token found in URL', { url });
       return;
     }
-    sendToRenderer({
+    sendFromMainWindowToRenderer({
       data: { magicToken },
       type: MAGIC_TOKEN,
     });
@@ -27,5 +29,5 @@ const getMagicTokenFromUrl = (url: string): string => {
 };
 
 export const showAuthTokenInput = (): void => {
-  sendToRenderer({ type: SHOW_AUTH_TOKEN_INPUT });
+  sendFromMainWindowToRenderer({ type: SHOW_AUTH_TOKEN_INPUT });
 };

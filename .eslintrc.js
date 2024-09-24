@@ -41,6 +41,12 @@ module.exports = {
       },
     },
     {
+      files: ['src/main-process/**/*.ts'],
+      rules: {
+        'react-hooks/rules-of-hooks': 'off',
+      },
+    },
+    {
       env: {
         mocha: true,
       },

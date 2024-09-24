@@ -1,6 +1,8 @@
 import getPort, { portNumbers } from 'get-port';
 
-import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../log';
 import { GET_PORT, PORT } from '../../universal/constants';
 import { subscribeToMainProcessMessage } from '../main-events';
@@ -25,7 +27,7 @@ export const subscribeToPort = (): void => {
 };
 
 const sendPortToRenderer = (): void => {
-  sendFromProxyToRenderer({
+  sendFromProxyViewToRenderer({
     data: {
       port,
     },

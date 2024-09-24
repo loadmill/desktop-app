@@ -4,8 +4,8 @@ import { shell } from 'electron';
 
 import { DOWNLOADS_PATH } from '../../downloads/constants';
 import {
-  sendFromProxyToRenderer,
-} from '../../inter-process-communication/proxy-to-render';
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import {
   DOWNLOAD_CERTIFICATE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
@@ -26,7 +26,7 @@ export const subscribeToDownloadCertificate = (): void => {
 
 const downloadCertificate = (): void => {
   copyFile(proxyCertificatePath, proxyCertificateDownloadLocation, () => {
-    sendFromProxyToRenderer({ type: DOWNLOADED_CERTIFICATE_SUCCESS });
+    sendFromProxyViewToRenderer({ type: DOWNLOADED_CERTIFICATE_SUCCESS });
     shell.showItemInFolder(proxyCertificateDownloadLocation);
   });
 };

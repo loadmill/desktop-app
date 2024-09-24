@@ -1,0 +1,109 @@
+body, html {
+  background-color: #101e2c;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  margin: auto;
+}
+
+.hidden {
+  display: none;
+}
+
+#root {
+  display: grid;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root > * {
+  min-height: 0;
+}
+
+.page-wrapper {
+  display: grid;
+  gap: 16px;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: 2rem 2rem 1.5rem 2rem;
+}
+
+.fit-content {
+  width: fit-content;
+}
+
+.entry-summary {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 10px;
+}
+
+.url {
+  overflow: auto;
+}
+
+.body-content {
+  font-family: monospace;
+  font-size: 12px;
+  margin: 0;
+  overflow: auto;
+}
+
+.filters-list {
+  overflow: auto;
+  max-height: 230px;
+}
+
+.html-display {
+  color: #ffb482;
+}
+
+.json-display {
+  color: #6eb450;
+}
+
+.proxy-dashboard-header,
+.proxy-dashboard-footer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.proxy-dashboard-footer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+[class*='d-flex'] {
+  display: flex;
+}
+
+[class*='lg-gap'][class*='d-flex'] {
+  gap: 16px;
+}
+
+[class*='sm-gap'][class*='d-flex'] {
+  gap: 8px;
+}
+
+[class*='xs-gap'][class*='d-flex'] {
+  gap: 4px;
+}
+
+.entries-list {
+  overflow: auto;
+}
+
+.proxy-entries-list {
+  overflow: hidden;
+}
+
+.show-when-hover {
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+
+.show-when-hover-container:hover .show-when-hover {
+    opacity: 1;
+}

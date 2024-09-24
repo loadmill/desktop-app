@@ -1,4 +1,6 @@
-import { sendFromProxyToRenderer } from '../../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../../inter-process-communication/to-renderer-process/main-to-renderer';
 import { ProxyRendererMessageTypes } from '../../../types/messaging';
 
 export type ErrorResult<T = string> = {
@@ -15,7 +17,7 @@ export const handleNotSignedInError = (err: Error, msgType: ProxyRendererMessage
     'You are not logged in to Loadmill' :
     err.message;
 
-  sendFromProxyToRenderer({
+  sendFromProxyViewToRenderer({
     data: { error: dataError },
     type: msgType,
   });

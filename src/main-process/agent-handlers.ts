@@ -4,8 +4,10 @@ import path from 'path';
 import '@loadmill/agent/dist/cli';
 import { app } from 'electron';
 
-import { sendFromMainToAgentRenderer } from '../inter-process-communication/main-to-agent';
-import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
+import {
+  sendFromAgentViewToRenderer,
+  sendFromMainWindowToRenderer,
+} from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
 import { AgentMessage, MainMessage } from '../types/messaging';
 import { Token } from '../types/token';
@@ -88,7 +90,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
 const addOnAgentExitEvent = () => {
   agent.on('exit', (code) => {
     log.info('Agent process exited with code:', code);
-    sendToRenderer({
+    sendFromMainWindowToRenderer({
       data: {
         isAgentConnected: isAgentConnected(),
       },
@@ -101,7 +103,7 @@ const addOnAgentIsConnectedEvent = (): void => {
   agent.on('message', ({ data, type }: MainMessage) => {
     if (type === IS_AGENT_CONNECTED) {
       log.info('Agent message received', { data, type } );
-      sendToRenderer({
+      sendFromMainWindowToRenderer({
         data: {
           isAgentConnected: data.isConnected,
         },
@@ -131,7 +133,7 @@ const handleAgentStd = async (
   log.info('Agent:', text);
   await handleInvalidToken(text);
   refreshConnectedStatus({ text });
-  sendFromMainToAgentRenderer({ data: { text }, type });
+  sendFromAgentViewToRenderer({ data: { text }, type });
   agentLogger.info(text);
 };
 
@@ -211,7 +213,7 @@ const handleStartAgentEvent = async () => {
   }
   if (isAgentConnected()) {
     log.info('Agent is already connected');
-    sendToRenderer({
+    sendFromMainWindowToRenderer({
       data: {
         isAgentConnected: isAgentConnected(),
       },
@@ -235,7 +237,7 @@ const handleStopAgentEvent = () => {
   log.info(`Got ${STOP_AGENT} event`);
   if (!isAgentConnected()) {
     log.info('Agent is already not connected');
-    sendToRenderer({
+    sendFromMainWindowToRenderer({
       data: {
         isAgentConnected: isAgentConnected(),
       },

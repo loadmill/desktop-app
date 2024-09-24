@@ -1,4 +1,6 @@
-import { sendFromProxyToRenderer } from '../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
 import { MainMessage } from '../types/messaging';
 import { TestSuite } from '../types/suite';
@@ -33,7 +35,7 @@ export const subscribeToFetchSuites = (): void => {
 
 const onFetchSuites = async (_event: Electron.IpcMainEvent, { search }: MainMessage['data']) => {
   const suites = await fetchSuites(search);
-  sendFromProxyToRenderer({
+  sendFromProxyViewToRenderer({
     data: { search, suites },
     type: UPDATED_SUITES,
   });

@@ -5,8 +5,7 @@ import { READY } from '../universal/constants';
 
 import { showAuthTokenInput } from './authentication';
 import { checkForUpdates } from './updates';
-
-import { switchToAgentView } from '.';
+import { switchToAgentView, switchToSettingsView } from './views';
 
 const isMac = process.platform === 'darwin';
 
@@ -19,6 +18,11 @@ const template = [
       {
         click: () => checkForUpdates(),
         label: 'Check for Updates...',
+      },
+      { type: 'separator' },
+      {
+        click: () => switchToSettingsView(),
+        label: 'Settings...',
       },
       { type: 'separator' },
       { role: 'services' },
@@ -34,6 +38,13 @@ const template = [
   {
     label: 'File',
     submenu: [
+      ...(!isMac ? [
+        {
+          click: () => switchToSettingsView(),
+          label: 'Settings',
+        },
+        { type: 'separator' },
+      ] : []),
       isMac ? { role: 'close' } : { role: 'quit' },
     ],
   },

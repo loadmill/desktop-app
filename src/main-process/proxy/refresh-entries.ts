@@ -1,5 +1,7 @@
 
-import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import { REFRESH_ENTRIES, UPDATED_ENTRIES } from '../../universal/constants';
 import { subscribeToMainProcessMessage } from '../main-events';
 
@@ -12,7 +14,7 @@ export const subscribeToRefreshEntriesFromRenderer = (): void => {
 };
 
 export const sendUpdatedEntries = (): void => {
-  sendFromProxyToRenderer({
+  sendFromProxyViewToRenderer({
     data: { proxies: getEntries() },
     type: UPDATED_ENTRIES,
   });

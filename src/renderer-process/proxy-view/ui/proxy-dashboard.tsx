@@ -21,11 +21,11 @@ import {
   UPDATED_ENTRIES,
   UPDATED_SUITES,
 } from '../../../universal/constants';
+import { CustomizedSnackbars } from '../../snack-bar';
 
 import { ProxyDashboardFooter } from './proxy-dashboard-footer';
 import { ProxyDashboardHeader } from './proxy-dashboard-header';
 import { ProxyEntries } from './proxy-entries';
-import { CustomizedSnackbars } from './snack-bar';
 
 const searchSuitesDelay = 500;
 let searchSuitesTimeout: NodeJS.Timeout;

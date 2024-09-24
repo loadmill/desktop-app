@@ -7,6 +7,7 @@ import {
   DOWNLOAD_AGENT_LOG,
   DOWNLOAD_CERTIFICATE,
   EXPORT_AS_HAR,
+  FETCH_SETTINGS,
   FETCH_SUITES,
   FIND_NEXT,
   GET_IP_ADDRESS,
@@ -19,6 +20,7 @@ import {
   MARK_RELEVANT,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
+  SAVE_SETTINGS,
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
@@ -28,6 +30,7 @@ import {
   TOGGLE_MAXIMIZE_WINDOW,
 } from '../universal/constants';
 
+import { Settings } from './settings';
 import { SuiteOption } from './suite';
 import { ViewName } from './views';
 
@@ -37,7 +40,12 @@ declare global {
   }
 }
 
-type DesktopApi = ApiForMainWindow & ApiForLoadmillBrowserView & ApiForLoadmillProxyView & ApiForLoadmillAgentView;
+type DesktopApi =
+  ApiForMainWindow &
+  ApiForLoadmillBrowserView &
+  ApiForLoadmillProxyView &
+  ApiForLoadmillAgentView &
+  ApiForSettingsView;
 
 export type ApiForMainWindow = {
   [FIND_NEXT]: (toFind: string) => void;
@@ -76,4 +84,9 @@ export type ApiForLoadmillProxyView = {
 
 export type ApiForLoadmillAgentView = {
   [DOWNLOAD_AGENT_LOG]: () => void;
+};
+
+export type ApiForSettingsView = {
+  [FETCH_SETTINGS]: () => void;
+  [SAVE_SETTINGS]: (settings: Settings) => void;
 };

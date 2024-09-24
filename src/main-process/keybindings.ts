@@ -1,6 +1,8 @@
 import { app, globalShortcut } from 'electron';
 
-import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
+import {
+  sendFromMainWindowToRenderer,
+} from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
 import { SHOW_FIND_ON_PAGE } from '../universal/constants';
 
@@ -26,7 +28,7 @@ const registerAllKeyBindings = () => {
 
 const registerEscapeKeyBind = () => {
   registerKeyBind(ACCLERATOR.ESCAPE, () => {
-    sendToRenderer({
+    sendFromMainWindowToRenderer({
       data: { shouldShowFind: false },
       type: SHOW_FIND_ON_PAGE,
     });
@@ -35,7 +37,7 @@ const registerEscapeKeyBind = () => {
 
 const registerFindKeyBind = () => {
   registerKeyBind(ACCLERATOR.FIND, () => {
-    sendToRenderer({
+    sendFromMainWindowToRenderer({
       data: { shouldShowFind: true },
       type: SHOW_FIND_ON_PAGE,
     });
