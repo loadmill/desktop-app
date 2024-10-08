@@ -1,4 +1,6 @@
-import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import { MainMessage } from '../../types/messaging';
 import { MARK_RELEVANT, UPDATED_ENTRIES } from '../../universal/constants';
 import { subscribeToMainProcessMessage } from '../main-events';
@@ -16,7 +18,7 @@ const markRelevant = (_event: Electron.IpcMainEvent, { entryIds }: MainMessage['
       entry.irrelevant = false;
     }
   });
-  sendFromProxyToRenderer({
+  sendFromProxyViewToRenderer({
     data: { proxies: entries },
     type: UPDATED_ENTRIES,
   });

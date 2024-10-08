@@ -1,6 +1,8 @@
 import { contextBridge } from 'electron';
 
-import { sendToMain } from '../../inter-process-communication/renderer-to-main';
+import {
+  sendToMain,
+} from '../../inter-process-communication/to-main-process/renderer-to-main';
 import { ApiForLoadmillAgentView } from '../../types/api';
 import { AgentRendererMessage } from '../../types/messaging';
 import { DESKTOP_API, DOWNLOAD_AGENT_LOG, STDERR, STDOUT } from '../../universal/constants';

@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 
-import { sendFromProxyToRenderer } from '../../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../../log';
 import { MainMessage } from '../../../types/messaging';
 import { CREATE_TEST, CREATE_TEST_COMPLETE } from '../../../universal/constants';
@@ -50,7 +52,7 @@ const pollImportStatus = async (token: string): Promise<void> => {
       } else if (pollingAttempts > MAX_POLLING_ATTEMPTS) {
         data = { error: 'Import timed out' };
       } // else status === 'done'
-      sendFromProxyToRenderer({
+      sendFromProxyViewToRenderer({
         data,
         type: CREATE_TEST_COMPLETE,
       });

@@ -4,7 +4,9 @@ import http from 'http';
 import async from 'async';
 import Proxy from 'loadmill-http-mitm-proxy';
 
-import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../log';
 import { Header } from '../../types/header';
 import { ProxyEntry, ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
@@ -178,7 +180,7 @@ const handleResponse = (request: ProxyRequest, ctx: Proxy.IContext) => {
     };
     addEntry(entry);
     if (shouldSendEntry(entry.request.url)) {
-      sendFromProxyToRenderer({
+      sendFromProxyViewToRenderer({
         data: {
           proxy: entry,
         },

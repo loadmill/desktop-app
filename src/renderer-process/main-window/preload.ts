@@ -1,8 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
-import { sendToMain } from '../../inter-process-communication/renderer-to-main';
+import {
+  sendToMain,
+} from '../../inter-process-communication/to-main-process/renderer-to-main';
 import { ApiForMainWindow } from '../../types/api';
-import { RendererMessage } from '../../types/messaging';
+import { MainWindowRendererMessage } from '../../types/messaging';
 import { ViewName } from '../../types/views';
 import {
   DESKTOP_API,
@@ -48,7 +50,7 @@ subscribeToMainWindowMessages(GENERATE_TOKEN, (event: Electron.IpcRendererEvent)
   }
 });
 
-subscribeToMainWindowMessages(MAGIC_TOKEN, (event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(MAGIC_TOKEN, (event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   if (isFromMainProcess(event)) {
     ipcRenderer.sendTo(loadmillViewId, MAGIC_TOKEN, data);
   }
@@ -60,7 +62,7 @@ subscribeToMainWindowMessages(SHOW_AUTH_TOKEN_INPUT, (event: Electron.IpcRendere
   }
 });
 
-subscribeToMainWindowMessages(LOADMILL_VIEW_ID, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(LOADMILL_VIEW_ID, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   loadmillViewId = data[LOADMILL_VIEW_ID];
 });
 
@@ -70,19 +72,19 @@ subscribeToMainWindowMessages(SAVED_TOKEN, (event: Electron.IpcRendererEvent) =>
   }
 });
 
-subscribeToMainWindowMessages(NAVIGATION, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(NAVIGATION, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   window.postMessage({ data, type: NAVIGATION });
 });
 
-subscribeToMainWindowMessages(SHOW_FIND_ON_PAGE, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(SHOW_FIND_ON_PAGE, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   window.postMessage({ data, type: SHOW_FIND_ON_PAGE });
 });
 
-subscribeToMainWindowMessages(IS_AGENT_CONNECTED, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(IS_AGENT_CONNECTED, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   window.postMessage({ data, type: IS_AGENT_CONNECTED });
 });
 
-subscribeToMainWindowMessages(SWITCH_VIEW, (_event: Electron.IpcRendererEvent, data: RendererMessage['data']) => {
+subscribeToMainWindowMessages(SWITCH_VIEW, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   window.postMessage({ data, type: SWITCH_VIEW });
 });
 

@@ -1,6 +1,8 @@
 import { BrowserView } from 'electron';
 
-import { sendToRenderer } from '../inter-process-communication/main-to-renderer';
+import {
+  sendFromMainWindowToRenderer,
+} from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import { Navigation } from '../types/navigation';
 import {
   DID_NAVIGATE_IN_PAGE,
@@ -27,7 +29,7 @@ export const subscribeToNavigationEvents = (webView: BrowserView): void => {
       canGoBack: webView.webContents.canGoBack(),
       canGoForward: webView.webContents.canGoForward(),
     };
-    sendToRenderer({
+    sendFromMainWindowToRenderer({
       data: { nav },
       type: NAVIGATION,
     });

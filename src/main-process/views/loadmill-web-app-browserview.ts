@@ -3,7 +3,9 @@ import {
   BrowserWindow,
 } from 'electron';
 
-import { sendToRenderer } from '../../inter-process-communication/main-to-renderer';
+import {
+  sendFromMainWindowToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import {
   LOADMILL_VIEW_ID,
 } from '../../universal/constants';
@@ -25,7 +27,7 @@ export const createLoadmillWebView = (
     preload: LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY,
     url: LOADMILL_WEB_APP_ORIGIN,
   });
-  sendToRenderer({
+  sendFromMainWindowToRenderer({
     data: { loadmillViewId: loadmillWebView.webContents.id },
     type: LOADMILL_VIEW_ID,
   });

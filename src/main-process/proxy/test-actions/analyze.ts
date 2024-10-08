@@ -1,4 +1,6 @@
-import { sendFromProxyToRenderer } from '../../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../../log';
 import { LoadmillRequest } from '../../../types/loadmill-types';
 import { ProxyEntry } from '../../../types/proxy-entry';
@@ -40,7 +42,7 @@ const pollTransformStatus = async (token: string): Promise<void> => {
   const intervalId = setInterval(async () => {
     if (pollingAttempts > MAX_POLLING_ATTEMPTS) {
       clearInterval(intervalId);
-      sendFromProxyToRenderer({
+      sendFromProxyViewToRenderer({
         data: { error: 'Analyze took too long' },
         type: ANALYZE_REQUESTS_COMPLETE,
       });
@@ -62,14 +64,14 @@ const pollTransformStatus = async (token: string): Promise<void> => {
         const requests = details.conf.requests;
         const entries = getEntries();
         prepareEntries(entries, requests);
-        sendFromProxyToRenderer({
+        sendFromProxyViewToRenderer({
           data: { proxies: getEntries() },
           type: UPDATED_ENTRIES,
         });
       }
     }
     clearInterval(intervalId);
-    sendFromProxyToRenderer({
+    sendFromProxyViewToRenderer({
       data,
       type: ANALYZE_REQUESTS_COMPLETE,
     });

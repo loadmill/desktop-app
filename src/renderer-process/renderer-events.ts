@@ -5,10 +5,12 @@ import {
   AgentRendererMessageTypes,
   LoadmillViewRendererMessage,
   LoadmillViewRendererMessageTypes,
+  MainWindowRendererMessage,
   ProxyRendererMessage,
   ProxyRendererMessageTypes,
-  RendererMessage,
   RendererMessageTypes,
+  SettingsRendererMessage,
+  SettingsRendererMessageTypes,
 } from '../types/messaging';
 
 export enum Renderer {
@@ -20,7 +22,7 @@ export enum Renderer {
 
 export const subscribeToMainWindowMessages = (
   type: RendererMessageTypes,
-  handler: (event?: Electron.IpcRendererEvent, data?: RendererMessage['data']) => void,
+  handler: (event?: Electron.IpcRendererEvent, data?: MainWindowRendererMessage['data']) => void,
 ): void => {
   ipcRenderer.on(type, handler);
 };
@@ -42,6 +44,13 @@ export const subscribeToProxyViewMessages = (
 export const subscribeToAgentViewMessages = (
   type: AgentRendererMessageTypes,
   handler: (event?: Electron.IpcRendererEvent, data?: AgentRendererMessage['data']) => void,
+): void => {
+  ipcRenderer.on(type, handler);
+};
+
+export const subscribeToSettingsViewMessages = (
+  type: SettingsRendererMessageTypes,
+  handler: (event?: Electron.IpcRendererEvent, data?: SettingsRendererMessage['data']) => void,
 ): void => {
   ipcRenderer.on(type, handler);
 };

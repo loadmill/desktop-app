@@ -2,7 +2,9 @@ import fs from 'fs';
 
 import { dialog } from 'electron';
 
-import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../log';
 import { Har } from '../../types/har';
 import { IMPORT_HAR, IMPORT_HAR_IS_IN_PROGRESS, UPDATED_ENTRIES } from '../../universal/constants';
@@ -26,7 +28,7 @@ const onImportHar = () => {
   });
 
   if (Array.isArray(filePaths) && filePaths.length === 1 && filePaths[0].length > 0) {
-    sendFromProxyToRenderer({ type: IMPORT_HAR_IS_IN_PROGRESS });
+    sendFromProxyViewToRenderer({ type: IMPORT_HAR_IS_IN_PROGRESS });
     try {
       const harAsTextBuffer = fs.readFileSync(filePaths[0]);
       const harAsText = harAsTextBuffer.toString();
@@ -36,16 +38,16 @@ const onImportHar = () => {
       clearEntries();
       appendEntries(proxyEntries);
 
-      sendFromProxyToRenderer({
+      sendFromProxyViewToRenderer({
         data: {
           proxies: getEntries(),
         },
         type: UPDATED_ENTRIES,
       });
-      sendFromProxyToRenderer({ type: IMPORT_HAR });
+      sendFromProxyViewToRenderer({ type: IMPORT_HAR });
     } catch (e) {
       log.error('Error while parsing HAR file', e);
-      sendFromProxyToRenderer({
+      sendFromProxyViewToRenderer({
         data: {
           error: e,
         },
@@ -53,7 +55,7 @@ const onImportHar = () => {
       });
     }
   } else {
-    sendFromProxyToRenderer({
+    sendFromProxyViewToRenderer({
       data: {
         canceledAction: true,
       },

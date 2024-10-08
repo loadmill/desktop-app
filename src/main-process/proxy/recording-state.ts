@@ -1,5 +1,7 @@
 
-import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import { MainMessage } from '../../types/messaging';
 import { IS_RECORDING, SET_IS_RECORDING } from '../../universal/constants';
 import { subscribeToMainProcessMessage } from '../main-events';
@@ -24,7 +26,7 @@ export const subscribeToSetIsRecording = (): void => {
 };
 
 const sendIsRecording = (): void => {
-  sendFromProxyToRenderer({
+  sendFromProxyViewToRenderer({
     data: { isRecording: getIsRecording() },
     type: IS_RECORDING,
   });

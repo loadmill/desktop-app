@@ -1,5 +1,6 @@
 import ElectronStore from 'electron-store';
 
+import { Settings } from '../../types/settings';
 import { Token } from '../../types/token';
 
 const Store = {
@@ -20,4 +21,4 @@ export const get = <V extends StoreValue>(key: string): V => {
   return Store._store.get(key) as V;
 };
 
-export type StoreValue = string | Token;
+export type StoreValue = string | Token | Settings;

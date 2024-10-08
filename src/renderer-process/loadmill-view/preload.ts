@@ -1,6 +1,8 @@
 import { contextBridge } from 'electron';
 
-import { sendToMain } from '../../inter-process-communication/renderer-to-main';
+import {
+  sendToMain,
+} from '../../inter-process-communication/to-main-process/renderer-to-main';
 import { ApiForLoadmillBrowserView } from '../../types/api';
 import { LoadmillViewRendererMessage } from '../../types/messaging';
 import {

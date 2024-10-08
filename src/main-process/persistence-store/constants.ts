@@ -6,3 +6,5 @@ export enum AgentActions {
   STARTED = 'started',
   STOPPED = 'stopped',
 }
+
+export const SETTINGS = 'settings';

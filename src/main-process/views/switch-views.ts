@@ -16,6 +16,7 @@ export const subscribeToSwitchView = (
   loadmillWebView: BrowserView,
   proxyView: BrowserView,
   agentView: BrowserView,
+  settingsView: BrowserView,
 ): void => {
   subscribeToMainProcessMessage(SWITCH_VIEW, (_event: Electron.IpcMainEvent, { view }: MainMessage['data']) => {
     switch (view) {
@@ -27,6 +28,9 @@ export const subscribeToSwitchView = (
         break;
       case ViewName.AGENT:
         switchView(mainWindow, agentView);
+        break;
+      case ViewName.SETTINGS:
+        switchView(mainWindow, settingsView);
         break;
     }
   });

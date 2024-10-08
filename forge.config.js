@@ -93,6 +93,14 @@ module.exports = {
                 js: './src/renderer-process/agent-view/preload.ts',
               },
             },
+            {
+              html: './src/renderer-process/settings-view/index.html',
+              js: './src/renderer-process/settings-view/renderer.ts',
+              name: 'settings_view',
+              preload: {
+                js: './src/renderer-process/settings-view/preload.ts',
+              },
+            },
           ],
         },
       },

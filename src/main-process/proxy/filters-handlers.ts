@@ -1,4 +1,6 @@
-import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import { MainMessage } from '../../types/messaging';
 import { INIT_FILTER_REGEX, SET_FILTER_REGEX } from '../../universal/constants';
 import { subscribeToMainProcessMessage } from '../main-events';
@@ -14,7 +16,7 @@ export const subscribeToFilterRegexEvents = (): void => {
 
 const subscribeToInitFilterRegexFromRenderer = (): void => {
   subscribeToMainProcessMessage(INIT_FILTER_REGEX, () => {
-    sendFromProxyToRenderer({
+    sendFromProxyViewToRenderer({
       data: {
         filterRegex: getFilterRegex(),
       },

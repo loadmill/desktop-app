@@ -11,6 +11,7 @@ import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORT_AS_HAR,
   EXPORTED_AS_HAR_SUCCESS,
+  FETCH_SETTINGS,
   FETCH_SUITES,
   FIND_NEXT,
   GENERATE_TOKEN,
@@ -33,6 +34,7 @@ import {
   PROXY,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
+  SAVE_SETTINGS,
   SAVED_TOKEN,
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
@@ -51,6 +53,7 @@ import {
 
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
+import { Settings } from './settings';
 import { SuiteOption } from './suite';
 import { ViewName } from './views';
 
@@ -58,7 +61,10 @@ import { ViewName } from './views';
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: { [key: string]: string[] | string | boolean | number | Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | null };
+  data?: {
+    [key: string]: string[] | string | boolean | number | null |
+    Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | Settings
+  };
   type: string;
 }
 
@@ -79,6 +85,7 @@ export abstract class MainMessage implements IPCMessage {
     isRecording?: boolean;
     isSignedIn?: boolean;
     search?: string;
+    settings?: Settings;
     suite?: SuiteOption | null;
     text?: string;
     toFind?: string;
@@ -88,7 +95,14 @@ export abstract class MainMessage implements IPCMessage {
   type: MainMessageTypes;
 }
 
-export abstract class RendererMessage implements IPCMessage {
+export type RendererMessage =
+  MainWindowRendererMessage |
+  LoadmillViewRendererMessage |
+  ProxyRendererMessage |
+  AgentRendererMessage |
+  SettingsRendererMessage;
+
+export abstract class MainWindowRendererMessage implements IPCMessage {
   data?: {
     isAgentConnected?: boolean;
     loadmillViewId?: number;
@@ -134,6 +148,14 @@ export abstract class AgentRendererMessage implements IPCMessage {
   type: AgentRendererMessageTypes;
 }
 
+export abstract class SettingsRendererMessage implements IPCMessage {
+  data?: {
+    error?: string;
+    settings?: Settings;
+  };
+  type: SettingsRendererMessageTypes;
+}
+
 export type AgentMessageTypes =
   typeof IS_AGENT_CONNECTED |
   typeof START_AGENT |
@@ -148,6 +170,7 @@ export type MainMessageTypes =
   typeof DOWNLOAD_AGENT_LOG |
   typeof DOWNLOAD_CERTIFICATE |
   typeof EXPORT_AS_HAR |
+  typeof FETCH_SETTINGS |
   typeof FETCH_SUITES |
   typeof FIND_NEXT |
   typeof GET_IP_ADDRESS |
@@ -164,6 +187,7 @@ export type MainMessageTypes =
   typeof SET_FILTER_REGEX |
   typeof SET_IS_RECORDING |
   typeof SET_IS_USER_SIGNED_IN |
+  typeof SAVE_SETTINGS |
   typeof START_AGENT |
   typeof STOP_AGENT |
   typeof SWITCH_VIEW |
@@ -207,3 +231,7 @@ export type ProxyRendererMessageTypes =
 export type AgentRendererMessageTypes =
   typeof STDOUT |
   typeof STDERR;
+
+export type SettingsRendererMessageTypes =
+  typeof FETCH_SETTINGS |
+  typeof SAVE_SETTINGS;

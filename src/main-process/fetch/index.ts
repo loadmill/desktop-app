@@ -1,15 +1,10 @@
-import https from 'https';
-
-import { app } from 'electron';
 import fetch, { RequestInit, Response } from 'node-fetch';
 
-const httpsAgent = new https.Agent({
-  rejectUnauthorized: false,
-});
+import { getHttpsAgent } from './https-agent';
 
 const _fetch = async (path: string, reqInit: RequestInit = {}): Promise<Response> => {
   const response = await fetch(path, {
-    agent: app.isPackaged && httpsAgent,
+    agent: getHttpsAgent(),
     ...reqInit,
   });
   return response;

@@ -5,7 +5,7 @@ import React, {
 } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';
-import { RendererMessage } from '../../../types/messaging';
+import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
 import {
   IS_AGENT_CONNECTED,
@@ -33,7 +33,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     };
   }, []);
 
-  const onPreloadMessage = (event: MessageEvent<RendererMessage>) => {
+  const onPreloadMessage = (event: MessageEvent<MainWindowRendererMessage>) => {
     if (isFromPreload(event)) {
       const { data: { type, data } } = event;
       switch (type) {
@@ -55,20 +55,20 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     }
   };
 
-  const onNavigationMsg = (data: RendererMessage['data']) => {
+  const onNavigationMsg = (data: MainWindowRendererMessage['data']) => {
     setCanGoBack(!!data?.nav?.canGoBack);
     setCanGoForward(!!data?.nav?.canGoForward);
   };
 
-  const onIsAgentConnectedMsg = (data: RendererMessage['data']) => {
+  const onIsAgentConnectedMsg = (data: MainWindowRendererMessage['data']) => {
     setIsAgentConnected(!!data?.isAgentConnected);
   };
 
-  const onSwitchViewMsg = (data: RendererMessage['data']) => {
+  const onSwitchViewMsg = (data: MainWindowRendererMessage['data']) => {
     setView(data?.view);
   };
 
-  const onShowFindMsg = (data: RendererMessage['data']) => {
+  const onShowFindMsg = (data: MainWindowRendererMessage['data']) => {
     const incomingShouldShowFind = !!data?.shouldShowFind;
     setShouldShowFind(incomingShouldShowFind);
     if (!incomingShouldShowFind) {

@@ -4,7 +4,9 @@ import fs from 'fs';
 import { shell } from 'electron';
 
 import { DOWNLOADS_PATH } from '../../downloads/constants';
-import { sendFromProxyToRenderer } from '../../inter-process-communication/proxy-to-render';
+import {
+  sendFromProxyViewToRenderer,
+} from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../log';
 import { proxyEntriesToHar } from '../../proxy-to-har/proxy-to-har';
 import { MainMessage } from '../../types/messaging';
@@ -29,7 +31,7 @@ const exportAsHar = (_event: Electron.IpcMainEvent, { entryIds }: MainMessage['d
       log.error('Error while saving file', err);
     }
     log.info('Har exported successfully', fileName);
-    sendFromProxyToRenderer({ type: EXPORTED_AS_HAR_SUCCESS });
+    sendFromProxyViewToRenderer({ type: EXPORTED_AS_HAR_SUCCESS });
     shell.showItemInFolder(savePath);
   });
 };
