@@ -23,6 +23,7 @@ export const initializeViews = (window: BrowserWindow): void => {
   const loadmillWebView = createLoadmillWebView(mainWindow);
   const settingsView = createSettingsView(mainWindow);
   setViews(loadmillWebView, proxyView, agentView, settingsView);
+  mainWindow.setTopBrowserView(loadmillWebView);
   subscribeToSwitchView(mainWindow, loadmillWebView, proxyView, agentView, settingsView);
 };
 
