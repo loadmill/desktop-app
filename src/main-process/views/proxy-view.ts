@@ -4,6 +4,7 @@ import {
 } from 'electron';
 
 import { subscribeToFindOnPageEvents } from '../find-on-page';
+import { subscribeToProfileEvents } from '../profiles';
 import { subscribeToDownloadCertificate } from '../proxy/download-certificate';
 import { subscribeToFetchSuites } from '../suites';
 
@@ -22,6 +23,7 @@ export const createProxyView = (
   });
   subscribeToDownloadCertificate();
   subscribeToFindOnPageEvents(proxyView.webContents);
+  subscribeToProfileEvents();
   subscribeToFetchSuites();
   return proxyView;
 };

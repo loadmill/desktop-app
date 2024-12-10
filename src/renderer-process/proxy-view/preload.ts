@@ -19,9 +19,11 @@ import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORT_AS_HAR,
   EXPORTED_AS_HAR_SUCCESS,
+  FETCH_PROFILES,
   FETCH_SUITES,
   GET_IP_ADDRESS,
   GET_PORT,
+  GET_PROFILE,
   IMPORT_HAR,
   IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
@@ -34,7 +36,9 @@ import {
   REFRESH_ENTRIES,
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
+  SET_PROFILE,
   UPDATED_ENTRIES,
+  UPDATED_PROFILES,
   UPDATED_SUITES,
 } from '../../universal/constants';
 import { subscribeToProxyViewMessages } from '../renderer-events';
@@ -47,9 +51,11 @@ export const WINDOW_API: ApiForLoadmillProxyView = {
   [DELETE_ENTRY]: (entryId: string): void => sendToMain(DELETE_ENTRY, { entryId }),
   [DOWNLOAD_CERTIFICATE]: (): void => sendToMain(DOWNLOAD_CERTIFICATE),
   [EXPORT_AS_HAR]: (entryIds: string[]): void => sendToMain(EXPORT_AS_HAR, { entryIds }),
+  [FETCH_PROFILES]: (search?: string): void => sendToMain(FETCH_PROFILES, { search }),
   [FETCH_SUITES]: (search?: string): void => sendToMain(FETCH_SUITES, { search }),
   [GET_IP_ADDRESS]: (ipvFamily?: 'IPv4' | 'IPv6'): void => sendToMain(GET_IP_ADDRESS, { ipvFamily }),
   [GET_PORT]: (): void => sendToMain(GET_PORT),
+  [GET_PROFILE]: (): void => sendToMain(GET_PROFILE),
   [IMPORT_HAR]: (): void => sendToMain(IMPORT_HAR),
   [INIT_FILTER_REGEX]: () => sendToMain(INIT_FILTER_REGEX),
   [IS_RECORDING]: (): void => sendToMain(IS_RECORDING),
@@ -57,6 +63,7 @@ export const WINDOW_API: ApiForLoadmillProxyView = {
   [REFRESH_ENTRIES]: (): void => sendToMain(REFRESH_ENTRIES),
   [SET_FILTER_REGEX]: (filterRegex: string): void => sendToMain(SET_FILTER_REGEX, { filterRegex }),
   [SET_IS_RECORDING]: (isRecording: boolean): void => sendToMain(SET_IS_RECORDING, { isRecording }),
+  [SET_PROFILE]: (profile: string): void => sendToMain(SET_PROFILE, { profile }),
 };
 
 subscribeToProxyViewMessages(ANALYZE_REQUESTS_COMPLETE, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
@@ -73,6 +80,10 @@ subscribeToProxyViewMessages(DOWNLOADED_CERTIFICATE_SUCCESS, (_event: Electron.I
 
 subscribeToProxyViewMessages(EXPORTED_AS_HAR_SUCCESS, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: EXPORTED_AS_HAR_SUCCESS });
+});
+
+subscribeToProxyViewMessages(GET_PROFILE, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: GET_PROFILE });
 });
 
 subscribeToProxyViewMessages(IMPORT_HAR, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
@@ -105,6 +116,10 @@ subscribeToProxyViewMessages(PROXY, (_event: Electron.IpcRendererEvent, data: Pr
 
 subscribeToProxyViewMessages(UPDATED_ENTRIES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
   window.postMessage({ data, type: UPDATED_ENTRIES });
+});
+
+subscribeToProxyViewMessages(UPDATED_PROFILES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {
+  window.postMessage({ data, type: UPDATED_PROFILES });
 });
 
 subscribeToProxyViewMessages(UPDATED_SUITES, (_event: Electron.IpcRendererEvent, data: ProxyRendererMessage['data']) => {

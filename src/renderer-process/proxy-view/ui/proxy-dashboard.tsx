@@ -10,6 +10,7 @@ import {
   CREATE_TEST_COMPLETE,
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORTED_AS_HAR_SUCCESS,
+  GET_PROFILE,
   IMPORT_HAR,
   IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
@@ -19,6 +20,7 @@ import {
   PORT,
   PROXY,
   UPDATED_ENTRIES,
+  UPDATED_PROFILES,
   UPDATED_SUITES,
 } from '../../../universal/constants';
 import { CustomizedSnackbars } from '../../snack-bar';
@@ -27,8 +29,9 @@ import { ProxyDashboardFooter } from './proxy-dashboard-footer';
 import { ProxyDashboardHeader } from './proxy-dashboard-header';
 import { ProxyEntries } from './proxy-entries';
 
-const searchSuitesDelay = 500;
+const searchDelay = 500;
 let searchSuitesTimeout: NodeJS.Timeout;
+let searchProfilesTimeout: NodeJS.Timeout;
 
 export const ProxyDashboard = (): JSX.Element => {
   const [shouldShowEntries, setShouldShowEntries] = useState<boolean>(false);
@@ -42,6 +45,9 @@ export const ProxyDashboard = (): JSX.Element => {
   const [port, setPort] = useState<number>(0);
   const [loadingEntries, setLoadingEntries] = useState<boolean>(true);
   const [selectedSuite, setSelectedSuite] = useState<SuiteOption>();
+  const [profiles, setProfiles] = useState<string[]>([]);
+  const [isFetchingProfiles, setIsFetchingProfiles] = React.useState(true);
+  const [selectedProfile, setSelectedProfile] = useState<string>();
   const [isLoadingCreateTest, setIsLoadingCreateTest] = useState<boolean>(false);
   const [severity, setSeverity] = useState<'error' | 'success'>('success');
   const [isLoadingAnalyze, setIsLoadingAnalyze] = useState<boolean>(false);
@@ -51,8 +57,10 @@ export const ProxyDashboard = (): JSX.Element => {
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
 
   useEffect(() => {
+    window.desktopApi.fetchProfiles();
     window.desktopApi.fetchSuites();
     window.desktopApi.getIpAddress();
+    window.desktopApi.getProfile();
     window.desktopApi.initFilterRegex();
     window.desktopApi.isRecording();
     window.desktopApi.getPort();
@@ -78,6 +86,9 @@ export const ProxyDashboard = (): JSX.Element => {
           break;
         case DOWNLOADED_CERTIFICATE_SUCCESS:
           onDownloadedCertificateSuccess(data);
+          break;
+        case GET_PROFILE:
+          onGetProfile(data);
           break;
         case IMPORT_HAR:
           onImportHar(data);
@@ -105,6 +116,9 @@ export const ProxyDashboard = (): JSX.Element => {
           break;
         case UPDATED_ENTRIES:
           onUpdatedEntries(data);
+          break;
+        case UPDATED_PROFILES:
+          onUpdatedProfiles(data);
           break;
         case UPDATED_SUITES:
           onUpdatedSuites(data);
@@ -141,6 +155,10 @@ export const ProxyDashboard = (): JSX.Element => {
     setSnackBarMessage('Downloaded certificate successfully');
     setOpenSnackBar(true);
     setIsDownloadInProgress(false);
+  };
+
+  const onGetProfile = ({ profile }: ProxyRendererMessage['data']) => {
+    setSelectedProfile(profile);
   };
 
   const onImportHar = (data: ProxyRendererMessage['data']) => {
@@ -202,6 +220,18 @@ export const ProxyDashboard = (): JSX.Element => {
     setIsFetchingSuites(false);
   };
 
+  const onUpdatedProfiles = ({ profiles }: ProxyRendererMessage['data']) => {
+    setProfiles(profiles);
+    setIsFetchingProfiles(false);
+  };
+
+  const onSelectProfile = (profile: string) => {
+    if (profiles.includes(profile)) {
+      setSelectedProfile(profile);
+      window.desktopApi.setProfile(profile);
+    }
+  };
+
   const onCreateTest = () => {
     setIsLoadingCreateTest(true);
     window.desktopApi.createTest(selectedSuite);
@@ -211,6 +241,11 @@ export const ProxyDashboard = (): JSX.Element => {
     setSuites([]);
     setIsFetchingSuites(true);
     debounceSearchSuites(search);
+  };
+
+  const onSearchProfiles = (search: string) => {
+    setIsFetchingProfiles(true);
+    debounceSearchProfiles(search);
   };
 
   const onAnalyze = () => {
@@ -240,13 +275,18 @@ export const ProxyDashboard = (): JSX.Element => {
         ipAddress={ ipAddress }
         isClearAllDisabled={ isClearAllDisabled }
         isDownloadInProgress={ isDownloadInProgress }
+        isFetchingProfiles={ isFetchingProfiles }
         isFetchingSuites={ isFetchingSuites }
         isImportHarDisabled={ isImportHarDisabled }
         isImportHarInProgress={ isImportHarInProgress }
         isRecording={ isRecording }
         onImportHarClick={ onImportHarClick }
+        onSearchProfiles={ onSearchProfiles }
         onSearchSuites={ onSearchSuites }
+        onSelectProfile={ onSelectProfile }
         port={ port }
+        profiles={ profiles }
+        selectedProfile={ selectedProfile }
         selectedSuite={ selectedSuite }
         setFilterRegex={ setFilterRegex }
         setIsDownloadInProgress={ setIsDownloadInProgress }
@@ -315,7 +355,14 @@ const debounceSearchSuites = (search: string) => {
   clearTimeout(searchSuitesTimeout);
   searchSuitesTimeout = setTimeout(() => {
     window.desktopApi.fetchSuites(search);
-  }, searchSuitesDelay);
+  }, searchDelay);
+};
+
+const debounceSearchProfiles = (search: string) => {
+  clearTimeout(searchProfilesTimeout);
+  searchProfilesTimeout = setTimeout(() => {
+    window.desktopApi.fetchProfiles(search);
+  }, searchDelay);
 };
 
 export type ProxyDashboardProps = {};

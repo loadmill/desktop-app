@@ -11,12 +11,14 @@ import {
   DOWNLOADED_CERTIFICATE_SUCCESS,
   EXPORT_AS_HAR,
   EXPORTED_AS_HAR_SUCCESS,
+  FETCH_PROFILES,
   FETCH_SETTINGS,
   FETCH_SUITES,
   FIND_NEXT,
   GENERATE_TOKEN,
   GET_IP_ADDRESS,
   GET_PORT,
+  GET_PROFILE,
   GO_BACK,
   GO_FORWARD,
   IMPORT_HAR,
@@ -39,6 +41,7 @@ import {
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
+  SET_PROFILE,
   SHOW_AUTH_TOKEN_INPUT,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
@@ -48,6 +51,7 @@ import {
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
   UPDATED_ENTRIES,
+  UPDATED_PROFILES,
   UPDATED_SUITES,
 } from '../universal/constants';
 
@@ -84,6 +88,7 @@ export abstract class MainMessage implements IPCMessage {
     isConnected?: boolean;
     isRecording?: boolean;
     isSignedIn?: boolean;
+    profile?: string;
     search?: string;
     settings?: Settings;
     suite?: SuiteOption | null;
@@ -132,6 +137,8 @@ export abstract class ProxyRendererMessage implements IPCMessage {
     ipAddress?: string;
     isRecording?: boolean;
     port?: number;
+    profile?: string;
+    profiles?: string[];
     proxies?: ProxyEntry[];
     proxy?: ProxyEntry;
     search?: string;
@@ -170,11 +177,13 @@ export type MainMessageTypes =
   typeof DOWNLOAD_AGENT_LOG |
   typeof DOWNLOAD_CERTIFICATE |
   typeof EXPORT_AS_HAR |
+  typeof FETCH_PROFILES |
   typeof FETCH_SETTINGS |
   typeof FETCH_SUITES |
   typeof FIND_NEXT |
   typeof GET_IP_ADDRESS |
   typeof GET_PORT |
+  typeof GET_PROFILE |
   typeof GO_BACK |
   typeof GO_FORWARD |
   typeof IMPORT_HAR |
@@ -186,6 +195,7 @@ export type MainMessageTypes =
   typeof REFRESH_PAGE |
   typeof SET_FILTER_REGEX |
   typeof SET_IS_RECORDING |
+  typeof SET_PROFILE |
   typeof SET_IS_USER_SIGNED_IN |
   typeof SAVE_SETTINGS |
   typeof START_AGENT |
@@ -217,6 +227,7 @@ export type ProxyRendererMessageTypes =
   typeof ANALYZE_REQUESTS_COMPLETE |
   typeof CREATE_TEST_COMPLETE |
   typeof DOWNLOADED_CERTIFICATE_SUCCESS |
+  typeof GET_PROFILE |
   typeof IMPORT_HAR |
   typeof IMPORT_HAR_IS_IN_PROGRESS |
   typeof INIT_FILTER_REGEX |
@@ -224,6 +235,7 @@ export type ProxyRendererMessageTypes =
   typeof IS_RECORDING |
   typeof EXPORTED_AS_HAR_SUCCESS |
   typeof UPDATED_ENTRIES |
+  typeof UPDATED_PROFILES |
   typeof UPDATED_SUITES |
   typeof PORT |
   typeof PROXY;

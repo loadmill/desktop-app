@@ -1,13 +1,12 @@
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 import React from 'react';
 
 import { SuiteOption } from '../../../types/suite';
 
 import { ClearAll } from './clear-all';
-import { DownloadCertificate } from './download-certificate';
+import { ConnectionInfoBanner } from './connection-info-banner';
 import { FilterRegex } from './filters';
 import { ImportHar } from './import-har';
+import { ProfilesAutocomplete } from './profiles-autocomplete';
 import { Recording } from './recording';
 import { SuitesAutocomplete } from './suites-autocomplete';
 
@@ -16,18 +15,23 @@ export const ProxyDashboardHeader = ({
   ipAddress,
   isClearAllDisabled,
   isDownloadInProgress,
+  isFetchingProfiles,
+  isFetchingSuites,
   isImportHarDisabled,
   isImportHarInProgress,
   isRecording,
   onImportHarClick,
+  onSearchProfiles,
+  onSearchSuites,
   port,
+  profiles,
+  selectedProfile,
   selectedSuite,
   setFilterRegex,
   setIsDownloadInProgress,
+  onSelectProfile,
   setSelectedSuite,
   suites,
-  isFetchingSuites,
-  onSearchSuites,
 }: ProxyDashboardHeaderProps): JSX.Element => (
   <div
     className='proxy-dashboard-header'
@@ -45,38 +49,26 @@ export const ProxyDashboardHeader = ({
         disabled={ isClearAllDisabled }
       />
     </div>
-    <Paper
-      className='d-flex-sm-gap'
-      sx={ {
-        alignItems: 'center',
-        padding: '6px',
-      } }
-      variant='outlined'
-    >
-      <Typography
-        className='d-flex-xs-gap'
-        style={ {
-          alignItems: 'baseline',
-        } }
-        variant='body2'
-      >
-        {'Listening on'}
-        <Typography
-          variant='button'
-        >
-          {ipAddress + ':' + port}
-        </Typography>
-      </Typography>
-      <DownloadCertificate
-        isInProgress={ isDownloadInProgress }
-        setIsInProgress={ setIsDownloadInProgress }
-      />
-    </Paper>
+    <ConnectionInfoBanner
+      ipAddress={ ipAddress }
+      isDownloadInProgress={ isDownloadInProgress }
+      port={ port }
+      setIsDownloadInProgress={ setIsDownloadInProgress }
+    />
     <div className='d-flex-sm-gap'>
       <FilterRegex
         filterRegex={ filterRegex }
         setFilterRegex={ setFilterRegex }
       />
+      {profiles.length > 1 && (
+        <ProfilesAutocomplete
+          isFetchingProfiles={ isFetchingProfiles }
+          onSearchProfiles={ onSearchProfiles }
+          onSelectProfile={ onSelectProfile }
+          profiles={ profiles }
+          selectedProfile={ selectedProfile }
+        />
+      )}
       <SuitesAutocomplete
         isFetchingSuites={ isFetchingSuites }
         onSearchSuites={ onSearchSuites }
@@ -93,13 +85,18 @@ export type ProxyDashboardHeaderProps = {
   ipAddress?: string;
   isClearAllDisabled?: boolean;
   isDownloadInProgress?: boolean;
+  isFetchingProfiles: boolean;
   isFetchingSuites: boolean;
   isImportHarDisabled?: boolean;
   isImportHarInProgress?: boolean;
   isRecording?: boolean;
   onImportHarClick?: () => void;
+  onSearchProfiles: (search: string) => void;
   onSearchSuites: (search: string) => void;
+  onSelectProfile?: (profile: string | null) => void;
   port?: number;
+  profiles: string[];
+  selectedProfile: string | null;
   selectedSuite: SuiteOption | null;
   setFilterRegex?: (filterRegex: string) => void;
   setIsDownloadInProgress?: (isInProgress: boolean) => void;

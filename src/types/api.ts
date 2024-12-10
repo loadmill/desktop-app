@@ -7,11 +7,13 @@ import {
   DOWNLOAD_AGENT_LOG,
   DOWNLOAD_CERTIFICATE,
   EXPORT_AS_HAR,
+  FETCH_PROFILES,
   FETCH_SETTINGS,
   FETCH_SUITES,
   FIND_NEXT,
   GET_IP_ADDRESS,
   GET_PORT,
+  GET_PROFILE,
   GO_BACK,
   GO_FORWARD,
   IMPORT_HAR,
@@ -24,6 +26,7 @@ import {
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
+  SET_PROFILE,
   START_AGENT,
   STOP_AGENT,
   SWITCH_VIEW,
@@ -70,9 +73,11 @@ export type ApiForLoadmillProxyView = {
   [DELETE_ENTRY]: (entryId: string) => void;
   [DOWNLOAD_CERTIFICATE]: () => void;
   [EXPORT_AS_HAR]: (entryIds: string[]) => void;
+  [FETCH_PROFILES]: (search?: string) => void;
   [FETCH_SUITES]: (search?: string) => void;
   [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
   [GET_PORT]: () => void;
+  [GET_PROFILE]: () => void;
   [IMPORT_HAR]: () => void;
   [INIT_FILTER_REGEX]: () => void;
   [IS_RECORDING]: () => void;
@@ -80,6 +85,7 @@ export type ApiForLoadmillProxyView = {
   [REFRESH_ENTRIES]: () => void;
   [SET_FILTER_REGEX]: (filterRegex: string) => void;
   [SET_IS_RECORDING]: (isRecording: boolean) => void;
+  [SET_PROFILE]: (profile: string) => void;
 };
 
 export type ApiForLoadmillAgentView = {
