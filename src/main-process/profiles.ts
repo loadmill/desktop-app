@@ -10,6 +10,8 @@ import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { PROFILE } from './persistence-store/constants';
 
+const PROFILE_DEFAULT = 'Default';
+
 export const fetchProfiles = async (): Promise<string[]> => {
   try {
     const response = await callLoadmillApi('settings/recordings/profiles');
@@ -34,6 +36,20 @@ const onFetchProfiles = async (_event: Electron.IpcMainEvent, _data: MainMessage
     data: { profiles },
     type: UPDATED_PROFILES,
   });
+
+  if (!_isStoredProfileValid(profiles)) {
+    set(PROFILE, PROFILE_DEFAULT);
+    sendFromProxyViewToRenderer({
+      data: { profile: PROFILE_DEFAULT },
+      type: GET_PROFILE,
+    });
+  }
+};
+
+const _isStoredProfileValid = (profiles: string[]): boolean => {
+  // handle stored profile was deleted since last fetch
+  const profile = getProfile();
+  return profiles.includes(profile);
 };
 
 export const subscribeToSetProfile = (): void => {
@@ -47,7 +63,7 @@ const onSetProfile = async (_event: Electron.IpcMainEvent, { profile }: MainMess
 export const getProfile = (): string => {
   const profile = get(PROFILE);
   if (!profile) {
-    return 'Default';
+    return PROFILE_DEFAULT;
   }
   return profile as string;
 };
