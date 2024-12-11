@@ -15,6 +15,7 @@ export const ConnectionInfoBanner = ({
       className='d-flex-sm-gap'
       sx={ {
         alignItems: 'center',
+        justifySelf: 'center',
         padding: '6px',
       } }
       variant='outlined'
