@@ -13,4 +13,5 @@ export type TransformOptions = {
     filterIrrelevantRequests?: boolean;
     keepAllMimeTypes?: boolean;
   };
+  profile?: string;
 };

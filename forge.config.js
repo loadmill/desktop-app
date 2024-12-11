@@ -48,6 +48,7 @@ module.exports = {
     osxSign: {
       entitlements: 'entitlements.plist',
       'entitlements-inherit': 'entitlements.plist',
+      'gatekeeper-assess': false,
       'hardened-runtime': true,
       identity: `Developer ID Application: Loadmill LTD (${process.env.LOADMILL_KEY_CODE})`,
       'signature-flags': 'library',

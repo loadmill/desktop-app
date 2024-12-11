@@ -6,6 +6,7 @@ import { LoadmillRequest } from '../../../types/loadmill-types';
 import { ProxyEntry } from '../../../types/proxy-entry';
 import { ANALYZE_REQUESTS, ANALYZE_REQUESTS_COMPLETE, UPDATED_ENTRIES } from '../../../universal/constants';
 import { subscribeToMainProcessMessage } from '../../main-events';
+import { getProfile } from '../../profiles';
 import { getEntries, iterateEntries } from '../entries';
 import { assignRequestDescription } from '../request-description';
 
@@ -25,6 +26,7 @@ const onAnalyzeRequests = async (): Promise<void> => {
         filterIrrelevantRequests: true,
         keepAllMimeTypes: true,
       },
+      profile: getProfile(),
     });
     await pollTransformStatus(token);
   } catch (err) {

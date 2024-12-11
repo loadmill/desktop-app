@@ -63,7 +63,12 @@ body {
   color: #6eb450;
 }
 
-.proxy-dashboard-header,
+.proxy-dashboard-header {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 .proxy-dashboard-footer {
   align-items: center;
   display: flex;
