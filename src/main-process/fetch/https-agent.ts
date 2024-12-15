@@ -1,5 +1,7 @@
+import http from 'http';
 import https from 'https';
 
+import { app } from 'electron';
 import { HttpsProxyAgent } from 'hpagent';
 
 import log from '../../log';
@@ -9,9 +11,10 @@ export enum HttpsProxyAgentType {
   PROXY = 'proxy',
 }
 
-let agent: https.Agent | HttpsProxyAgent | null | undefined;
+export type HttpAgent = http.Agent | https.Agent | HttpsProxyAgent | null | undefined;
+let agent: HttpAgent;
 
-export const getHttpsAgent = (): https.Agent | HttpsProxyAgent | undefined => {
+export const getHttpsAgent = (): HttpAgent => {
   if (!agent) {
     useDefaultHttpsAgent();
   }
@@ -46,7 +49,12 @@ export const useDefaultHttpsAgent = (): void => {
   agent = _createDefaultHttpsAgent();
 };
 
-const _createDefaultHttpsAgent = (): https.Agent => {
+const _createDefaultHttpsAgent = (): https.Agent | http.Agent => {
+  if (!app.isPackaged && process.env.NODE_ENV === 'development') {
+    log.info('Using HTTP agent for development');
+    return new http.Agent(httpsAgentOptions);
+  }
+
   return new https.Agent(httpsAgentOptions);
 };
 
