@@ -26,6 +26,7 @@ import {
   INIT_FILTER_REGEX,
   IP_ADDRESS,
   IS_AGENT_CONNECTED,
+  IS_AGENT_OUTDATED,
   IS_RECORDING,
   LOADMILL_VIEW_ID,
   MAGIC_TOKEN,
@@ -36,12 +37,12 @@ import {
   PROXY,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
-  SAVE_SETTINGS,
   SAVED_TOKEN,
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
   SET_PROFILE,
+  SETTING_CHANGED,
   SHOW_AUTH_TOKEN_INPUT,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
@@ -57,7 +58,7 @@ import {
 
 import { Navigation } from './navigation';
 import { ProxyEntry } from './proxy-entry';
-import { Settings } from './settings';
+import { ChangedSetting, Settings } from './settings';
 import { SuiteOption } from './suite';
 import { ViewName } from './views';
 
@@ -67,7 +68,7 @@ import { ViewName } from './views';
 interface IPCMessage {
   data?: {
     [key: string]: string[] | string | boolean | number | null |
-    Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | Settings
+    Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | Settings | ChangedSetting
   };
   type: string;
 }
@@ -81,6 +82,7 @@ export abstract class AgentMessage implements IPCMessage {
 
 export abstract class MainMessage implements IPCMessage {
   data?: {
+    changedSetting?: ChangedSetting;
     entryId?: string;
     entryIds?: string[];
     filterRegex?: string;
@@ -90,7 +92,6 @@ export abstract class MainMessage implements IPCMessage {
     isSignedIn?: boolean;
     profile?: string;
     search?: string;
-    settings?: Settings;
     suite?: SuiteOption | null;
     text?: string;
     toFind?: string;
@@ -110,6 +111,7 @@ export type RendererMessage =
 export abstract class MainWindowRendererMessage implements IPCMessage {
   data?: {
     isAgentConnected?: boolean;
+    isAgentOutdated?: boolean;
     loadmillViewId?: number;
     magicToken?: string;
     mainWindowId?: number;
@@ -197,7 +199,7 @@ export type MainMessageTypes =
   typeof SET_IS_RECORDING |
   typeof SET_PROFILE |
   typeof SET_IS_USER_SIGNED_IN |
-  typeof SAVE_SETTINGS |
+  typeof SETTING_CHANGED |
   typeof START_AGENT |
   typeof STOP_AGENT |
   typeof SWITCH_VIEW |
@@ -206,6 +208,7 @@ export type MainMessageTypes =
 export type RendererMessageTypes =
   typeof GENERATE_TOKEN |
   typeof IS_AGENT_CONNECTED |
+  typeof IS_AGENT_OUTDATED |
   typeof LOADMILL_VIEW_ID |
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
@@ -246,4 +249,4 @@ export type AgentRendererMessageTypes =
 
 export type SettingsRendererMessageTypes =
   typeof FETCH_SETTINGS |
-  typeof SAVE_SETTINGS;
+  typeof SETTING_CHANGED;
