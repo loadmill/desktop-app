@@ -1,8 +1,6 @@
 import { MainMessage } from '../types/messaging';
 import { textToNonEmptyLines } from '../universal/utils';
 
-import { checkForUpdates } from './updates';
-
 let _isConnected = false;
 
 export const isAgentConnected = (): boolean => _isConnected;
@@ -27,11 +25,9 @@ const updateConnectedStatusByText = (text: string) => {
     _isConnected = true;
   }
   if (lines.some(l => l.includes('[INFO] Shutting down gracefully')) ||
-    lines.some(l => l.includes('[ERROR] Disconnected from Loadmill'))) {
+    lines.some(l => l.includes('[ERROR] Disconnected from Loadmill')) ||
+    lines.some(l => l.includes('[ERROR] The agent is outdated'))
+  ) {
     _isConnected = false;
-  }
-  if (lines.some(l => l.includes('[ERROR] The agent is outdated'))) {
-    _isConnected = false;
-    checkForUpdates();
   }
 };

@@ -3,14 +3,20 @@ import React, { useEffect, useState } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';
 import { SettingsRendererMessage } from '../../../types/messaging';
-import { Settings } from '../../../types/settings';
-import { FETCH_SETTINGS, MESSAGE, SAVE_SETTINGS } from '../../../universal/constants';
+import { ChangedSetting, ProxySettings } from '../../../types/settings';
+import { FETCH_SETTINGS, MESSAGE, SETTING_CHANGED } from '../../../universal/constants';
+import {
+  defaultAutoUpdateSetting,
+  defaultProxySettings,
+} from '../../../universal/default-settings';
 import { CustomizedSnackbars } from '../../snack-bar';
 
 import { SettingsForm } from './settings-form';
 
 export const SettingsPage = (): JSX.Element => {
-  const [settings, setSettings] = useState<Settings>({});
+  const [autoUpdateSetting, setAutoUpdateSetting] = useState<boolean>(defaultAutoUpdateSetting);
+  const [proxySettings, setProxySettings] = useState<ProxySettings>(defaultProxySettings);
+
   const [loadingSettings, setLoadingSettings] = useState<boolean>(true);
 
   const [snackBarMessage, setSnackBarMessage] = useState<string>('');
@@ -35,8 +41,8 @@ export const SettingsPage = (): JSX.Element => {
         case FETCH_SETTINGS:
           onFetchSettings(data);
           break;
-        case SAVE_SETTINGS:
-          onSaveSettings(data);
+        case SETTING_CHANGED:
+          onSettingChanged(data);
           break;
       }
     }
@@ -44,7 +50,9 @@ export const SettingsPage = (): JSX.Element => {
 
   const onFetchSettings = (data: SettingsRendererMessage['data']) => {
     if (data?.settings) {
-      setSettings(data.settings);
+      const { settings } = data;
+      setAutoUpdateSetting(settings.autoUpdate);
+      setProxySettings(settings.proxy || { enabled: false, url: '' });
     } else {
       setSnackBarMessage('Failed to get settings');
       setSnackBarSeverity('error');
@@ -53,7 +61,7 @@ export const SettingsPage = (): JSX.Element => {
     setLoadingSettings(false);
   };
 
-  const onSaveSettings = (data: SettingsRendererMessage['data']) => {
+  const onSettingChanged = (data: SettingsRendererMessage['data']) => {
     if (data?.error) {
       setSnackBarMessage(data.error);
       setSnackBarSeverity('error');
@@ -71,18 +79,8 @@ export const SettingsPage = (): JSX.Element => {
     setSnackBarSeverity('success');
   };
 
-  const onChange = (field: keyof Settings['proxy'], value: string | number | boolean) => {
-    setSettings({
-      ...settings,
-      proxy: {
-        ...settings.proxy,
-        [field]: value,
-      },
-    });
-  };
-
-  const saveSettings = () => {
-    window.desktopApi.saveSettings(settings);
+  const saveChangedSetting = (changedSetting: ChangedSetting) => {
+    window.desktopApi.settingChanged(changedSetting);
   };
 
   return (
@@ -108,9 +106,10 @@ export const SettingsPage = (): JSX.Element => {
         </>
       ) : (
         <SettingsForm
-          onChange={ onChange }
-          onSave={ saveSettings }
-          settings={ settings }
+          autoUpdate={ autoUpdateSetting }
+          onSave={ saveChangedSetting }
+          proxySettings={ proxySettings }
+          setAutoUpdate={ setAutoUpdateSetting }
         />
       )}
       {

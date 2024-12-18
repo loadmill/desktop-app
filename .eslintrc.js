@@ -141,7 +141,7 @@ module.exports = {
     'quotes': ['error', 'single'],
     'react-hooks/exhaustive-deps': 'off',
     'react/boolean-prop-naming': ['error', {
-      'rule': 'loading|open|disabled|^(is|has|can|should)[A-Z]([A-Za-z0-9]?)+',
+      'rule': 'loading|open|disabled|autoUpdate|^(is|has|can|should)[A-Z]([A-Za-z0-9]?)+',
       'validateNested': true,
     }],
     'react/destructuring-assignment': 'error',

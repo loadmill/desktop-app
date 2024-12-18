@@ -14,6 +14,7 @@ import { Token } from '../types/token';
 import {
   DATA,
   IS_AGENT_CONNECTED,
+  IS_AGENT_OUTDATED,
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
   STDERR,
@@ -35,6 +36,7 @@ import {
 import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
+import { getSettings } from './settings/settings-store';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -129,12 +131,30 @@ const handleAgentStd = async (
   data: string | Buffer,
   type: typeof STDOUT | typeof STDERR,
 ) => {
-  const text = Buffer.from(data).toString();
+  const text = data.toString();
   log.info('Agent:', text);
+  handleAgentOutdated(text);
   await handleInvalidToken(text);
   refreshConnectedStatus({ text });
   sendFromAgentViewToRenderer({ data: { text }, type });
   agentLogger.info(text);
+};
+
+const handleAgentOutdated = (text: string) => {
+  if (text.includes('[ERROR] The agent is outdated')) {
+    log.info('Got outdated agent message, stopping agent');
+    stopAgent();
+    if (getSettings()?.autoUpdate === false) {
+      log.info('Auto update is disabled, storing LAST_AGENT_ACTION as STOPPED');
+      set(LAST_AGENT_ACTION, AgentActions.STOPPED);
+    }
+    sendFromMainWindowToRenderer({
+      data: {
+        isAgentOutdated: true,
+      },
+      type: IS_AGENT_OUTDATED,
+    });
+  }
 };
 
 const stopAgent = (): void => {

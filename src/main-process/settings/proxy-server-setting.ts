@@ -9,11 +9,6 @@ import {
 
 import { getSettings } from './settings-store';
 
-export const defaultProxySettings: ProxySettings = {
-  enabled: false,
-  url: '',
-};
-
 export const setProxyOnStartup = async (): Promise<void> => {
   if (process.env.PROXY_SERVER) {
     _setProxyOnAppStart(process.env.PROXY_SERVER, 'env var PROXY_SERVER');
@@ -35,25 +30,24 @@ export const applyProxySettings = async (
   currentProxySettings: ProxySettings,
   newProxySettings: ProxySettings,
 ): Promise<boolean> => {
-  let wasChanged = false;
   const enabledChanged = newProxySettings.enabled !== currentProxySettings.enabled;
-  const urlChanged = newProxySettings.enabled && newProxySettings.url !== currentProxySettings.url;
+  const urlChanged = newProxySettings.url !== currentProxySettings.url;
+  const { enabled, url: newUrl } = newProxySettings;
 
-  const { enabled, url } = newProxySettings;
+  let hasApplied = false;
 
-  if (enabled) {
-    if (enabledChanged || urlChanged) {
-      await _setProxy(url);
-      wasChanged = true;
-    }
-  } else {
-    if (enabledChanged) {
-      await _disableProxy();
-      wasChanged = true;
-    }
+  const shouldSetNewProxy = enabled && (enabledChanged || urlChanged) && newUrl;
+  const shouldDisableProxy = !enabled && enabledChanged;
+
+  if (shouldSetNewProxy) {
+    await _setProxy(newUrl);
+    hasApplied = true;
+  } else if (shouldDisableProxy) {
+    await _disableProxy();
+    hasApplied = true;
   }
 
-  return wasChanged;
+  return hasApplied;
 };
 
 const _setProxy = async (proxyUrl: string) => {

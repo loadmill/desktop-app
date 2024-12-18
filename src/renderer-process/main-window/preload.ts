@@ -13,6 +13,7 @@ import {
   GO_BACK,
   GO_FORWARD,
   IS_AGENT_CONNECTED,
+  IS_AGENT_OUTDATED,
   LOADMILL_VIEW_ID,
   MAGIC_TOKEN,
   NAVIGATION,
@@ -82,6 +83,10 @@ subscribeToMainWindowMessages(SHOW_FIND_ON_PAGE, (_event: Electron.IpcRendererEv
 
 subscribeToMainWindowMessages(IS_AGENT_CONNECTED, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   window.postMessage({ data, type: IS_AGENT_CONNECTED });
+});
+
+subscribeToMainWindowMessages(IS_AGENT_OUTDATED, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
+  window.postMessage({ data, type: IS_AGENT_OUTDATED });
 });
 
 subscribeToMainWindowMessages(SWITCH_VIEW, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
