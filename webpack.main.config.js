@@ -20,7 +20,7 @@ module.exports = {
     minimize: true,
   },
   output: {
-    filename:'[name].js',
+    filename: '[name].js',
     path: path.resolve(__dirname, '.webpack/main'),
   },
   resolve: {
@@ -30,4 +30,5 @@ module.exports = {
     },
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
   },
+  target: 'electron-main',
 };

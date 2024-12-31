@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge } from 'electron';
 
 import {
   sendToMain,
@@ -9,17 +9,12 @@ import { ViewName } from '../../types/views';
 import {
   DESKTOP_API,
   FIND_NEXT,
-  GENERATE_TOKEN,
   GO_BACK,
   GO_FORWARD,
   IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
-  LOADMILL_VIEW_ID,
-  MAGIC_TOKEN,
   NAVIGATION,
   REFRESH_PAGE,
-  SAVED_TOKEN,
-  SHOW_AUTH_TOKEN_INPUT,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
   STOP_AGENT,
@@ -38,40 +33,6 @@ export const WINDOW_API: ApiForMainWindow = {
   [SWITCH_VIEW]: (view?: ViewName) => sendToMain(SWITCH_VIEW, { view }),
   [TOGGLE_MAXIMIZE_WINDOW]: () => sendToMain(TOGGLE_MAXIMIZE_WINDOW),
 };
-
-let loadmillViewId = 3;
-
-const isFromMainProcess = ({ senderId }: Electron.IpcRendererEvent) => {
-  return senderId === 0;
-};
-
-subscribeToMainWindowMessages(GENERATE_TOKEN, (event: Electron.IpcRendererEvent) => {
-  if (isFromMainProcess(event)) {
-    ipcRenderer.sendTo(loadmillViewId, GENERATE_TOKEN);
-  }
-});
-
-subscribeToMainWindowMessages(MAGIC_TOKEN, (event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
-  if (isFromMainProcess(event)) {
-    ipcRenderer.sendTo(loadmillViewId, MAGIC_TOKEN, data);
-  }
-});
-
-subscribeToMainWindowMessages(SHOW_AUTH_TOKEN_INPUT, (event: Electron.IpcRendererEvent) => {
-  if (isFromMainProcess(event)) {
-    ipcRenderer.sendTo(loadmillViewId, SHOW_AUTH_TOKEN_INPUT);
-  }
-});
-
-subscribeToMainWindowMessages(LOADMILL_VIEW_ID, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
-  loadmillViewId = data[LOADMILL_VIEW_ID];
-});
-
-subscribeToMainWindowMessages(SAVED_TOKEN, (event: Electron.IpcRendererEvent) => {
-  if (isFromMainProcess(event)) {
-    ipcRenderer.sendTo(loadmillViewId, SAVED_TOKEN);
-  }
-});
 
 subscribeToMainWindowMessages(NAVIGATION, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   window.postMessage({ data, type: NAVIGATION });
