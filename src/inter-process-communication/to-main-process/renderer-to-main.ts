@@ -7,7 +7,6 @@ export const sendToMain = (type: MainMessageTypes, data?: MainMessage['data']): 
   try {
     log.debug('Sending to main', JSON.stringify({ data, type }, null, 2));
     ipcRenderer.send(type, data);
-    // ipcRenderer.send(RELAY_TO_VIEWS, { channel: type, data });
   } catch (e) {
     log.error('error in send to main', e);
   }
