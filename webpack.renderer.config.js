@@ -23,5 +23,4 @@ module.exports = {
       util: require.resolve('util/'),
     },
   },
-  target: 'electron-renderer',
 };

@@ -1,16 +1,18 @@
 import path from 'path';
 
-import log from 'electron-log';
+import log, { LevelOption, MainLogger } from 'electron-log';
 
 import {
   LOGS_PATH,
 } from './constants';
 
 const setMainLogLevels = () => {
-  log.transports.file.level = 'info';
   log.transports.console.level = 'silly';
   // Now log.debug Will show in console mode (dev) but not in file mode (prod)
-  log.info('Main logger created. Writing to file: ', log.transports.file.getFile().path);
+  if (log.transports.file) {
+    log.transports.file.level = 'info';
+    log.info('Main logger created. Writing to file: ', log.transports.file?.getFile().path);
+  }
 };
 
 setMainLogLevels();
@@ -18,18 +20,23 @@ setMainLogLevels();
 export const createLogger = (
   logId: string,
   filePath: string,
-  fileLevel: log.LevelOption = 'info',
-  consoleLevel: log.LevelOption = 'silly',
+  fileLevel: LevelOption = 'info',
+  consoleLevel: LevelOption = 'silly',
 ): Logger => {
-  const logger = log.create(logId) as Logger;
-  logger.transports.file.resolvePath = () => path.join(LOGS_PATH, filePath);
-  logger.transports.file.level = fileLevel;
+  const logger = log.create({ logId }) as Logger;
+  logger.initialize();
+  if (logger.transports.file) {
+    logger.transports.file.resolvePathFn = () => path.join(LOGS_PATH, filePath);
+    logger.transports.file.level = fileLevel;
+    logger.filePath = logger.transports.file.getFile().path;
+  }
   logger.transports.console.level = consoleLevel;
-  logger.filePath = logger.transports.file.getFile().path;
   return logger;
 };
 
-export type Logger = log.ElectronLog & {
+export type Logger = MainLogger & {
+  default: MainLogger;
+} & {
   filePath: string;
 };
 

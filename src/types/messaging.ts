@@ -37,6 +37,7 @@ import {
   PROXY,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
+  RELAY_TO_VIEWS,
   SAVED_TOKEN,
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
@@ -203,7 +204,8 @@ export type MainMessageTypes =
   typeof START_AGENT |
   typeof STOP_AGENT |
   typeof SWITCH_VIEW |
-  typeof TOGGLE_MAXIMIZE_WINDOW;
+  typeof TOGGLE_MAXIMIZE_WINDOW |
+  typeof RELAY_TO_VIEWS;
 
 export type RendererMessageTypes =
   typeof GENERATE_TOKEN |

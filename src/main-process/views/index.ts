@@ -5,7 +5,8 @@ import {
 } from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../log';
 import { View, ViewName } from '../../types/views';
-import { SWITCH_VIEW } from '../../universal/constants';
+import { RELAY_FROM_MAIN_WINDOW, RELAY_TO_VIEWS, SWITCH_VIEW } from '../../universal/constants';
+import { subscribeToMainProcessMessage } from '../main-events';
 
 import { createAgentView } from './agent-view';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
@@ -25,6 +26,9 @@ export const initializeViews = (window: BrowserWindow): void => {
   setViews(loadmillWebView, proxyView, agentView, settingsView);
   mainWindow.setTopBrowserView(loadmillWebView);
   subscribeToSwitchView(mainWindow, loadmillWebView, proxyView, agentView, settingsView);
+  subscribeToMainProcessMessage(RELAY_TO_VIEWS, (_, data) => {
+    loadmillWebView.webContents.send(RELAY_FROM_MAIN_WINDOW, data);
+  });
 };
 
 const setViews = (

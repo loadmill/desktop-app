@@ -1,4 +1,4 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
 import {
   sendToMain,
@@ -9,12 +9,17 @@ import { ViewName } from '../../types/views';
 import {
   DESKTOP_API,
   FIND_NEXT,
+  GENERATE_TOKEN,
   GO_BACK,
   GO_FORWARD,
   IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
+  MAGIC_TOKEN,
   NAVIGATION,
   REFRESH_PAGE,
+  RELAY_TO_VIEWS,
+  SAVED_TOKEN,
+  SHOW_AUTH_TOKEN_INPUT,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
   STOP_AGENT,
@@ -33,6 +38,27 @@ export const WINDOW_API: ApiForMainWindow = {
   [SWITCH_VIEW]: (view?: ViewName) => sendToMain(SWITCH_VIEW, { view }),
   [TOGGLE_MAXIMIZE_WINDOW]: () => sendToMain(TOGGLE_MAXIMIZE_WINDOW),
 };
+
+// Instead of direct sendTo, we'll relay through main process
+const sendToLoadmillView = (channel: string, data?: MainWindowRendererMessage['data']) => {
+  ipcRenderer.send(RELAY_TO_VIEWS, { channel, data });
+};
+
+subscribeToMainWindowMessages(GENERATE_TOKEN, (_event: Electron.IpcRendererEvent) => {
+  sendToLoadmillView(GENERATE_TOKEN);
+});
+
+subscribeToMainWindowMessages(MAGIC_TOKEN, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
+  sendToLoadmillView(MAGIC_TOKEN, data);
+});
+
+subscribeToMainWindowMessages(SHOW_AUTH_TOKEN_INPUT, (_event: Electron.IpcRendererEvent) => {
+  sendToLoadmillView(SHOW_AUTH_TOKEN_INPUT);
+});
+
+subscribeToMainWindowMessages(SAVED_TOKEN, (_event: Electron.IpcRendererEvent) => {
+  sendToLoadmillView(SAVED_TOKEN);
+});
 
 subscribeToMainWindowMessages(NAVIGATION, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   window.postMessage({ data, type: NAVIGATION });

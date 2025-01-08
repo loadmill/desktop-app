@@ -84,7 +84,7 @@
     "async": "^3.2.4",
     "dayjs": "^1.11.9",
     "debounce": "^1.2.1",
-    "electron-log": "^4.4.8",
+    "electron-log": "^5.2.4",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "get-port": "^6.1.2",

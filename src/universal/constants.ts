@@ -50,6 +50,8 @@ export const
   READY = 'ready',
   REFRESH_ENTRIES = 'refreshEntries',
   REFRESH_PAGE = 'refreshPage',
+  RELAY_FROM_MAIN_WINDOW = 'relayFromMainWindow',
+  RELAY_TO_VIEWS = 'relayToViews',
   RESIZE = 'resize',
   SAVED_TOKEN = 'savedToken',
   SAVE_SETTINGS = 'saveSettings',
