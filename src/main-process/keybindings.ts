@@ -20,7 +20,7 @@ app.whenReady().then(() => {
     globalShortcut.unregisterAll();
   });
 
-  app.on('will-quit', () => {
+  app.on('before-quit', () => {
     for (const accelerator of Object.values(ACCLERATOR)) {
       globalShortcut.unregister(accelerator);
     }
