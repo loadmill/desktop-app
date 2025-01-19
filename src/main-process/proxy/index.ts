@@ -1,7 +1,6 @@
 import { randomUUID } from 'crypto';
 import http from 'http';
 
-import async from 'async';
 import Proxy from 'loadmill-http-mitm-proxy';
 
 import {
@@ -29,6 +28,15 @@ import { subscribeToRefreshEntriesFromRenderer } from './refresh-entries';
 import { subscribeToAnalyzeRequests } from './test-actions/analyze';
 import { subscribeToCreateTest } from './test-actions/create-test';
 
+const handleProxyError = (_ctx: Proxy.IContext, err: Error | undefined) => {
+  const logId = randomUUID();
+  log.error('Proxy Error: For more details, see', {
+    id: logId,
+    path: getProxyErrorsLogPath(),
+  });
+  appendToProxyErrorsLog(`${new Date().toLocaleString()} ${logId}: ${err}\n`, 'proxy-erros.log');
+};
+
 export const initProxyServer = async (): Promise<void> => {
   subscribeToProxyEvents();
   const proxyPort = await initToAvailablePort();
@@ -36,39 +44,17 @@ export const initProxyServer = async (): Promise<void> => {
   const proxy = Proxy();
   proxy.use(Proxy.gunzip);
 
-  proxy.onError((_ctx, err) => {
-    const logId = randomUUID();
-    log.error('Proxy Error: For more details, see', {
-      id: logId,
-      path: getProxyErrorsLogPath(),
-    });
-    appendToProxyErrorsLog(`${new Date().toLocaleString()} ${logId}: ${err}\n`, 'proxy-erros.log');
-  });
+  proxy.onError(handleProxyError);
+  proxy.onWebSocketError((ctx: Proxy.IContext, err: Error | undefined) => handleProxyError(ctx, err));
+  proxy.onWebSocketClose(() => appendToProxyErrorsLog(`${new Date().toLocaleString()}: WebSocket closed\n`, 'proxy-erros.log'));
 
-  // nasty hack, will fix it later
-  //@ts-ignore
-  proxy._onWebSocketClose = function (ctx, closedByServer, code, message) {
-    if (!ctx.closedByServer && !ctx.closedByClient) {
-      ctx.closedByServer = closedByServer;
-      ctx.closedByClient = !closedByServer;
-      //@ts-ignore
-      async.forEach(this.onWebSocketCloseHandlers.concat(ctx.onWebSocketCloseHandlers), function (fn: Function, callback) {
-        return fn(ctx, code, message, callback);
-      }, function (err) {
-        if (err) {
-          //@ts-ignore
-          return self._onWebSocketError(ctx, err);
-        }
-        if (ctx.clientToProxyWebSocket.readyState !== ctx.proxyToServerWebSocket.readyState) {
-          if (ctx.clientToProxyWebSocket.readyState === WebSocket.CLOSED && ctx.proxyToServerWebSocket.readyState === WebSocket.OPEN) {
-            ctx.proxyToServerWebSocket.close(1000, message);
-          } else if (ctx.proxyToServerWebSocket.readyState === WebSocket.CLOSED && ctx.clientToProxyWebSocket.readyState === WebSocket.OPEN) {
-            ctx.clientToProxyWebSocket.close(1000, message);
-          }
-        }
-      });
-    }
-  };
+  proxy.onWebSocketConnection = (): void => {};
+
+  proxy.onWebSocketSend = (): void => {};
+
+  proxy.onWebSocketMessage = (): void => {};
+
+  proxy.onWebSocketFrame = (): void => {};
 
   proxy.onRequest(function (ctx, callback) {
     if (!getIsRecording()) {
