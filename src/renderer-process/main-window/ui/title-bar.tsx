@@ -9,6 +9,7 @@ import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
 import {
   IS_AGENT_CONNECTED,
+  IS_AGENT_OUTDATED,
   MESSAGE,
   NAVIGATION,
   SHOW_FIND_ON_PAGE,
@@ -24,6 +25,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
   const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
+  const [isAgentOutdated, setIsAgentOutdated] = useState<boolean>(false);
   const [view, setView] = useState<ViewName>(ViewName.WEB_PAGE);
 
   useEffect(() => {
@@ -46,6 +48,9 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         case IS_AGENT_CONNECTED:
           onIsAgentConnectedMsg(data);
           break;
+        case IS_AGENT_OUTDATED:
+          onIsAgentOutdatedMsg(data);
+          break;
         case SWITCH_VIEW:
           onSwitchViewMsg(data);
           break;
@@ -62,6 +67,12 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
 
   const onIsAgentConnectedMsg = (data: MainWindowRendererMessage['data']) => {
     setIsAgentConnected(!!data?.isAgentConnected);
+  };
+
+  const onIsAgentOutdatedMsg = (data: MainWindowRendererMessage['data']) => {
+    if (data?.isAgentOutdated) {
+      setIsAgentOutdated(true);
+    }
   };
 
   const onSwitchViewMsg = (data: MainWindowRendererMessage['data']) => {
@@ -121,6 +132,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
           />
         ) : (
           <StartAgentIconButton
+            disabled={ isAgentOutdated }
             onStartAgentClicked={ window.desktopApi.startAgent }
           />
         )

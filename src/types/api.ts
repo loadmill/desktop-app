@@ -22,18 +22,18 @@ import {
   MARK_RELEVANT,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
-  SAVE_SETTINGS,
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
   SET_PROFILE,
+  SETTING_CHANGED,
   START_AGENT,
   STOP_AGENT,
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
 } from '../universal/constants';
 
-import { Settings } from './settings';
+import { ChangedSetting } from './settings';
 import { SuiteOption } from './suite';
 import { ViewName } from './views';
 
@@ -94,5 +94,5 @@ export type ApiForLoadmillAgentView = {
 
 export type ApiForSettingsView = {
   [FETCH_SETTINGS]: () => void;
-  [SAVE_SETTINGS]: (settings: Settings) => void;
+  [SETTING_CHANGED]: (changedSetting: ChangedSetting) => void;
 };

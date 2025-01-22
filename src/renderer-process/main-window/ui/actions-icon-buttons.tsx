@@ -121,21 +121,28 @@ export type RefreshIconButtonProps = {
 };
 
 export const StartAgentIconButton: React.FC<StartAgentIconButtonProps> = ({
+  disabled,
   onStartAgentClicked,
 }) => {
   return (
     <div className='stop-start-agent'>
       <ActionIconButton
+        disabled={ disabled }
         iconType='start'
         onActionClicked={ onStartAgentClicked }
         placement='left'
-        title='Start Agent'
+        title={
+          disabled
+            ? 'Agent is outdated'
+            : 'Start Agent'
+        }
       />
     </div>
   );
 };
 
 export type StartAgentIconButtonProps = {
+  disabled?: boolean;
   onStartAgentClicked: (e: SyntheticEvent) => void;
 };
 

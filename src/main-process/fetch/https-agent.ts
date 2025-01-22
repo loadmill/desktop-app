@@ -5,6 +5,7 @@ import { app } from 'electron';
 import { HttpsProxyAgent } from 'hpagent';
 
 import log from '../../log';
+import { LOADMILL_WEB_APP_ORIGIN } from '../constants';
 
 export enum HttpsProxyAgentType {
   DEFAULT = 'default',
@@ -50,7 +51,7 @@ export const useDefaultHttpsAgent = (): void => {
 };
 
 const _createDefaultHttpsAgent = (): https.Agent | http.Agent => {
-  if (!app.isPackaged && process.env.NODE_ENV === 'development') {
+  if (_isLocalHttpOrigin()) {
     log.info('Using HTTP agent for development');
     return new http.Agent(httpsAgentOptions);
   }
@@ -65,3 +66,8 @@ const _destroyAgent = (): void => {
     agent = null;
   }
 };
+
+const _isLocalHttpOrigin = () =>
+  !app.isPackaged &&
+  process.env.NODE_ENV === 'development' &&
+  LOADMILL_WEB_APP_ORIGIN.startsWith('http://');
