@@ -20,13 +20,6 @@ app.whenReady().then(() => {
     globalShortcut.unregisterAll();
   });
 
-  app.on('before-quit', () => {
-    for (const accelerator of Object.values(ACCLERATOR)) {
-      globalShortcut.unregister(accelerator);
-    }
-
-    globalShortcut.unregisterAll();
-  });
 });
 
 const registerAllKeyBindings = () => {
@@ -68,3 +61,11 @@ const logFailedRegistration = (
     log.info(accelerator + ' registration failed');
   }
 };
+
+app.on('will-quit', () => {
+  for (const accelerator of Object.values(ACCLERATOR)) {
+    globalShortcut.unregister(accelerator);
+  }
+
+  globalShortcut.unregisterAll();
+});
