@@ -130,11 +130,11 @@ const unsubscribeToCloseEvent = () => {
 const subscribeToCloseEvent = (window: BrowserWindow = getMainWindow()) => {
   if (window) {
     window.on(CLOSE, (event: Electron.Event) => {
-      if (!forceQuit && process.platform === PLATFORM.DARWIN) {
-        if (!forceQuit) {
-          event.preventDefault();
-          window.hide();
-        }
+      if (forceQuit) {
+        setMainWindow(null);
+      } else if (process.platform === PLATFORM.DARWIN) {
+        event.preventDefault();
+        window.hide();
       }
     });
   }
