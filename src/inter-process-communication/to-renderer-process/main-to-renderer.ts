@@ -34,7 +34,7 @@ const _sendToRenderer = ({ type, data }: RendererMessage, viewName?: ViewName): 
   try {
     const viewOrWindow = viewName ? getViewByName(viewName) : getMainWindow();
     const webContents = viewOrWindow?.webContents;
-    if (!webContents) {
+    if (!webContents || webContents.isDestroyed()) {
       throw new Error('No webContents found');
     }
     log.debug('Sending to renderer', JSON.stringify({ data, type, viewName }, null, 2));
