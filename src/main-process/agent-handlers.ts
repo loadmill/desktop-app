@@ -91,14 +91,13 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
 
 const addOnAgentExitEvent = () => {
   agent.on('exit', (code) => {
-    if (code !== null) {
-      sendFromMainWindowToRenderer({
-        data: {
-          isAgentConnected: isAgentConnected(),
-        },
-        type: IS_AGENT_CONNECTED,
-      });
-    }
+    log.info('Agent process exited with code:', code);
+    sendFromMainWindowToRenderer({
+      data: {
+        isAgentConnected: isAgentConnected(),
+      },
+      type: IS_AGENT_CONNECTED,
+    });
   });
 };
 

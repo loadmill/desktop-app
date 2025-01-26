@@ -15,7 +15,7 @@ import { createSettingsView } from './settings-view';
 import { subscribeToSwitchView, switchView } from './switch-views';
 
 let mainWindow: BrowserWindow;
-const views: View[] = [];
+let views: View[] = [];
 
 export const initializeViews = (window: BrowserWindow): void => {
   mainWindow = window;
@@ -29,6 +29,10 @@ export const initializeViews = (window: BrowserWindow): void => {
   subscribeToMainProcessMessage(RELAY_TO_VIEWS, (_, data) => {
     loadmillWebView.webContents.send(RELAY_FROM_MAIN_WINDOW, data);
   });
+};
+
+export const removeAccessToViews = (): void => {
+  views = [];
 };
 
 const setViews = (
