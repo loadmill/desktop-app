@@ -6,12 +6,14 @@ import {
   LOGS_PATH,
 } from './constants';
 
+log.info('Main logger created.');
+
 const setMainLogLevels = () => {
   log.transports.console.level = 'silly';
   // Now log.debug Will show in console mode (dev) but not in file mode (prod)
   if (log.transports.file) {
     log.transports.file.level = 'info';
-    log.info('Main logger created. Writing to file: ', log.transports.file?.getFile().path);
+    log.info('Writing to file: ', log.transports.file?.getFile().path);
   }
 };
 

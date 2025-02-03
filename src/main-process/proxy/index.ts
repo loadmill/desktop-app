@@ -45,7 +45,7 @@ export const initProxyServer = async (): Promise<void> => {
   proxy.use(Proxy.gunzip);
 
   proxy.onError(handleProxyError);
-  proxy.onWebSocketError((ctx: Proxy.IContext, err: Error | undefined) => handleProxyError(ctx, err));
+  proxy.onWebSocketError(handleProxyError);
   proxy.onWebSocketClose(() => appendToProxyErrorsLog(`${new Date().toLocaleString()}: WebSocket closed\n`, 'proxy-erros.log'));
 
   proxy.onWebSocketConnection = (): void => {};
