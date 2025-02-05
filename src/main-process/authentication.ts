@@ -1,5 +1,5 @@
 import {
-  sendFromMainWindowToRenderer,
+  sendFromLoadmillViewToRenderer,
 } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
 import {
@@ -16,7 +16,7 @@ export const handleAuthEvent = (url: string): void => {
       log.error('No magic token found in URL', { url });
       return;
     }
-    sendFromMainWindowToRenderer({
+    sendFromLoadmillViewToRenderer({
       data: { magicToken },
       type: MAGIC_TOKEN,
     });
@@ -29,5 +29,5 @@ const getMagicTokenFromUrl = (url: string): string => {
 };
 
 export const showAuthTokenInput = (): void => {
-  sendFromMainWindowToRenderer({ type: SHOW_AUTH_TOKEN_INPUT });
+  sendFromLoadmillViewToRenderer({ type: SHOW_AUTH_TOKEN_INPUT });
 };
