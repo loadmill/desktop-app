@@ -13,8 +13,5 @@ module.exports = {
   plugins: plugins,
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
-    fallback: {
-      path: false,
-    },
   },
 };
