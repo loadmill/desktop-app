@@ -114,8 +114,8 @@ jobs:
             # print out the certificate
             openssl pkcs12 -info -in cert.pfx -passin pass:${KEYCHAIN_PASSWORD} -passout pass:${KEYCHAIN_PASSWORD} -nokeys
       - run:
-          name: Install Node 14.18.0
-          command: nvm install 14.18.0 && nvm use 14.18.0
+          name: Install Node 18.20.5
+          command: nvm install 18.20.5 && nvm use 18.20.5
       - run:
           name: Install Yarn
           command: npm install -g yarn

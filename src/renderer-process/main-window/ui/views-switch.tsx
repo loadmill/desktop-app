@@ -25,30 +25,35 @@ export const ViewsSwitch = ({
   };
 
   return (
-    <ToggleButtonGroup
-      aria-label='Views'
-      color='primary'
-      exclusive
-      onChange={ onSelectView }
-      size='small'
-      sx={ {
-        height: '1.75rem',
-      } }
-      value={ view }
+    <div
+      className='undraggable'
+      style={ { marginLeft: '1rem' } }
     >
-      <ToggleButton
-        sx={ toggleButtonStyle }
-        value={ ViewName.WEB_PAGE }
+      <ToggleButtonGroup
+        aria-label='Views'
+        color='primary'
+        exclusive
+        onChange={ onSelectView }
+        size='small'
+        sx={ {
+          height: '1.75rem',
+        } }
+        value={ view }
       >
-        Loadmill
-      </ToggleButton>
-      <ToggleButton
-        sx={ toggleButtonStyle }
-        value={ ViewName.PROXY }
-      >
-        Proxy
-      </ToggleButton>
-    </ToggleButtonGroup>
+        <ToggleButton
+          sx={ toggleButtonStyle }
+          value={ ViewName.WEB_PAGE }
+        >
+          Loadmill
+        </ToggleButton>
+        <ToggleButton
+          sx={ toggleButtonStyle }
+          value={ ViewName.PROXY }
+        >
+          Proxy
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </div>
   );
 };
 

@@ -169,12 +169,10 @@ export const TitleBarActions = ({
         disabled={ isNavigationDisabled }
         onRefreshClicked={ onRefreshClick }
       />
-      <div style={ { marginLeft: '1rem' } }>
-        <ViewsSwitch
-          setView={ setView }
-          view={ view }
-        />
-      </div>
+      <ViewsSwitch
+        setView={ setView }
+        view={ view }
+      />
     </div>
   );
 };

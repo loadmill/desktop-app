@@ -7,6 +7,7 @@ import { getMainWindow } from '../../main-process/main-window';
 import { getViewByName } from '../../main-process/views';
 import {
   AgentRendererMessage,
+  LoadmillViewRendererMessage,
   MainWindowRendererMessage,
   ProxyRendererMessage,
   RendererMessage,
@@ -28,6 +29,10 @@ export const sendFromProxyViewToRenderer = ({ type, data }: ProxyRendererMessage
 
 export const sendFromSettingsViewToRenderer = ({ type, data }: SettingsRendererMessage): void => {
   _sendToRenderer({ data, type }, ViewName.SETTINGS);
+};
+
+export const sendFromLoadmillViewToRenderer = ({ type, data }: LoadmillViewRendererMessage): void => {
+  _sendToRenderer({ data, type }, ViewName.WEB_PAGE);
 };
 
 const _sendToRenderer = ({ type, data }: RendererMessage, viewName?: ViewName): void => {

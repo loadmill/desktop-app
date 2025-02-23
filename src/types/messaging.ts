@@ -15,7 +15,6 @@ import {
   FETCH_SETTINGS,
   FETCH_SUITES,
   FIND_NEXT,
-  GENERATE_TOKEN,
   GET_IP_ADDRESS,
   GET_PORT,
   GET_PROFILE,
@@ -37,7 +36,6 @@ import {
   PROXY,
   REFRESH_ENTRIES,
   REFRESH_PAGE,
-  SAVED_TOKEN,
   SET_FILTER_REGEX,
   SET_IS_RECORDING,
   SET_IS_USER_SIGNED_IN,
@@ -206,14 +204,12 @@ export type MainMessageTypes =
   typeof TOGGLE_MAXIMIZE_WINDOW;
 
 export type RendererMessageTypes =
-  typeof GENERATE_TOKEN |
   typeof IS_AGENT_CONNECTED |
   typeof IS_AGENT_OUTDATED |
   typeof LOADMILL_VIEW_ID |
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
   typeof MAGIC_TOKEN |
-  typeof SAVED_TOKEN |
   typeof SHOW_AUTH_TOKEN_INPUT |
   typeof SHOW_FIND_ON_PAGE |
   typeof STDERR |
@@ -221,9 +217,7 @@ export type RendererMessageTypes =
   typeof SWITCH_VIEW;
 
 export type LoadmillViewRendererMessageTypes =
-  typeof GENERATE_TOKEN |
   typeof MAGIC_TOKEN |
-  typeof SAVED_TOKEN |
   typeof SHOW_AUTH_TOKEN_INPUT;
 
 export type ProxyRendererMessageTypes =

@@ -55,9 +55,8 @@ module.exports = {
     },
   },
   plugins: [
-    [
-      '@electron-forge/plugin-webpack',
-      {
+    {
+      config: {
         mainConfig: './webpack.main.config.js',
         renderer: {
           config: './webpack.renderer.config.js',
@@ -105,14 +104,15 @@ module.exports = {
           ],
         },
       },
-    ],
-    [
-      '@timfish/forge-externals-plugin',
-      {
+      name: '@electron-forge/plugin-webpack',
+    },
+    {
+      config: {
         externals: ['vm2', 'jsonpath'],
         includeDeps: true,
       },
-    ],
+      name: '@timfish/forge-externals-plugin',
+    },
   ],
   protocols: [
     {
