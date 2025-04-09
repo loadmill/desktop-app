@@ -32,6 +32,7 @@ import {
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED,
+  UI_TESTS_ENABLED,
 } from './constants';
 import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
@@ -84,6 +85,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
       LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
+      UI_TESTS_ENABLED,
     },
     stdio: 'pipe',
   });
