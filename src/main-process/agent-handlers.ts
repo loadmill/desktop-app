@@ -92,7 +92,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
 };
 
 const isAgentKilledExternally = (exitCode: number | null) => exitCode === null;
-const isAgentStopped = (exitCode: number | null) => exitCode === 0;
+const isAgentDisconnected = (exitCode: number | null) => exitCode === 0;
 
 const addOnAgentExitEvent = () => {
   agent.on('exit', (code, signal) => {
@@ -101,7 +101,7 @@ const addOnAgentExitEvent = () => {
       return;
     }
     log.info('Agent process exited with code:', code);
-    if (isAgentStopped(code)) {
+    if (isAgentDisconnected(code)) {
       set(LAST_AGENT_ACTION, AgentActions.STOPPED);
     }
     sendFromMainWindowToRenderer({
