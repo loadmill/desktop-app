@@ -21,12 +21,13 @@ const updateConnectedStatus = ({ isConnected, text }: MainMessage['data']): void
 
 const updateConnectedStatusByText = (text: string) => {
   const lines = textToNonEmptyLines(text);
-  if (lines.some(l => l.includes('[INFO] Successfully connected to Loadmill'))) {
+  if (lines.some(l => l.includes('Successfully connected to Loadmill'))) {
     _isConnected = true;
   }
-  if (lines.some(l => l.includes('[INFO] Shutting down gracefully')) ||
-    lines.some(l => l.includes('[ERROR] Disconnected from Loadmill')) ||
-    lines.some(l => l.includes('[ERROR] The agent is outdated'))
+  if (lines.some(l => l.includes('Shutting down gracefully')) ||
+    lines.some(l => l.includes('Disconnected from Loadmill')) ||
+    lines.some(l => l.includes('Agent disconnected from server')) ||
+    lines.some(l => l.includes('The agent is outdated'))
   ) {
     _isConnected = false;
   }

@@ -91,11 +91,18 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   });
 };
 
+const isAgentKilledExternally = (exitCode: number | null) => exitCode === null;
+const isAgentDisconnected = (exitCode: number | null) => exitCode === 0;
+
 const addOnAgentExitEvent = () => {
-  agent.on('exit', (code) => {
-    log.info('Agent process exited with code:', code);
-    if (code === null) { // agent process was killed externally
+  agent.on('exit', (code, signal) => {
+    if (isAgentKilledExternally(code)) {
+      log.info('Agent process killed with signal:', signal);
       return;
+    }
+    log.info('Agent process exited with code:', code);
+    if (isAgentDisconnected(code)) {
+      set(LAST_AGENT_ACTION, AgentActions.STOPPED);
     }
     sendFromMainWindowToRenderer({
       data: {
