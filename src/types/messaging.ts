@@ -2,6 +2,7 @@ import {
   ANALYZE_REQUESTS,
   ANALYZE_REQUESTS_COMPLETE,
   CLEAR_ALL_ENTRIES,
+  COPY_URL,
   CREATE_TEST,
   CREATE_TEST_COMPLETE,
   DELETE_ENTRIES,
@@ -170,6 +171,7 @@ export type AgentMessageTypes =
 
 export type MainMessageTypes =
   typeof ANALYZE_REQUESTS |
+  typeof COPY_URL |
   typeof CLEAR_ALL_ENTRIES |
   typeof CREATE_TEST |
   typeof DELETE_ENTRIES |

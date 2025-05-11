@@ -6,6 +6,7 @@ export const
   BEFORE_QUIT_FOR_UPDATE = 'before-quit-for-update',
   CLEAR_ALL_ENTRIES = 'clearAllEntries',
   CLOSE = 'close',
+  COPY_URL = 'copyUrl',
   CREATE_TEST = 'createTest',
   CREATE_TEST_COMPLETE = 'createTestComplete',
   DATA = 'data',

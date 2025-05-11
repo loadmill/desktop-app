@@ -1,5 +1,6 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import StopIcon from '@mui/icons-material/Stop';
@@ -7,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import React, { SyntheticEvent } from 'react';
 
-type Icons = 'back' | 'forward' | 'refresh' | 'start' | 'stop';
+type Icons = 'back' | 'forward' | 'refresh' | 'start' | 'stop' | 'copy';
 
 const getIconFromName = (iconType: Icons): JSX.Element => {
   switch (iconType) {
@@ -21,6 +22,8 @@ const getIconFromName = (iconType: Icons): JSX.Element => {
       return <PlayArrowIcon fontSize='small' />;
     case 'stop':
       return <StopIcon fontSize='small' />;
+    case 'copy':
+      return <ContentCopyIcon fontSize='small' />;
   }
 };
 
@@ -118,6 +121,25 @@ export const RefreshIconButton = ({
 export type RefreshIconButtonProps = {
   disabled?: boolean;
   onRefreshClicked: (e: SyntheticEvent) => void;
+};
+
+export const CopyIconButton = ({
+  disabled,
+  onCopyClicked,
+}: CopyIconButtonProps): JSX.Element => {
+  return (
+    <ActionIconButton
+      disabled={ disabled }
+      iconType='copy'
+      onActionClicked={ onCopyClicked }
+      title='Copy url'
+    />
+  );
+};
+
+export type CopyIconButtonProps = {
+  disabled?: boolean;
+  onCopyClicked: (e: SyntheticEvent) => void;
 };
 
 export const StartAgentIconButton: React.FC<StartAgentIconButtonProps> = ({
