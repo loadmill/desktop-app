@@ -4,6 +4,7 @@ import { downloadMainLog } from '../log/download-logs';
 import { READY } from '../universal/constants';
 
 import { showAuthTokenInput } from './authentication';
+import { downloadPlaywright } from './playwright-packages';
 import { checkForUpdates } from './updates';
 import { switchToAgentView, switchToSettingsView } from './views';
 
@@ -120,6 +121,10 @@ const template = [
   {
     role: 'help',
     submenu: [
+      {
+        click: async () => await downloadPlaywright(),
+        label: 'Download Playwright',
+      },
       {
         click: () => downloadMainLog(),
         label: 'Download App Logs',

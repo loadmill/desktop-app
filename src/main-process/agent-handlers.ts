@@ -81,10 +81,12 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   });
   return fork(LOADMILL_AGENT_PATH, {
     env: {
+      HOME_DIR: app.getPath('userData'),
       LOADMILL_AGENT_SERVER_URL,
       LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
+      PATH: process.env.PATH,
       UI_TESTS_ENABLED,
     },
     stdio: 'pipe',
