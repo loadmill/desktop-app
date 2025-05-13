@@ -126,13 +126,14 @@ export type RefreshIconButtonProps = {
 export const CopyIconButton = ({
   disabled,
   onCopyClicked,
+  title,
 }: CopyIconButtonProps): JSX.Element => {
   return (
     <ActionIconButton
       disabled={ disabled }
       iconType='copy'
       onActionClicked={ onCopyClicked }
-      title='Copy url'
+      title={ title || 'Copy' }
     />
   );
 };
@@ -140,6 +141,7 @@ export const CopyIconButton = ({
 export type CopyIconButtonProps = {
   disabled?: boolean;
   onCopyClicked: (e: SyntheticEvent) => void;
+  title?: string;
 };
 
 export const StartAgentIconButton: React.FC<StartAgentIconButtonProps> = ({

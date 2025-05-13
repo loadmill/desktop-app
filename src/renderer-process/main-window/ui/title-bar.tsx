@@ -16,7 +16,14 @@ import {
   SWITCH_VIEW,
 } from '../../../universal/constants';
 
-import { CopyIconButton, GoBackIconButton, GoForwardIconButton, RefreshIconButton, StartAgentIconButton, StopAgentIconButton } from './actions-icon-buttons';
+import {
+  CopyIconButton,
+  GoBackIconButton,
+  GoForwardIconButton,
+  RefreshIconButton,
+  StartAgentIconButton,
+  StopAgentIconButton,
+} from './actions-icon-buttons';
 import { FindOnPage } from './find-on-page';
 import { ViewsSwitch, ViewsSwitchProps } from './views-switch';
 
@@ -178,6 +185,7 @@ export const TitleBarActions = ({
       <CopyIconButton
         disabled={ isNavigationDisabled }
         onCopyClicked={ onCopyUrlClick }
+        title='Copy URL'
       />
       <ViewsSwitch
         setView={ setView }
