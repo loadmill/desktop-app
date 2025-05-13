@@ -7,6 +7,7 @@ import { ApiForMainWindow } from '../../types/api';
 import { MainWindowRendererMessage } from '../../types/messaging';
 import { ViewName } from '../../types/views';
 import {
+  COPY_URL,
   DESKTOP_API,
   FIND_NEXT,
   GO_BACK,
@@ -24,6 +25,7 @@ import {
 import { subscribeToMainWindowMessages } from '../renderer-events';
 
 export const WINDOW_API: ApiForMainWindow = {
+  [COPY_URL]: () => sendToMain(COPY_URL),
   [FIND_NEXT]: (toFind: string) => sendToMain(FIND_NEXT, { toFind }),
   [GO_BACK]: () => sendToMain(GO_BACK),
   [GO_FORWARD]: () => sendToMain(GO_FORWARD),

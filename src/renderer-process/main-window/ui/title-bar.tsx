@@ -16,7 +16,14 @@ import {
   SWITCH_VIEW,
 } from '../../../universal/constants';
 
-import { GoBackIconButton, GoForwardIconButton, RefreshIconButton, StartAgentIconButton, StopAgentIconButton } from './actions-icon-buttons';
+import {
+  CopyIconButton,
+  GoBackIconButton,
+  GoForwardIconButton,
+  RefreshIconButton,
+  StartAgentIconButton,
+  StopAgentIconButton,
+} from './actions-icon-buttons';
 import { FindOnPage } from './find-on-page';
 import { ViewsSwitch, ViewsSwitchProps } from './views-switch';
 
@@ -105,6 +112,10 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     window.desktopApi.goForward();
   };
 
+  const onCopyUrlClick = () => {
+    window.desktopApi.copyUrl();
+  };
+
   return (
     <div
       className='title-bar'
@@ -114,6 +125,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         canGoBack={ canGoBack }
         canGoForward={ canGoForward }
         onBackClick={ onBackClick }
+        onCopyUrlClick={ onCopyUrlClick }
         onForwardClick={ onForwardClick }
         onRefreshClick={ onRefreshClick }
         setView={ setView }
@@ -149,6 +161,7 @@ export const TitleBarActions = ({
   onBackClick,
   onForwardClick,
   onRefreshClick,
+  onCopyUrlClick,
   setView,
   view,
 }: TitleBarActionsProps): JSX.Element => {
@@ -169,6 +182,11 @@ export const TitleBarActions = ({
         disabled={ isNavigationDisabled }
         onRefreshClicked={ onRefreshClick }
       />
+      <CopyIconButton
+        disabled={ isNavigationDisabled }
+        onCopyClicked={ onCopyUrlClick }
+        title='Copy URL'
+      />
       <ViewsSwitch
         setView={ setView }
         view={ view }
@@ -181,6 +199,7 @@ export type TitleBarActionsProps = {
   canGoBack?: boolean;
   canGoForward?: boolean;
   onBackClick: () => void;
+  onCopyUrlClick: () => void;
   onForwardClick: () => void,
   onRefreshClick: () => void;
 } & ViewsSwitchProps;

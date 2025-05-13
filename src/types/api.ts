@@ -1,6 +1,7 @@
 import {
   ANALYZE_REQUESTS,
   CLEAR_ALL_ENTRIES,
+  COPY_URL,
   CREATE_TEST,
   DELETE_ENTRIES,
   DELETE_ENTRY,
@@ -51,6 +52,7 @@ type DesktopApi =
   ApiForSettingsView;
 
 export type ApiForMainWindow = {
+  [COPY_URL]: () => void;
   [FIND_NEXT]: (toFind: string) => void;
   [GO_BACK]: () => void;
   [GO_FORWARD]: () => void;
