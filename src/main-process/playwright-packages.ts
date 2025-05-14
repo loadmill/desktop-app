@@ -6,11 +6,68 @@ import { app } from 'electron';
 import { extract } from 'tar';
 
 import log from '../log';
+import { NodeBundleRunner } from '../node-bundle-runner';
 
 import { fetch } from './fetch';
 
 const PLAYWRIGHT_VERSION = process.env.PLAYWRIGHT_VERSION || '1.50.0';
 const USER_DATA_PATH = process.env.USER_DATA_PATH || app.getPath('userData');
+const packages = [
+  `playwright@${PLAYWRIGHT_VERSION}`,
+  `playwright-core@${PLAYWRIGHT_VERSION}`,
+  `@playwright/test@${PLAYWRIGHT_VERSION}`,
+];
+
+/**
+ * Downloads and installs Playwright and its dependencies to the user data directory
+ * This function runs two commands:
+ * 1. npm i @playwright/test@[version] - Install the Playwright test package
+ * 2. npx playwright install --with-deps --only-shell - Install Playwright browser dependencies
+ *
+ * The Playwright version is determined by the PLAYWRIGHT_VERSION environment variable,
+ * defaulting to '1.50.0' if not specified.
+ *
+ * @returns Promise that resolves when installation is complete
+ */
+export const downloadPlaywright2 = async (): Promise<void> => {
+  try {
+    // Initialize the NodeBundleRunner
+    const nodeRunner = new NodeBundleRunner();
+
+    log.info(`Using user data path: ${USER_DATA_PATH}`);
+    log.info(`Using Playwright version: ${PLAYWRIGHT_VERSION}`);
+
+    if (!fs.existsSync(USER_DATA_PATH)) {
+      fs.mkdirSync(USER_DATA_PATH, { recursive: true });
+    }
+
+    const options = { cwd: USER_DATA_PATH };
+
+    log.info('Starting Playwright installation...');
+
+    // Step 1: Install Playwright test package with the specified version
+    const fullPackageName = `@playwright/test@${PLAYWRIGHT_VERSION}`;
+    log.info('Installing Playwright test package...', {
+      fullPackageName,
+      options,
+    });
+    await nodeRunner.runNpm(['i', fullPackageName], options);
+    log.info('Successfully installed Playwright test package', {
+      fullPackageName,
+      options,
+    });
+
+    // Step 2: Install Playwright browser dependencies
+    log.info('Installing Playwright browser dependencies...');
+    await nodeRunner.runNpx(['playwright', 'install', '--with-deps', '--only-shell'], options);
+    log.info('Successfully installed Playwright browser dependencies');
+
+    log.info('Playwright installation completed successfully');
+  } catch (error) {
+    log.error('Failed to download Playwright:', error);
+    throw error;
+  }
+};
 
 export const downloadPlaywright = async (): Promise<void> => {
   log.info('Starting Playwright download process...');
@@ -35,12 +92,6 @@ export const downloadPlaywright = async (): Promise<void> => {
     });
 
     log.info('Starting download of Playwright packages...');
-
-    const packages = [
-      `playwright@${PLAYWRIGHT_VERSION}`,
-      `playwright-core@${PLAYWRIGHT_VERSION}`,
-      `@playwright/test@${PLAYWRIGHT_VERSION}`,
-    ];
 
     log.info('Downloading the following packages:', packages);
 

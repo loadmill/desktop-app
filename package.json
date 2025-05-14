@@ -1,7 +1,7 @@
 {
   "name": "desktop-app",
   "productName": "Loadmill",
-  "version": "3.5.5",
+  "version": "3.6.0",
   "description": "The Loadmill desktop app",
   "author": {
     "name": "Loadmill Ltd.",
@@ -76,6 +76,7 @@
     "@loadmill/agent": "^0.1.168",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.13",
+    "@playwright/test": "^1.50.0",
     "async": "^3.2.4",
     "dayjs": "^1.11.9",
     "debounce": "^1.2.1",
