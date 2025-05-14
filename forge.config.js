@@ -38,6 +38,7 @@ module.exports = {
     },
   ],
   packagerConfig: {
+    extraResource: ['bundled_node'],
     icon: isWindowsOS ? './images/loadmill-icon-256-256' : './images/MyIcon',
     osxNotarize: {
       appleId: process.env.APPLE_ID,
