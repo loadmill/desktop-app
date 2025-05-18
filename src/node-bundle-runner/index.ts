@@ -57,12 +57,22 @@ export class NodeBundleRunner {
    */
   private initPaths(): void {
     // Base path to the bundled Node.js directory
-    let bundledNodeBase;
-    if (!app.isPackaged) {
-      bundledNodeBase = path.join(app.getAppPath(), 'bundled_node');
-    } else {
-      bundledNodeBase = path.join(process.resourcesPath, 'bundled_node');
+    const PACKED_RELATIVE_PATH = path.join(app.getAppPath(), '.webpack', 'main');
+    const bundledNodeBase = path.join(PACKED_RELATIVE_PATH, 'bundled_node');
+    log.info(`Bundled Node.js base path: ${bundledNodeBase}`);
+    if (!fs.existsSync(bundledNodeBase)) {
+      throw new Error(`Bundled Node.js base path does not exist: ${bundledNodeBase}`);
     }
+    log.info(`Bundled Node.js base path exists: ${bundledNodeBase}`);
+    log.info(`Platform: ${this.platform}`);
+    log.info(`Architecture: ${this.arch}`);
+    log.info(`Node.js version: ${process.versions.node}`);
+    log.info(`Electron version: ${process.versions.electron}`);
+    log.info(`Electron app path: ${app.getAppPath()}`);
+    log.info(`Electron user data path: ${app.getPath('userData')}`);
+    log.info(`Electron app name: ${app.getName()}`);
+    log.info(`Electron app version: ${app.getVersion()}`);
+    log.info(`Electron app is dev: ${app.isPackaged ? 'No' : 'Yes'}`);
 
     // Determine platform-specific directory
     let platformDir: string;
@@ -106,8 +116,8 @@ export class NodeBundleRunner {
 
     // Set paths to npm/npx binaries based on platform
     if (this.platform === 'darwin') {
-      this.npmBinary = path.join(this.nodeBasePath, 'bin', 'npm');
-      this.npxBinary = path.join(this.nodeBasePath, 'bin', 'npx');
+      this.npmBinary = path.join(this.nodeBasePath, 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js');
+      this.npxBinary = path.join(this.nodeBasePath, 'lib', 'node_modules', 'npm', 'bin', 'npx-cli.js');
     } else if (this.platform === 'win32') {
       this.npmBinary = path.join(this.nodeBasePath, 'npm.cmd');
       this.npxBinary = path.join(this.nodeBasePath, 'npx.cmd');
@@ -120,6 +130,21 @@ export class NodeBundleRunner {
 
     if (!this.npxBinary || !fs.existsSync(this.npxBinary)) {
       throw new Error(`npx binary not found at: ${this.npxBinary}`);
+    }
+
+    // Set executable permissions on macOS/Linux
+    if (this.platform !== 'win32') {
+      try {
+        log.info('Setting executable permissions for npm and npx binaries');
+        log.info('Setting executable permissions for npm binary:');
+        fs.chmodSync(this.npmBinary, 0o755);
+        log.info('Setting executable permissions for npx binary:');
+        fs.chmodSync(this.npxBinary, 0o755);
+        log.info('Executable permissions set successfully');
+      } catch (error) {
+        log.error('Failed to set executable permissions');
+        throw error;
+      }
     }
 
     log.info(`Using npm binary: ${this.npmBinary}`);
