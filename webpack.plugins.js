@@ -9,6 +9,7 @@ module.exports = [
     patterns: [
       {
         from: 'bundled_node',
+        info: { minimized: true },
         to: path.resolve(__dirname, '.webpack/main/bundled_node'),
       },
     ],

@@ -7,7 +7,6 @@ module.exports = [
     use: 'node-loader',
   },
   {
-    exclude: /bundled_node/,
     parser: {
       amd: false,
       javascript: {
@@ -23,7 +22,7 @@ module.exports = [
     },
   },
   {
-    exclude: /(node_modules|\.webpack|bundled_node)/,
+    exclude: /(node_modules|\.webpack)/,
     test: /\.tsx?$/,
     use: {
       loader: 'ts-loader',
