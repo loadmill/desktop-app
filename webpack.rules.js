@@ -7,6 +7,7 @@ module.exports = [
     use: 'node-loader',
   },
   {
+    exclude: /bundled_node/,
     parser: {
       amd: false,
       javascript: {
