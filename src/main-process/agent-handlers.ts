@@ -1,4 +1,4 @@
-import { ChildProcessWithoutNullStreams, fork } from 'child_process';
+import { ChildProcessWithoutNullStreams, fork, spawnSync } from 'child_process';
 import path from 'path';
 
 import '@loadmill/agent/dist/cli';
@@ -9,6 +9,7 @@ import {
   sendFromMainWindowToRenderer,
 } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
+import { NodeBundleRunner } from '../node-bundle-runner';
 import { AgentMessage, MainMessage } from '../types/messaging';
 import { Token } from '../types/token';
 import {
@@ -79,6 +80,26 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
     LOADMILL_AGENT_SERVER_URL,
     NODE_TLS_REJECT_UNAUTHORIZED,
   });
+
+  log.info('Current PATH:', process.env.PATH);
+
+  const pathWithoutNpx = process.env.PATH
+    ?.split(path.delimiter)
+    .filter(p => !/npx|npm|nvm/.test(p))
+    .join(':');
+  log.info('PATH without npx:', pathWithoutNpx);
+
+  const npxDir = NodeBundleRunner.getNpxDir();
+  if (!npxDir) {
+    throw new Error('npx directory path not initialized');
+  }
+
+  const fullPathWithBundledNpx = npxDir + path.delimiter + pathWithoutNpx;
+  log.info('New PATH:', fullPathWithBundledNpx);
+
+  const whichNpx = spawnSync('which', ['npx'], { env: { ...process.env, PATH: fullPathWithBundledNpx } });
+  log.info('Resolved npx:', whichNpx.stdout.toString());
+
   return fork(LOADMILL_AGENT_PATH, {
     env: {
       HOME_DIR: app.getPath('userData'),
@@ -86,7 +107,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
       LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
-      PATH: process.env.PATH,
+      PATH: fullPathWithBundledNpx,
       UI_TESTS_ENABLED,
     },
     stdio: 'pipe',

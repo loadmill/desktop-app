@@ -29,33 +29,24 @@ interface NodeRunnerOptions extends SpawnOptions {
 }
 
 /**
- * NodeBundleRunner - A utility class to run Node.js commands using Electron's built-in Node.js with
+ * NodeBundleRunner - A utility module to run Node.js commands using Electron's built-in Node.js with
  * npm and npx binaries from the bundled Node.js distribution
  */
-export class NodeBundleRunner {
-  private platform: NodeJS.Platform;
-  private arch: string;
-  private npmBinary: string | null = null;
-  private npxBinary: string | null = null;
-  private nodeBasePath: string | null = null;
+const NodeBundleRunner = (() => {
+  // Private properties
+  const platform: NodeJS.Platform = process.platform;
+  const arch: string = process.arch;
 
-  /**
-   * Initialize the NodeBundleRunner
-   * Detects platform and architecture
-   * Sets up paths to npm and npx binaries
-   */
-  constructor() {
-    this.platform = process.platform;
-    this.arch = process.arch;
-
-    this.initPaths();
-  }
+  let npmBinary: string | null = null;
+  let npxBinary: string | null = null;
+  let nodeBasePath: string | null = null;
+  let npxDir: string | null = null;
 
   /**
    * Initialize paths to the npm and npx binaries
    * @throws Error if paths cannot be resolved
    */
-  private initPaths(): void {
+  const initPaths = (): void => {
     // Base path to the bundled Node.js directory
     const PACKED_RELATIVE_PATH = path.join(app.getAppPath(), '.webpack', 'main');
     const bundledNodeBase = path.join(PACKED_RELATIVE_PATH, 'bundled_node');
@@ -64,8 +55,8 @@ export class NodeBundleRunner {
       throw new Error(`Bundled Node.js base path does not exist: ${bundledNodeBase}`);
     }
     log.info(`Bundled Node.js base path exists: ${bundledNodeBase}`);
-    log.info(`Platform: ${this.platform}`);
-    log.info(`Architecture: ${this.arch}`);
+    log.info(`Platform: ${platform}`);
+    log.info(`Architecture: ${arch}`);
     log.info(`Node.js version: ${process.versions.node}`);
     log.info(`Electron version: ${process.versions.electron}`);
     log.info(`Electron app path: ${app.getAppPath()}`);
@@ -76,26 +67,26 @@ export class NodeBundleRunner {
 
     // Determine platform-specific directory
     let platformDir: string;
-    if (this.platform === 'darwin') {
+    if (platform === 'darwin') {
       platformDir = 'macos';
-    } else if (this.platform === 'win32') {
+    } else if (platform === 'win32') {
       platformDir = 'windows';
     } else {
-      throw new Error(`Unsupported platform: ${this.platform}`);
+      throw new Error(`Unsupported platform: ${platform}`);
     }
 
     // Determine architecture-specific directory
     let archDir: string;
-    if (this.arch === 'arm64') {
+    if (arch === 'arm64') {
       archDir = 'arm64';
-    } else if (this.arch === 'x64') {
+    } else if (arch === 'x64') {
       archDir = 'x86_64';
     } else {
-      throw new Error(`Unsupported architecture: ${this.arch}`);
+      throw new Error(`Unsupported architecture: ${arch}`);
     }
 
     // Only use arm64 on macOS if it's available
-    if (this.platform === 'darwin' && this.arch === 'arm64') {
+    if (platform === 'darwin' && arch === 'arm64') {
       const arm64Path = path.join(bundledNodeBase, platformDir, 'arm64');
       if (!fs.existsSync(arm64Path)) {
         // Fall back to x64 if arm64 is not available
@@ -112,44 +103,84 @@ export class NodeBundleRunner {
       throw new Error(`Could not find Node.js directory in ${nodeDistBase}`);
     }
 
-    this.nodeBasePath = path.join(nodeDistBase, nodeDir);
+    nodeBasePath = path.join(nodeDistBase, nodeDir);
 
-    // Set paths to npm/npx binaries based on platform
-    if (this.platform === 'darwin') {
-      this.npmBinary = path.join(this.nodeBasePath, 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js');
-      this.npxBinary = path.join(this.nodeBasePath, 'lib', 'node_modules', 'npm', 'bin', 'npx-cli.js');
-    } else if (this.platform === 'win32') {
-      this.npmBinary = path.join(this.nodeBasePath, 'npm.cmd');
-      this.npxBinary = path.join(this.nodeBasePath, 'npx.cmd');
-    }
-
-    // Ensure the paths exist
-    if (!this.npmBinary || !fs.existsSync(this.npmBinary)) {
-      throw new Error(`npm binary not found at: ${this.npmBinary}`);
-    }
-
-    if (!this.npxBinary || !fs.existsSync(this.npxBinary)) {
-      throw new Error(`npx binary not found at: ${this.npxBinary}`);
-    }
-
-    // Set executable permissions on macOS/Linux
-    if (this.platform !== 'win32') {
+    // Set executable permissions on macOS/Linux for all relevant npm/npx binaries in the bin directory
+    if (platform !== 'win32') {
       try {
-        log.info('Setting executable permissions for npm and npx binaries');
-        log.info('Setting executable permissions for npm binary:');
-        fs.chmodSync(this.npmBinary, 0o755);
-        log.info('Setting executable permissions for npx binary:');
-        fs.chmodSync(this.npxBinary, 0o755);
-        log.info('Executable permissions set successfully');
+        // Set executable permissions for symlinks and corepack in the Node.js bin directory
+        const nodeBinDir = path.join(nodeBasePath, 'bin');
+
+        if (!fs.existsSync(nodeBinDir)) {
+          fs.mkdirSync(nodeBinDir, { recursive: true });
+          log.info(`Created Node.js bin directory: ${nodeBinDir}`);
+        }
+
+        const symlinks = [
+          {
+            link: path.join(nodeBinDir, 'npm'),
+            target: path.join(nodeBasePath, 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+          },
+          {
+            link: path.join(nodeBinDir, 'npx'),
+            target: path.join(nodeBasePath, 'lib', 'node_modules', 'npm', 'bin', 'npx-cli.js'),
+          },
+        ];
+        for (const { link, target } of symlinks) {
+          try {
+            if (!fs.existsSync(link)) {
+              fs.symlinkSync(target, link);
+              log.info(`Created symlink: ${link} -> ${target}`);
+            }
+            // Always set executable permissions on the link target
+            if (fs.existsSync(target)) {
+              fs.chmodSync(target, 0o755);
+              log.info(`Set executable permissions for: ${target}`);
+            }
+            // And on the symlink itself (if it exists)
+            if (fs.existsSync(link)) {
+              fs.chmodSync(link, 0o755);
+              log.info(`Set executable permissions for symlink: ${link}`);
+            }
+          } catch (err) {
+            log.error(`Failed to create symlink or set permissions: ${link} -> ${target}`, err);
+          }
+        }
+        log.info('Executable permissions set successfully for npm/npx binaries and symlinks');
       } catch (error) {
-        log.error('Failed to set executable permissions');
+        log.error('Failed to set executable permissions for npm/npx binaries');
         throw error;
       }
     }
 
-    log.info(`Using npm binary: ${this.npmBinary}`);
-    log.info(`Using npx binary: ${this.npxBinary}`);
-  }
+    // Set paths to npm/npx binaries based on platform
+    if (platform === 'darwin') {
+      npmBinary = path.join(nodeBasePath, 'bin', 'npm');
+      npxBinary = path.join(nodeBasePath, 'bin', 'npx');
+    } else if (platform === 'win32') {
+      npmBinary = path.join(nodeBasePath, 'npm.cmd');
+      npxBinary = path.join(nodeBasePath, 'npx.cmd');
+    }
+
+    // Set the npxDir for external access
+    npxDir = path.dirname(npxBinary);
+
+    // Ensure the paths exists
+    if (!npmBinary || !fs.existsSync(npmBinary)) {
+      throw new Error(`npm binary not found at: ${npmBinary}`);
+    }
+
+    if (!npxBinary || !fs.existsSync(npxBinary)) {
+      throw new Error(`npx binary not found at: ${npxBinary}`);
+    }
+
+    log.info(`Using npm binary: ${npmBinary}`);
+    log.info(`Using npx binary: ${npxBinary}`);
+    log.info(`NPX directory: ${npxDir}`);
+  };
+
+  // Initialize paths on module load
+  initPaths();
 
   /**
    * Run a command using spawn
@@ -159,11 +190,11 @@ export class NodeBundleRunner {
    * @param options - Options for the child process
    * @returns Promise resolving to stdout and stderr
    */
-  private runCommand(
+  const runCommand = (
     command: string,
     args: string[] = [],
     options: NodeRunnerOptions = {},
-  ): Promise<ProcessResult> {
+  ): Promise<ProcessResult> => {
     return new Promise((resolve, reject) => {
       const defaultOptions: NodeRunnerOptions = {
         cwd: app.getAppPath(),
@@ -174,8 +205,8 @@ export class NodeBundleRunner {
       const mergedOptions: NodeRunnerOptions = { ...defaultOptions, ...options };
 
       // Add the Node.js bin directory to PATH to ensure the npm/npx binaries can find the right Node.js
-      if (this.nodeBasePath) {
-        const nodeBinDir = path.join(this.nodeBasePath, 'bin');
+      if (nodeBasePath) {
+        const nodeBinDir = path.join(nodeBasePath, 'bin');
         const currentPath = mergedOptions.env?.PATH || process.env.PATH || '';
         mergedOptions.env = {
           ...mergedOptions.env,
@@ -190,37 +221,44 @@ export class NodeBundleRunner {
         options,
       });
 
-      const xprocess = spawn(command, args, mergedOptions);
-      log.info(`Spawned process PID: ${xprocess.pid}`);
+      const childProcess = spawn(command, args, mergedOptions);
+      log.info(`Spawned process PID: ${childProcess.pid}`);
 
       let stdout = '';
       let stderr = '';
 
-      xprocess.stdout?.on('data', (data: Buffer) => {
+      childProcess.stdout?.on('data', (data: Buffer) => {
         const dataStr = data.toString();
         stdout += dataStr;
         log.info(`[NodeRunner stdout] ${dataStr}`);
       });
 
-      xprocess.stderr?.on('data', (data: Buffer) => {
+      childProcess.stderr?.on('data', (data: Buffer) => {
         const dataStr = data.toString();
         stderr += dataStr;
         log.error(`[NodeRunner stderr] ${dataStr}`);
       });
 
-      xprocess.on('close', (code: number | null) => {
+      childProcess.on('close', (code: number | null) => {
         if (code === 0) {
           resolve({ stderr, stdout });
         } else {
-          reject(new Error(`Process exited with code ${code}: ${stderr}`));
+          reject(new Error(`Process closed with code ${code}: ${stderr}`));
         }
       });
 
-      xprocess.on('error', (error: Error) => {
+      childProcess.on('error', (error: Error) => {
         reject(new Error(`Failed to start process: ${error.message}`));
       });
+
+      childProcess.on('exit', (code: number | null) => {
+        log.info(`Process exited with code: ${code}`);
+        if (code !== 0) {
+          reject(new Error(`Process exited with code ${code}`));
+        }
+      });
     });
-  }
+  };
 
   /**
    * Run an npm command using the npm binary
@@ -229,12 +267,12 @@ export class NodeBundleRunner {
    * @param options - Options for the child process
    * @returns Promise resolving to stdout and stderr
    */
-  public runNpm(args: string[] = [], options: NodeRunnerOptions = {}): Promise<ProcessResult> {
-    if (!this.npmBinary) {
+  const runNpm = (args: string[] = [], options: NodeRunnerOptions = {}): Promise<ProcessResult> => {
+    if (!npmBinary) {
       return Promise.reject(new Error('npm binary path not initialized'));
     }
-    return this.runCommand(this.npmBinary, args, options);
-  }
+    return runCommand(npmBinary, args, options);
+  };
 
   /**
    * Run an npx command using the npx binary
@@ -243,12 +281,12 @@ export class NodeBundleRunner {
    * @param options - Options for the child process
    * @returns Promise resolving to stdout and stderr
    */
-  public runNpx(args: string[] = [], options: NodeRunnerOptions = {}): Promise<ProcessResult> {
-    if (!this.npxBinary) {
+  const runNpx = (args: string[] = [], options: NodeRunnerOptions = {}): Promise<ProcessResult> => {
+    if (!npxBinary) {
       return Promise.reject(new Error('npx binary path not initialized'));
     }
-    return this.runCommand(this.npxBinary, args, options);
-  }
+    return runCommand(npxBinary, args, options);
+  };
 
   /**
    * Run a direct Node.js command (equivalent to `node script.js`)
@@ -258,14 +296,31 @@ export class NodeBundleRunner {
    * @param options - Options for the child process
    * @returns Promise resolving to stdout and stderr
    */
-  public runNode(
+  const runNode = (
     scriptPath: string,
     args: string[] = [],
     options: NodeRunnerOptions = {},
-  ): Promise<ProcessResult> {
+  ): Promise<ProcessResult> => {
     // Use process.execPath (Electron) to run the script
-    return this.runCommand(process.execPath, ['--no-sandbox', scriptPath, ...args], options);
-  }
-}
+    return runCommand(process.execPath, ['--no-sandbox', scriptPath, ...args], options);
+  };
 
-export { ProcessResult, NodeRunnerOptions };
+  // Public API
+  return {
+    // Expose paths for external use
+    getNodeBasePath: () => nodeBasePath,
+    getNpmBinary: () => npmBinary,
+    getNpxBinary: () => npxBinary,
+    getNpxDir: () => npxDir,
+
+    // Re-initialize if needed (rarely used)
+    reinitialize: initPaths,
+
+    // Command runner methods
+    runNode,
+    runNpm,
+    runNpx,
+  };
+})();
+
+export { NodeBundleRunner, ProcessResult, NodeRunnerOptions };

@@ -31,9 +31,6 @@ const packages = [
  */
 export const downloadPlaywright2 = async (): Promise<void> => {
   try {
-    // Initialize the NodeBundleRunner
-    const nodeRunner = new NodeBundleRunner();
-
     log.info(`Using user data path: ${USER_DATA_PATH}`);
     log.info(`Using Playwright version: ${PLAYWRIGHT_VERSION}`);
 
@@ -51,7 +48,7 @@ export const downloadPlaywright2 = async (): Promise<void> => {
       fullPackageName,
       options,
     });
-    await nodeRunner.runNpm(['i', fullPackageName], options);
+    await NodeBundleRunner.runNpm(['i', fullPackageName], options);
     log.info('Successfully installed Playwright test package', {
       fullPackageName,
       options,
@@ -59,7 +56,7 @@ export const downloadPlaywright2 = async (): Promise<void> => {
 
     // Step 2: Install Playwright browser dependencies
     log.info('Installing Playwright browser dependencies...');
-    await nodeRunner.runNpx(['playwright', 'install', '--with-deps', '--only-shell'], options);
+    await NodeBundleRunner.runNpx(['playwright', 'install', '--with-deps', '--only-shell'], options);
     log.info('Successfully installed Playwright browser dependencies');
 
     log.info('Playwright installation completed successfully');
