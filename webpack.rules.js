@@ -22,7 +22,7 @@ module.exports = [
     },
   },
   {
-    exclude: /(node_modules|\.webpack)/,
+    exclude: /(node_modules|\.webpack|bundled_node)/,
     test: /\.tsx?$/,
     use: {
       loader: 'ts-loader',
