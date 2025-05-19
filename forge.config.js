@@ -7,8 +7,8 @@ const { name, version, productName } = require('./package.json');
 const extraResource = isWindowsOS ?
   ['bundled_node/windows'] :
   process.arch === 'arm64' ?
-    ['bundled_node/arm64'] :
-    ['bundled_node/x64'];
+    ['bundled_node/macos/arm64'] :
+    ['bundled_node/macos/x64'];
 
 module.exports = {
   makers: [
