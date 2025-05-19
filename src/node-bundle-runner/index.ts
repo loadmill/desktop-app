@@ -80,7 +80,7 @@ const NodeBundleRunner = (() => {
     if (arch === 'arm64') {
       archDir = 'arm64';
     } else if (arch === 'x64') {
-      archDir = 'x86_64';
+      archDir = 'x64';
     } else {
       throw new Error(`Unsupported architecture: ${arch}`);
     }
@@ -90,7 +90,7 @@ const NodeBundleRunner = (() => {
       const arm64Path = path.join(bundledNodeBase, platformDir, 'arm64');
       if (!fs.existsSync(arm64Path)) {
         // Fall back to x64 if arm64 is not available
-        archDir = 'x86_64';
+        archDir = 'x64';
       }
     }
 

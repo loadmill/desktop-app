@@ -4,6 +4,12 @@ const isWindowsOS = process.platform === 'win32';
 
 const { name, version, productName } = require('./package.json');
 
+const extraResource = isWindowsOS ?
+  ['bundled_node/windows'] :
+  process.arch === 'arm64' ?
+    ['bundled_node/arm64'] :
+    ['bundled_node/x64'];
+
 module.exports = {
   makers: [
     {
@@ -38,7 +44,7 @@ module.exports = {
     },
   ],
   packagerConfig: {
-    extraResource: ['bundled_node'],
+    extraResource: extraResource,
     icon: isWindowsOS ? './images/loadmill-icon-256-256' : './images/MyIcon',
     osxNotarize: {
       appleId: process.env.APPLE_ID,
