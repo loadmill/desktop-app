@@ -104,13 +104,12 @@ const NodeBundleRunner = (() => {
     }
 
     nodeBasePath = path.join(nodeDistBase, nodeDir);
+    const nodeBinDir = path.join(nodeBasePath, 'bin');
 
     // Set executable permissions on macOS/Linux for all relevant npm/npx binaries in the bin directory
     if (platform !== 'win32') {
       try {
         // Set executable permissions for symlinks and corepack in the Node.js bin directory
-        const nodeBinDir = path.join(nodeBasePath, 'bin');
-
         if (!fs.existsSync(nodeBinDir)) {
           fs.mkdirSync(nodeBinDir, { recursive: true });
           log.info(`Created Node.js bin directory: ${nodeBinDir}`);
@@ -177,6 +176,13 @@ const NodeBundleRunner = (() => {
     log.info(`Using npm binary: ${npmBinary}`);
     log.info(`Using npx binary: ${npxBinary}`);
     log.info(`NPX directory: ${npxDir}`);
+
+    // Create symlink for node in the bin directory
+    fs.symlinkSync(
+      process.execPath,
+      path.join(nodeBinDir, 'node'),
+      'file',
+    );
   };
 
   // Initialize paths on module load

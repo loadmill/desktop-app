@@ -14,6 +14,7 @@
     "forge-publish-dry-run": "electron-forge publish --dry-run --arch=x64",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --color",
     "make": "electron-forge make",
+    "make-mac": "electron-forge make --arch=x64",
     "only-make": "electron-forge make --skip-package=true",
     "only-make-mac": "electron-forge make --skip-package=true --arch=x64",
     "package": "electron-forge package",

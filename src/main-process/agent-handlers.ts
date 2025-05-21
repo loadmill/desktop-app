@@ -91,7 +91,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
 
   const npxDir = NodeBundleRunner.getNpxDir();
   if (!npxDir) {
-    throw new Error('npx directory path not initialized');
+    log.error('npx directory path not initialized');
   }
 
   const fullPathWithBundledNpx = npxDir + path.delimiter + pathWithoutNpx;
@@ -100,14 +100,18 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   const whichNpx = spawnSync('which', ['npx'], { env: { ...process.env, PATH: fullPathWithBundledNpx } });
   log.info('Resolved npx:', whichNpx.stdout.toString());
 
+  const envWithExecPath = path.dirname(process.execPath) + path.delimiter + fullPathWithBundledNpx;
+  log.info('PATH with exec path:', envWithExecPath);
+
   return fork(LOADMILL_AGENT_PATH, {
     env: {
+      ELECTRON_RUN_AS_NODE: '1',
       HOME_DIR: app.getPath('userData'),
       LOADMILL_AGENT_SERVER_URL,
       LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
-      PATH: fullPathWithBundledNpx,
+      PATH: envWithExecPath,
       UI_TESTS_ENABLED,
     },
     stdio: 'pipe',
