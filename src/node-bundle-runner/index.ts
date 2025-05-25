@@ -1,14 +1,12 @@
 import {
-  spawn,
   SpawnOptions,
   StdioOptions,
 } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { app } from 'electron';
-
 import log from '../log';
+import { STANDALONE_NPX_FOLDER_PATH } from '../main-process/constants';
 
 /**
  * Interface for process execution results
@@ -33,9 +31,8 @@ interface NodeRunnerOptions extends SpawnOptions {
  * npm and npx binaries from the bundled Node.js distribution
  */
 const NodeBundleRunner = (() => {
-  // Private properties
+
   const platform: NodeJS.Platform = process.platform;
-  const arch: string = process.arch;
 
   let npmBinary: string | null = null;
   let npxBinary: string | null = null;
@@ -48,44 +45,30 @@ const NodeBundleRunner = (() => {
    */
   const initPaths = (): void => {
     // Base path to the bundled Node.js directory
-    const bundledNodeBase = path.join(app.getAppPath(), 'standalone_npx');
-    log.info(`Bundled Node.js base path: ${bundledNodeBase}`);
-    if (!fs.existsSync(bundledNodeBase)) {
-      throw new Error(`Bundled Node.js base path does not exist: ${bundledNodeBase}`);
+    log.info(`Bundled Node.js base path: ${STANDALONE_NPX_FOLDER_PATH}`);
+    if (!fs.existsSync(STANDALONE_NPX_FOLDER_PATH)) {
+      throw new Error(`Bundled Node.js base path does not exist: ${STANDALONE_NPX_FOLDER_PATH}`);
     }
-    log.info(`Bundled Node.js base path exists: ${bundledNodeBase}`);
-    log.info(`Platform: ${platform}`);
-    log.info(`Architecture: ${arch}`);
-    log.info(`Node.js version: ${process.versions.node}`);
-    log.info(`Electron version: ${process.versions.electron}`);
-    log.info(`Electron app path: ${app.getAppPath()}`);
-    log.info(`Electron user data path: ${app.getPath('userData')}`);
-    log.info(`Electron app name: ${app.getName()}`);
-    log.info(`Electron app version: ${app.getVersion()}`);
-    log.info(`Electron app is dev: ${app.isPackaged ? 'No' : 'Yes'}`);
 
-    // Construct the base path to the Node.js distribution
-    const nodeDistBase = path.join(bundledNodeBase);
-
-    nodeBasePath = nodeDistBase;
-    const nodeBinDir = path.join(nodeDistBase, 'bin');
+    nodeBasePath = STANDALONE_NPX_FOLDER_PATH;
+    const binDir = path.join(STANDALONE_NPX_FOLDER_PATH, 'bin');
 
     // Set executable permissions on macOS/Linux for all relevant npm/npx binaries in the bin directory
     if (platform !== 'win32') {
       try {
         // Set executable permissions for symlinks and corepack in the Node.js bin directory
-        if (!fs.existsSync(nodeBinDir)) {
-          fs.mkdirSync(nodeBinDir, { recursive: true });
-          log.info(`Created Node.js bin directory: ${nodeBinDir}`);
+        if (!fs.existsSync(binDir)) {
+          fs.mkdirSync(binDir, { recursive: true });
+          log.info(`Created bin directory: ${binDir}`);
         }
 
         const symlinks = [
           {
-            link: path.join(nodeBinDir, 'npm'),
+            link: path.join(binDir, 'npm'),
             target: path.join(nodeBasePath, 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js'),
           },
           {
-            link: path.join(nodeBinDir, 'npx'),
+            link: path.join(binDir, 'npx'),
             target: path.join(nodeBasePath, 'lib', 'node_modules', 'npm', 'bin', 'npx-cli.js'),
           },
         ];
@@ -143,168 +126,33 @@ const NodeBundleRunner = (() => {
 
     // Create symlink for node in the bin directory
     // if symlink does not exist already
-    if (fs.existsSync(path.join(nodeBinDir, 'node'))) {
-      log.info(`Symlink for node already exists: ${path.join(nodeBinDir, 'node')}`);
+    if (fs.existsSync(path.join(binDir, 'node'))) {
+      log.info(`Symlink for node already exists: ${path.join(binDir, 'node')}`);
       // also log the file which symlink points to
-      const symlinkTarget = fs.readlinkSync(path.join(nodeBinDir, 'node'));
+      const symlinkTarget = fs.readlinkSync(path.join(binDir, 'node'));
       log.info(`Symlink points to: ${symlinkTarget}`);
       return;
     }
     log.info('Creating symlink for node:', {
-      link: path.join(nodeBinDir, 'node'),
+      link: path.join(binDir, 'node'),
       target: process.execPath,
     });
     fs.symlinkSync(
       process.execPath,
-      path.join(nodeBinDir, 'node'),
+      path.join(binDir, 'node'),
       'file',
     );
     log.info('Symlink created successfully');
-    const symlinkTarget = fs.readlinkSync(path.join(nodeBinDir, 'node'));
+    const symlinkTarget = fs.readlinkSync(path.join(binDir, 'node'));
     log.info(`Symlink points to: ${symlinkTarget}`);
   };
 
   // Initialize paths on module load
   initPaths();
 
-  /**
-   * Run a command using spawn
-   *
-   * @param command - Command to run
-   * @param args - Arguments to pass to the command
-   * @param options - Options for the child process
-   * @returns Promise resolving to stdout and stderr
-   */
-  const runCommand = (
-    command: string,
-    args: string[] = [],
-    options: NodeRunnerOptions = {},
-  ): Promise<ProcessResult> => {
-    return new Promise((resolve, reject) => {
-      const defaultOptions: NodeRunnerOptions = {
-        cwd: app.getAppPath(),
-        env: process.env,
-        stdio: 'pipe',
-      };
-
-      const mergedOptions: NodeRunnerOptions = { ...defaultOptions, ...options };
-
-      // Add the Node.js bin directory to PATH to ensure the npm/npx binaries can find the right Node.js
-      if (nodeBasePath) {
-        const nodeBinDir = path.join(nodeBasePath, 'bin');
-        const currentPath = mergedOptions.env?.PATH || process.env.PATH || '';
-        mergedOptions.env = {
-          ...mergedOptions.env,
-          PATH: `${nodeBinDir}${path.delimiter}${currentPath}`,
-        };
-      }
-
-      const cmdStr = [command, ...args].join(' ');
-      log.info(`Running command: ${cmdStr}`, {
-        args,
-        command,
-        options,
-      });
-
-      const childProcess = spawn(command, args, mergedOptions);
-      log.info(`Spawned process PID: ${childProcess.pid}`);
-
-      let stdout = '';
-      let stderr = '';
-
-      childProcess.stdout?.on('data', (data: Buffer) => {
-        const dataStr = data.toString();
-        stdout += dataStr;
-        log.info(`[NodeRunner stdout] ${dataStr}`);
-      });
-
-      childProcess.stderr?.on('data', (data: Buffer) => {
-        const dataStr = data.toString();
-        stderr += dataStr;
-        log.error(`[NodeRunner stderr] ${dataStr}`);
-      });
-
-      childProcess.on('close', (code: number | null) => {
-        if (code === 0) {
-          resolve({ stderr, stdout });
-        } else {
-          reject(new Error(`Process closed with code ${code}: ${stderr}`));
-        }
-      });
-
-      childProcess.on('error', (error: Error) => {
-        reject(new Error(`Failed to start process: ${error.message}`));
-      });
-
-      childProcess.on('exit', (code: number | null) => {
-        log.info(`Process exited with code: ${code}`);
-        if (code !== 0) {
-          reject(new Error(`Process exited with code ${code}`));
-        }
-      });
-    });
-  };
-
-  /**
-   * Run an npm command using the npm binary
-   *
-   * @param args - Arguments to pass to npm
-   * @param options - Options for the child process
-   * @returns Promise resolving to stdout and stderr
-   */
-  const runNpm = (args: string[] = [], options: NodeRunnerOptions = {}): Promise<ProcessResult> => {
-    if (!npmBinary) {
-      return Promise.reject(new Error('npm binary path not initialized'));
-    }
-    return runCommand(npmBinary, args, options);
-  };
-
-  /**
-   * Run an npx command using the npx binary
-   *
-   * @param args - Arguments to pass to npx
-   * @param options - Options for the child process
-   * @returns Promise resolving to stdout and stderr
-   */
-  const runNpx = (args: string[] = [], options: NodeRunnerOptions = {}): Promise<ProcessResult> => {
-    if (!npxBinary) {
-      return Promise.reject(new Error('npx binary path not initialized'));
-    }
-    return runCommand(npxBinary, args, options);
-  };
-
-  /**
-   * Run a direct Node.js command (equivalent to `node script.js`)
-   *
-   * @param scriptPath - Path to the script to run
-   * @param args - Arguments to pass to the script
-   * @param options - Options for the child process
-   * @returns Promise resolving to stdout and stderr
-   */
-  const runNode = (
-    scriptPath: string,
-    args: string[] = [],
-    options: NodeRunnerOptions = {},
-  ): Promise<ProcessResult> => {
-    // Use process.execPath (Electron) to run the script
-    return runCommand(process.execPath, ['--no-sandbox', scriptPath, ...args], options);
-  };
-
   // Public API
   return {
-    // Expose paths for external use
-    getNodeBasePath: () => nodeBasePath,
-    getNpmBinary: () => npmBinary,
-    getNpxBinary: () => npxBinary,
     getNpxDir: () => npxDir,
-
-    // Re-initialize if needed (rarely used)
-    reinitialize: initPaths,
-
-    // Command runner methods
-    runNode,
-    runNpm,
-    runNpx,
   };
 })();
 

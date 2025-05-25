@@ -4,6 +4,8 @@ import path from 'path';
 import { app } from 'electron';
 
 import log from '../log';
+
+import { STANDALONE_PLAYWRIGHT_FOLDER_PATH } from './constants';
 /**
  * This module is used to copy the standalone Playwright packages and browser
  * binaries from the standalone Playwright directory to the user data directory.
@@ -11,16 +13,15 @@ import log from '../log';
  * It also creates symlinks for the Node.js, npm, and npx binaries in the bin
  * directory of the standalone Playwright package.
  */
-const standalonePlaywrightPath = path.join(app.getAppPath(), 'standalone_playwright');
 const userDataPath = app.getPath('userData');
 
 export const copyStandalonePlaywrightToUserData = async (): Promise<void> => {
   _logInfo('Copying standalone Playwright to user data path', {
-    standalonePlaywrightPath,
+    STANDALONE_PLAYWRIGHT_FOLDER_PATH,
     userDataPath,
   });
-  if (!fs.existsSync(standalonePlaywrightPath)) {
-    _logError('Standalone Playwright folder path does not exist:', standalonePlaywrightPath);
+  if (!fs.existsSync(STANDALONE_PLAYWRIGHT_FOLDER_PATH)) {
+    _logError('Standalone Playwright folder path does not exist:', STANDALONE_PLAYWRIGHT_FOLDER_PATH);
     return;
   }
   if (!fs.existsSync(userDataPath)) {
@@ -34,7 +35,7 @@ export const copyStandalonePlaywrightToUserData = async (): Promise<void> => {
   }
   _logInfo('Copying standalone Playwright node_modules to user data path:', userDataPath);
   try {
-    await _copyDirectory(standalonePlaywrightPath, userDataPath);
+    await _copyDirectory(STANDALONE_PLAYWRIGHT_FOLDER_PATH, userDataPath);
     _logInfo('Successfully copied standalone Playwright to user data path:', userDataPath);
     _replaceSymlinks();
     _logInfo('Updated symlinks for Playwright in user data path:', userDataPath);
@@ -60,15 +61,14 @@ const _copyDirectory = (src: string, dest: string) => {
 
 const _replaceSymlinks = () => {
   const linksFolderPath = path.join(app.getPath('userData'), 'node_modules', '.bin');
-  const userDataNodeModulesPath = path.join(app.getPath('userData'), 'node_modules');
   const symlinks = [
     {
       link: path.join(linksFolderPath, 'playwright'),
-      target: path.join(userDataNodeModulesPath, 'playwright', 'cli.js'),
+      target: path.join('../', 'playwright', 'cli.js'),
     },
     {
       link: path.join(linksFolderPath, 'playwright-core'),
-      target: path.join(userDataNodeModulesPath, 'playwright-core', 'cli.js'),
+      target: path.join('../', 'playwright-core', 'cli.js'),
     },
   ];
 
