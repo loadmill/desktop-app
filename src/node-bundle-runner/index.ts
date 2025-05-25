@@ -48,8 +48,7 @@ const NodeBundleRunner = (() => {
    */
   const initPaths = (): void => {
     // Base path to the bundled Node.js directory
-    const PACKED_RELATIVE_PATH = path.join(app.getAppPath(), '.webpack', 'main');
-    const bundledNodeBase = path.join(PACKED_RELATIVE_PATH, 'bundled_node');
+    const bundledNodeBase = path.join(app.getAppPath(), 'standalone_npx');
     log.info(`Bundled Node.js base path: ${bundledNodeBase}`);
     if (!fs.existsSync(bundledNodeBase)) {
       throw new Error(`Bundled Node.js base path does not exist: ${bundledNodeBase}`);
@@ -65,46 +64,11 @@ const NodeBundleRunner = (() => {
     log.info(`Electron app version: ${app.getVersion()}`);
     log.info(`Electron app is dev: ${app.isPackaged ? 'No' : 'Yes'}`);
 
-    // Determine platform-specific directory
-    let platformDir: string;
-    if (platform === 'darwin') {
-      platformDir = 'macos';
-    } else if (platform === 'win32') {
-      platformDir = 'windows';
-    } else {
-      throw new Error(`Unsupported platform: ${platform}`);
-    }
-
-    // Determine architecture-specific directory
-    let archDir: string;
-    if (arch === 'arm64') {
-      archDir = 'arm64';
-    } else if (arch === 'x64') {
-      archDir = 'x64';
-    } else {
-      throw new Error(`Unsupported architecture: ${arch}`);
-    }
-
-    // Only use arm64 on macOS if it's available
-    if (platform === 'darwin' && arch === 'arm64') {
-      const arm64Path = path.join(bundledNodeBase, platformDir, 'arm64');
-      if (!fs.existsSync(arm64Path)) {
-        // Fall back to x64 if arm64 is not available
-        archDir = 'x64';
-      }
-    }
-
     // Construct the base path to the Node.js distribution
-    const nodeDistBase = path.join(bundledNodeBase, platformDir, archDir);
+    const nodeDistBase = path.join(bundledNodeBase);
 
-    // Find the Node.js directory within the architecture directory
-    const nodeDir = fs.readdirSync(nodeDistBase).find(dir => dir.startsWith('node-'));
-    if (!nodeDir) {
-      throw new Error(`Could not find Node.js directory in ${nodeDistBase}`);
-    }
-
-    nodeBasePath = path.join(nodeDistBase, nodeDir);
-    const nodeBinDir = path.join(nodeBasePath, 'bin');
+    nodeBasePath = nodeDistBase;
+    const nodeBinDir = path.join(nodeDistBase, 'bin');
 
     // Set executable permissions on macOS/Linux for all relevant npm/npx binaries in the bin directory
     if (platform !== 'win32') {
@@ -178,11 +142,26 @@ const NodeBundleRunner = (() => {
     log.info(`NPX directory: ${npxDir}`);
 
     // Create symlink for node in the bin directory
+    // if symlink does not exist already
+    if (fs.existsSync(path.join(nodeBinDir, 'node'))) {
+      log.info(`Symlink for node already exists: ${path.join(nodeBinDir, 'node')}`);
+      // also log the file which symlink points to
+      const symlinkTarget = fs.readlinkSync(path.join(nodeBinDir, 'node'));
+      log.info(`Symlink points to: ${symlinkTarget}`);
+      return;
+    }
+    log.info('Creating symlink for node:', {
+      link: path.join(nodeBinDir, 'node'),
+      target: process.execPath,
+    });
     fs.symlinkSync(
       process.execPath,
       path.join(nodeBinDir, 'node'),
       'file',
     );
+    log.info('Symlink created successfully');
+    const symlinkTarget = fs.readlinkSync(path.join(nodeBinDir, 'node'));
+    log.info(`Symlink points to: ${symlinkTarget}`);
   };
 
   // Initialize paths on module load

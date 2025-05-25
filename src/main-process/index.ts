@@ -20,6 +20,7 @@ import {
 } from '../universal/constants';
 
 import { killAgentProcess, subscribeToAgentEventsFromRenderer } from './agent-handlers';
+import { copyStandalonePlaywrightToUserData } from './copy-from-standalone-playwright-to-user-data';
 import './deep-link';
 import './keybindings';
 import {
@@ -57,6 +58,7 @@ const onStartup = () => {
 onStartup();
 
 const onReady = async () => {
+  await copyStandalonePlaywrightToUserData();
   await initProxyServer();
   subscribeToAgentEventsFromRenderer();
   createWindow();

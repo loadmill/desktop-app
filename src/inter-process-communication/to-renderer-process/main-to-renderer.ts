@@ -42,7 +42,7 @@ const _sendToRenderer = ({ type, data }: RendererMessage, viewName?: ViewName): 
     if (!webContents) {
       throw new Error('No webContents found');
     }
-    log.debug('Sending to renderer', JSON.stringify({ data, type, viewName }, null, 2));
+    // log.debug('Sending to renderer', JSON.stringify({ data, type, viewName }, null, 2));
     webContents.send(type, data);
   } catch (e) {
     log.error('Error in send to renderer', { data, type, viewName }, e);
