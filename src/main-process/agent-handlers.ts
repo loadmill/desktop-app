@@ -83,24 +83,22 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
 
   log.info('Current PATH:', process.env.PATH);
 
-  const pathWithoutNpx = process.env.PATH
-    ?.split(path.delimiter)
-    .filter(p => !/npx|npm|nvm/.test(p))
-    .join(':');
-  log.info('PATH without npx:', pathWithoutNpx);
+  const pathLikeInProd = '/usr/bin:/bin:/usr/sbin:/sbin';
+
+  log.info('PATH like in prod:', pathLikeInProd);
 
   const npxDir = NodeBundleRunner.getNpxDir();
   if (!npxDir) {
     log.error('npx directory path not initialized');
   }
 
-  const fullPathWithBundledNpx = npxDir + path.delimiter + pathWithoutNpx;
-  log.info('New PATH:', fullPathWithBundledNpx);
+  const pathWithStandaloneNpx = npxDir + path.delimiter + pathLikeInProd;
+  log.info('PATH with standalone npx:', pathWithStandaloneNpx);
 
-  const whichNpx = spawnSync('which', ['npx'], { env: { ...process.env, PATH: fullPathWithBundledNpx } });
+  const whichNpx = spawnSync('which', ['npx'], { env: { ...process.env, PATH: pathWithStandaloneNpx } });
   log.info('Resolved npx:', whichNpx.stdout.toString());
 
-  const envWithExecPath = path.dirname(process.execPath) + path.delimiter + fullPathWithBundledNpx;
+  const envWithExecPath = path.dirname(process.execPath) + path.delimiter + pathWithStandaloneNpx;
   log.info('PATH with exec path:', envWithExecPath);
 
   return fork(LOADMILL_AGENT_PATH, {
@@ -112,6 +110,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
       PATH: envWithExecPath,
+      PLAYWRIGHT_BROWSERS_PATH: '0',
       UI_TESTS_ENABLED,
     },
     stdio: 'pipe',
