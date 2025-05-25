@@ -9,7 +9,6 @@ import {
   sendFromMainWindowToRenderer,
 } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
-import { NodeBundleRunner } from '../node-bundle-runner';
 import { AgentMessage, MainMessage } from '../types/messaging';
 import { Token } from '../types/token';
 import {
@@ -38,7 +37,11 @@ import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
 import { getSettings } from './settings/settings-store';
+<<<<<<< HEAD
 import { LOADMILL_AGENT_SERVER_URL } from './settings/web-app-settings';
+=======
+import { getStandaloneNpxBinaryDir } from './standalone-npx-binary';
+>>>>>>> bebd489 (install standalone - also works in packaged (prod))
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -87,7 +90,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
 
   log.info('PATH like in prod:', pathLikeInProd);
 
-  const npxDir = NodeBundleRunner.getNpxDir();
+  const npxDir = getStandaloneNpxBinaryDir();
   if (!npxDir) {
     log.error('npx directory path not initialized');
   }
