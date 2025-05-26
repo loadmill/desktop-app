@@ -177,14 +177,62 @@ const deleteArchive = (tempFile: string) => {
 const cleanupNodeDist = () => {
   logInfo('Cleaning up Node.js distribution...');
   logInfo('Keeping only the necessary directories and files for a standalone npx');
+  const platform = process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win' : 'linux';
 
-  removeUnwantedRootDirectories();
-  cleanupLibDirectory();
-  cleanupNodeModulesDirectory();
-  removeRedundantNpmFiles();
+  if (platform === 'win') {
+    cleanupNodeDistWindows();
+    return;
+  }
+  cleanupNodeDistUnix();
 };
 
-const removeUnwantedRootDirectories = () => {
+const cleanupNodeDistWindows = () => {
+  logInfo('Cleaning up Windows Node.js distribution...');
+
+  removeUnwantedRootItemsWindows();
+  cleanupWindowsNodeModulesDirectory();
+  cleanupWindowsNpmDirectory();
+};
+
+const removeUnwantedRootItemsWindows = () => {
+  const keepRootItems = new Set(['node_modules', 'npm', 'npm.cmd', 'npm.ps1', 'npx', 'npx.cmd', 'npx.ps1']);
+
+  processDirectoryItems(
+    TARGET_DIR,
+    (item) => !keepRootItems.has(item),
+    (itemPath) => `Removing Windows root item: ${itemPath}`,
+  );
+};
+
+const cleanupWindowsNodeModulesDirectory = () => {
+  const nodeModulesDir = path.join(TARGET_DIR, 'node_modules');
+  processDirectoryItems(
+    nodeModulesDir,
+    (item) => item !== 'npm',
+    (itemPath) => `Removing from node_modules: ${itemPath}`,
+  );
+};
+
+const cleanupWindowsNpmDirectory = () => {
+  const npmDir = path.join(TARGET_DIR, 'node_modules', 'npm');
+  const keepNpmItems = new Set(['bin', 'index.js', 'lib', 'node_modules', 'package.json']);
+
+  processDirectoryItems(
+    npmDir,
+    (item) => !keepNpmItems.has(item),
+    (itemPath) => `Removing from npm directory: ${itemPath}`,
+  );
+};
+
+const cleanupNodeDistUnix = () => {
+  logInfo('Cleaning up Unix Node.js distribution...');
+  removeUnwantedRootDirectoriesUnix();
+  cleanupLibDirectoryUnix();
+  cleanupUnixNodeModulesDirectory();
+  removeRedundantNpmFilesUnix();
+};
+
+const removeUnwantedRootDirectoriesUnix = () => {
   const keepDirectories = new Set(['lib']);
   logInfo('Keeping directories:', Array.from(keepDirectories).join(', '));
 
@@ -194,7 +242,7 @@ const removeUnwantedRootDirectories = () => {
   );
 };
 
-const cleanupLibDirectory = () => {
+const cleanupLibDirectoryUnix = () => {
   const libDir = path.join(TARGET_DIR, 'lib');
 
   processDirectoryItems(
@@ -203,7 +251,7 @@ const cleanupLibDirectory = () => {
   );
 };
 
-const cleanupNodeModulesDirectory = () => {
+const cleanupUnixNodeModulesDirectory = () => {
   const nodeModulesDir = path.join(TARGET_DIR, 'lib', 'node_modules');
 
   processDirectoryItems(
@@ -212,7 +260,7 @@ const cleanupNodeModulesDirectory = () => {
   );
 };
 
-const removeRedundantNpmFiles = () => {
+const removeRedundantNpmFilesUnix = () => {
   const npmDir = path.join(TARGET_DIR, 'lib', 'node_modules', 'npm');
 
   processDirectoryItems(
