@@ -17,7 +17,7 @@
     "make-mac": "electron-forge make --arch=x64",
     "only-make": "electron-forge make --skip-package=true",
     "only-make-mac": "electron-forge make --skip-package=true --arch=x64",
-    "package": "yarn prepare-standalones electron-forge package",
+    "package": "yarn prepare-standalones && electron-forge package",
     "package-mac": "yarn prepare-standalones && electron-forge package --arch=x64",
     "lint-and-test": "concurrently --raw 'yarn lint' 'yarn test'",
     "prepare-standalones": "yarn prepare-standalone-npx && yarn prepare-standalone-playwright",
