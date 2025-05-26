@@ -62,15 +62,31 @@ const isAlreadyPrepared = (): boolean => {
 const verifyStructure = (): boolean => {
   logInfo('Verifying standalone_npx structure...');
 
-  const requiredPaths = [
-    path.join(TARGET_DIR, 'lib', 'node_modules', 'npm'),
-    path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'node_modules'),
-    path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'bin'),
-    path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js'),
-    path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'bin', 'npx-cli.js'),
-    path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'index.js'),
-    path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'package.json'),
-  ];
+  let requiredPaths: string[];
+
+  if (process.platform === 'win32') {
+    // Windows structure: npm is directly in node_modules at root
+    requiredPaths = [
+      path.join(TARGET_DIR, 'node_modules', 'npm'),
+      path.join(TARGET_DIR, 'node_modules', 'npm', 'node_modules'),
+      path.join(TARGET_DIR, 'node_modules', 'npm', 'bin'),
+      path.join(TARGET_DIR, 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+      path.join(TARGET_DIR, 'node_modules', 'npm', 'bin', 'npx-cli.js'),
+      path.join(TARGET_DIR, 'node_modules', 'npm', 'index.js'),
+      path.join(TARGET_DIR, 'node_modules', 'npm', 'package.json'),
+    ];
+  } else {
+    // Unix structure: npm is under lib/node_modules
+    requiredPaths = [
+      path.join(TARGET_DIR, 'lib', 'node_modules', 'npm'),
+      path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'node_modules'),
+      path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'bin'),
+      path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+      path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'bin', 'npx-cli.js'),
+      path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'index.js'),
+      path.join(TARGET_DIR, 'lib', 'node_modules', 'npm', 'package.json'),
+    ];
+  }
 
   for (const requiredPath of requiredPaths) {
     if (!fs.existsSync(requiredPath)) {
