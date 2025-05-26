@@ -1,4 +1,7 @@
-import { ChildProcessWithoutNullStreams, fork, spawnSync } from 'child_process';
+import {
+  ChildProcessWithoutNullStreams,
+  fork,
+} from 'child_process';
 import path from 'path';
 
 import '@loadmill/agent/dist/cli';
@@ -38,10 +41,14 @@ import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
 import { getSettings } from './settings/settings-store';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { LOADMILL_AGENT_SERVER_URL } from './settings/web-app-settings';
 =======
 import { getStandaloneNpxBinaryDir } from './standalone-npx-binary';
 >>>>>>> bebd489 (install standalone - also works in packaged (prod))
+=======
+import { getEnvPathWithStandaloneNpx } from './standalone-npx';
+>>>>>>> 9289956 (refactor)
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -84,35 +91,14 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
     NODE_TLS_REJECT_UNAUTHORIZED,
   });
 
-  log.info('Current PATH:', process.env.PATH);
-
-  const pathLikeInProd = '/usr/bin:/bin:/usr/sbin:/sbin';
-
-  log.info('PATH like in prod:', pathLikeInProd);
-
-  const npxDir = getStandaloneNpxBinaryDir();
-  if (!npxDir) {
-    log.error('npx directory path not initialized');
-  }
-
-  const pathWithStandaloneNpx = npxDir + path.delimiter + pathLikeInProd;
-  log.info('PATH with standalone npx:', pathWithStandaloneNpx);
-
-  const whichNpx = spawnSync('which', ['npx'], { env: { ...process.env, PATH: pathWithStandaloneNpx } });
-  log.info('Resolved npx:', whichNpx.stdout.toString());
-
-  const envWithExecPath = path.dirname(process.execPath) + path.delimiter + pathWithStandaloneNpx;
-  log.info('PATH with exec path:', envWithExecPath);
-
   return fork(LOADMILL_AGENT_PATH, {
     env: {
-      ELECTRON_RUN_AS_NODE: '1',
       HOME_DIR: app.getPath('userData'),
       LOADMILL_AGENT_SERVER_URL,
       LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
-      PATH: envWithExecPath,
+      PATH: getEnvPathWithStandaloneNpx(),
       PLAYWRIGHT_BROWSERS_PATH: '0',
       UI_TESTS_ENABLED,
     },

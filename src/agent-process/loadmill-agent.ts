@@ -50,32 +50,3 @@ const sendIsConnected = () => {
 const sendToMainProcess = (msg: MainMessage) => {
   process.send(msg);
 };
-
-sendToMainProcess({
-  data: { text: 'Environment variables:' },
-  type: IS_AGENT_CONNECTED,
-});
-sendToMainProcess({
-  data: { text: JSON.stringify(process.env) },
-  type: IS_AGENT_CONNECTED,
-});
-
-sendToMainProcess({
-  data: { text: 'execPath:' },
-  type: IS_AGENT_CONNECTED,
-});
-sendToMainProcess({
-  data: { text: process.execPath },
-  type: IS_AGENT_CONNECTED,
-});
-
-sendToMainProcess({
-  data: { text: 'process.version:' },
-  type: IS_AGENT_CONNECTED,
-});
-sendToMainProcess({
-  data: { text: process.version },
-  type: IS_AGENT_CONNECTED,
-});
-
-sendToMainProcess({ data: { text: 'Loadmill agent process started' }, type: IS_AGENT_CONNECTED });

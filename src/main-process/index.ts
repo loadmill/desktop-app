@@ -20,7 +20,6 @@ import {
 } from '../universal/constants';
 
 import { killAgentProcess, subscribeToAgentEventsFromRenderer } from './agent-handlers';
-import { copyStandalonePlaywrightToUserData } from './copy-from-standalone-playwright-to-user-data';
 import './deep-link';
 import './keybindings';
 import {
@@ -36,8 +35,13 @@ import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initSettingsOnStartup } from './settings';
 =======
 import { setProxyOnStartup } from './settings/proxy-server-setting';
+<<<<<<< HEAD
 import { createStandaloneNpxSymlinks } from './standalone-npx-symlinks';
 >>>>>>> bebd489 (install standalone - also works in packaged (prod))
+=======
+import { createStandaloneNpxSymlinks } from './standalone-npx';
+import { copyStandalonePlaywrightToUserData } from './standalone-playwright';
+>>>>>>> 9289956 (refactor)
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
