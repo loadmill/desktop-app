@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as https from 'https';
 import * as path from 'path';
 
+import * as AdmZip from 'adm-zip';
 import * as tar from 'tar';
 
 import { getElectronNodeVersion } from './electron-node-version';
@@ -10,127 +11,55 @@ import { getElectronNodeVersion } from './electron-node-version';
 const NODE_VERSION = getElectronNodeVersion();
 const TARGET_DIR = 'standalone_npx';
 
-async function downloadAndExtractNode(): Promise<void> {
-  const platform = process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win' : 'linux';
-  const arch = process.arch === 'x64' ? 'x64' : process.arch === 'arm64' ? 'arm64' : 'x64';
-  const ext = platform === 'win' ? 'zip' : 'tar.gz';
+const main = async () => {
+  try {
+    logInfo('🔧 Preparing standalone_npx directory...');
+    logInfo(
+      'This script will download and install a standalone npx package in the target directory.',
+      {
+        NODE_VERSION,
+        TARGET_DIR,
+      },
+    );
 
-  const nodeUrl = `https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-${platform}-${arch}.${ext}`;
-  const tempFile = `node-v${NODE_VERSION}-${platform}-${arch}.${ext}`;
-  const tempDir = `node-v${NODE_VERSION}-${platform}-${arch}`;
+    deleteBinDirIfExists();
 
-  logInfo(`Downloading Node.js ${NODE_VERSION} from ${nodeUrl}...`);
-
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(tempFile);
-    https.get(nodeUrl, (response) => {
-      response.pipe(file);
-      file.on('finish', async () => {
-        file.close();
-
-        try {
-          // Extract the archive
-          if (ext === 'tar.gz') {
-            await tar.x({ cwd: '.', file: tempFile });
-          } else {
-            // For Windows zip files, you'd need additional handling
-            throw new Error('Windows zip extraction not implemented in this example');
-          }
-
-          // Move and clean up the extracted directory
-          if (fs.existsSync(TARGET_DIR)) {
-            fs.rmSync(TARGET_DIR, { force: true, recursive: true });
-          }
-
-          fs.renameSync(tempDir, TARGET_DIR);
-          fs.unlinkSync(tempFile);
-
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      });
-    }).on('error', (err) => {
-      fs.unlink(tempFile, () => { });
-      reject(err);
-    });
-  });
-}
-
-function cleanupNodeDist(): void {
-  logInfo('Cleaning up Node.js distribution...');
-
-  const keep = new Set(['lib']);
-  const items = fs.readdirSync(TARGET_DIR);
-  for (const item of items) {
-    if (!keep.has(item)) {
-      const itemPath = path.join(TARGET_DIR, item);
-      logInfo(`Removing ${itemPath}`);
-      fs.rmSync(itemPath, { force: true, recursive: true });
+    if (isAlreadyPrepared()) {
+      logInfo('✅ standalone_npx is already prepared and valid');
+      return;
     }
+
+    await downloadAndExtractNode();
+    cleanupNodeDist();
+
+    if (!verifyStructure()) {
+      throw new Error('Failed to create valid standalone_npx structure');
+    }
+
+    logInfo('✅ standalone_npx directory prepared successfully');
+  } catch (error) {
+    logError('❌ Failed to prepare standalone_npx:', error);
+    process.exit(1);
+  }
+};
+
+const deleteBinDirIfExists = (): void => {
+  const binDir = path.join(TARGET_DIR, 'bin');
+  if (fs.existsSync(binDir)) {
+    logInfo('🗑️  Deleting existing bin directory', binDir);
+    fs.rmSync(binDir, { force: true, recursive: true });
+  }
+};
+
+const isAlreadyPrepared = (): boolean => {
+  if (!fs.existsSync(TARGET_DIR)) {
+    return false;
   }
 
-  // Remove everything from lib except node_modules/npm
-  const libDir = path.join(TARGET_DIR, 'lib');
-  if (fs.existsSync(libDir)) {
-    const libItems = fs.readdirSync(libDir);
-    for (const item of libItems) {
-      if (item !== 'node_modules') {
-        const itemPath = path.join(libDir, item);
-        logInfo(`Removing ${itemPath}`);
-        fs.rmSync(itemPath, { force: true, recursive: true });
-      }
-    }
+  return verifyStructure();
+};
 
-    // Remove everything from node_modules except npm
-    const nodeModulesDir = path.join(libDir, 'node_modules');
-    if (fs.existsSync(nodeModulesDir)) {
-      const nodeModulesItems = fs.readdirSync(nodeModulesDir);
-      for (const item of nodeModulesItems) {
-        if (item !== 'npm') {
-          const itemPath = path.join(nodeModulesDir, item);
-          logInfo(`Removing ${itemPath}`);
-          fs.rmSync(itemPath, { force: true, recursive: true });
-        }
-      }
-    }
-
-    // Remove redundant files from lib/node_modules/npm
-    const npmDir = path.join(libDir, 'node_modules', 'npm');
-    if (fs.existsSync(npmDir)) {
-      const redundantPatterns = [
-        /^README/i,
-        /^readme/i,
-        /^LICENSE/i,
-        /^license/i,
-        /^LICENCE/i,
-        /^licence/i,
-        /^CHANGELOG/i,
-        /^changelog/i,
-        /^HISTORY/i,
-        /^history/i,
-        /^docs?$/i,
-        /^man$/i,
-        /^manuals?$/i,
-        /^test$/i,
-        /^examples?$/i,
-        /^CONTRIBUTING/i,
-        /^.github$/i,
-        /^.npmrc$/i,
-      ];
-      const npmItems = fs.readdirSync(npmDir);
-      for (const item of npmItems) {
-        if (redundantPatterns.some(pattern => pattern.test(item))) {
-          const itemPath = path.join(npmDir, item);
-          logInfo(`Removing redundant npm file/folder: ${itemPath}`);
-          fs.rmSync(itemPath, { force: true, recursive: true });
-        }
-      }
-    }
-  }
-}
-
-function verifyStructure(): boolean {
+const verifyStructure = (): boolean => {
   logInfo('Verifying standalone_npx structure...');
 
   const requiredPaths = [
@@ -152,47 +81,190 @@ function verifyStructure(): boolean {
 
   logInfo('✅ standalone_npx structure verified successfully');
   return true;
-}
+};
 
-function isAlreadyPrepared(): boolean {
-  if (!fs.existsSync(TARGET_DIR)) {
-    return false;
-  }
+const downloadAndExtractNode = async () => {
+  logInfo('🔄 Downloading and extracting Node.js...');
 
-  return verifyStructure();
-}
+  const nodeDownloadInfo = getNodeDownloadInfo();
+  logInfo('Downloading Node.js...', nodeDownloadInfo);
+  const {
+    ext,
+    nodeArchiveCompressedFileName,
+    nodeArchiveDecompressedDirName,
+    nodeUrl,
+  } = nodeDownloadInfo;
+  await downloadFile(nodeUrl, nodeArchiveCompressedFileName);
+  logInfo('Node.js archive downloaded successfully');
 
-const deleteBinDirIfExists = (): void => {
-  const binDir = path.join(TARGET_DIR, 'bin');
-  if (fs.existsSync(binDir)) {
-    logInfo('🗑️  Deleting existing bin directory', binDir);
-    fs.rmSync(binDir, { force: true, recursive: true });
+  logInfo('Extracting Node.js archive...');
+  await extractArchive(ext, nodeArchiveCompressedFileName);
+  logInfo('Node.js archive extracted successfully');
+
+  logInfo('Renaming extracted directory...', { TARGET_DIR, nodeArchiveDecompressedDirName });
+  renameTempDirToTarget(nodeArchiveDecompressedDirName);
+  logInfo('Deleting archive file...');
+  deleteArchive(nodeArchiveCompressedFileName);
+
+  logInfo('✅ Node.js downloaded and extracted successfully');
+};
+
+const getNodeDownloadInfo = () => {
+  const platform = process.platform === 'darwin' ? 'darwin' : process.platform === 'win32' ? 'win' : 'linux';
+  const arch = process.arch === 'x64' ? 'x64' : process.arch === 'arm64' ? 'arm64' : 'x64';
+  const ext = platform === 'win' ? 'zip' : 'tar.gz';
+
+  const nodeUrl = `https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-${platform}-${arch}.${ext}`;
+  const nodeArchiveCompressedFileName = `node-v${NODE_VERSION}-${platform}-${arch}.${ext}`;
+  const nodeArchiveDecompressedDirName = `node-v${NODE_VERSION}-${platform}-${arch}`;
+  return {
+    ext,
+    nodeArchiveCompressedFileName,
+    nodeArchiveDecompressedDirName,
+    nodeUrl,
+  };
+};
+
+const downloadFile = async (nodeUrl: string, fileName: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(fileName);
+    https.get(nodeUrl, (response) => {
+      response.pipe(file);
+      file.on('finish', () => {
+        file.close();
+        resolve();
+      });
+    }).on('error', (err) => {
+      fs.unlink(fileName, () => { });
+      reject(err);
+    });
+  });
+};
+
+const extractArchive = async (
+  ext: string,
+  compressedFileName: string,
+) => {
+  if (ext === 'tar.gz') {
+    await extractTarGzArchive(compressedFileName);
+  } else if (ext === 'zip') {
+    extractZip(compressedFileName);
+  } else {
+    throw new Error(`Unsupported archive format: ${ext}`);
   }
 };
 
-async function main(): Promise<void> {
-  try {
-    logInfo('🔧 Preparing standalone npx...');
+const extractTarGzArchive = async (tempFile: string) => {
+  await tar.x({ cwd: '.', file: tempFile });
+};
 
-    deleteBinDirIfExists();
+const extractZip = (zipPath: string, extractTo: string = '.') => {
+  const zip = new AdmZip(zipPath);
+  zip.extractAllTo(extractTo, true);
+};
 
-    if (isAlreadyPrepared()) {
-      logInfo('✅ standalone_npx is already prepared and valid');
-      return;
-    }
-
-    await downloadAndExtractNode();
-    cleanupNodeDist();
-
-    if (!verifyStructure()) {
-      throw new Error('Failed to create valid standalone_npx structure');
-    }
-
-    logInfo('✅ standalone_npx prepared successfully');
-  } catch (error) {
-    logError('❌ Failed to prepare standalone_npx:', error);
-    process.exit(1);
+const renameTempDirToTarget = (tempDir: string) => {
+  if (fs.existsSync(TARGET_DIR)) {
+    fs.rmSync(TARGET_DIR, { force: true, recursive: true });
   }
-}
+  fs.renameSync(tempDir, TARGET_DIR);
+};
+
+const deleteArchive = (tempFile: string) => {
+  fs.unlinkSync(tempFile);
+};
+
+const cleanupNodeDist = () => {
+  logInfo('Cleaning up Node.js distribution...');
+  logInfo('Keeping only the necessary directories and files for a standalone npx');
+
+  removeUnwantedRootDirectories();
+  cleanupLibDirectory();
+  cleanupNodeModulesDirectory();
+  removeRedundantNpmFiles();
+};
+
+const removeUnwantedRootDirectories = () => {
+  const keepDirectories = new Set(['lib']);
+  logInfo('Keeping directories:', Array.from(keepDirectories).join(', '));
+
+  processDirectoryItems(
+    TARGET_DIR,
+    (item) => !keepDirectories.has(item),
+  );
+};
+
+const cleanupLibDirectory = () => {
+  const libDir = path.join(TARGET_DIR, 'lib');
+
+  processDirectoryItems(
+    libDir,
+    (item) => item !== 'node_modules',
+  );
+};
+
+const cleanupNodeModulesDirectory = () => {
+  const nodeModulesDir = path.join(TARGET_DIR, 'lib', 'node_modules');
+
+  processDirectoryItems(
+    nodeModulesDir,
+    (item) => item !== 'npm',
+  );
+};
+
+const removeRedundantNpmFiles = () => {
+  const npmDir = path.join(TARGET_DIR, 'lib', 'node_modules', 'npm');
+
+  processDirectoryItems(
+    npmDir,
+    (item) => isRedundantFile(item),
+    (itemPath) => `Removing redundant npm file/folder: ${itemPath}`,
+  );
+};
+
+const processDirectoryItems = (
+  dirPath: string,
+  shouldRemove: (item: string) => boolean,
+  logMessage?: (itemPath: string) => string,
+): void => {
+  if (!fs.existsSync(dirPath)) {
+    return;
+  }
+
+  const items = fs.readdirSync(dirPath);
+  for (const item of items) {
+    if (shouldRemove(item)) {
+      const itemPath = path.join(dirPath, item);
+      const message = logMessage ? logMessage(itemPath) : `Removing ${itemPath}`;
+      logInfo(message);
+      fs.rmSync(itemPath, { force: true, recursive: true });
+    }
+  }
+};
+
+const isRedundantFile = (filename: string): boolean => {
+  return redundantFilePatterns.some(pattern => pattern.test(filename));
+};
+
+const redundantFilePatterns = [
+  /^README/i,
+  /^readme/i,
+  /^LICENSE/i,
+  /^license/i,
+  /^LICENCE/i,
+  /^licence/i,
+  /^CHANGELOG/i,
+  /^changelog/i,
+  /^HISTORY/i,
+  /^history/i,
+  /^docs?$/i,
+  /^man$/i,
+  /^manuals?$/i,
+  /^test$/i,
+  /^examples?$/i,
+  /^CONTRIBUTING/i,
+  /^.github$/i,
+  /^.npmrc$/i,
+];
 
 main();

@@ -20,7 +20,6 @@ import {
 } from '../universal/constants';
 
 import { killAgentProcess, subscribeToAgentEventsFromRenderer } from './agent-handlers';
-import { copyStandalonePlaywrightToUserData } from './copy-from-standalone-playwright-to-user-data';
 import './deep-link';
 import './keybindings';
 import {
@@ -33,7 +32,8 @@ import { initStore } from './persistence-store';
 import { initProxyServer } from './proxy';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { setProxyOnStartup } from './settings/proxy-server-setting';
-import { createStandaloneNpxSymlinks } from './standalone-npx-symlinks';
+import { createStandaloneNpxSymlinks } from './standalone-npx';
+import { copyStandalonePlaywrightToUserData } from './standalone-playwright';
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
