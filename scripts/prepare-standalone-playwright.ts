@@ -99,7 +99,7 @@ const verifyStructure = (): boolean => {
   const browserDirs = fs.readdirSync(browsersPath);
 
   const hasChromium = browserDirs.some(dir => dir.startsWith('chromium_headless_shell-'));
-  const hasFfmpeg = browserDirs.some(dir => dir.startsWith('ffmpeg-'));
+  const hasFfmpeg = browserDirs.some(dir => dir.startsWith('ffmpeg') || dir.startsWith('ffmpeg'));
   const hasLinks = browserDirs.includes('.links');
 
   if (!hasChromium) {
