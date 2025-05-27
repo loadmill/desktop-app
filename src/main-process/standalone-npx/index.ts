@@ -6,37 +6,47 @@ import log from '../../log';
 import { STANDALONE_NPX_DIR_PATH } from '../constants';
 
 export const createStandaloneNpxSymlinks = (): void => {
-  log.info('Creating symlinks for standalone npx');
-  log.info({ STANDALONE_NPX_FOLDER_PATH: STANDALONE_NPX_DIR_PATH });
+  try {
+    log.info('Creating symlinks for standalone npx');
+    log.info({ STANDALONE_NPX_FOLDER_PATH: STANDALONE_NPX_DIR_PATH });
 
-  const binDir = path.join(STANDALONE_NPX_DIR_PATH, 'bin');
+    const binDir = path.join(STANDALONE_NPX_DIR_PATH, 'bin');
 
-  if (!fs.existsSync(binDir)) {
-    fs.mkdirSync(binDir, { recursive: true });
-  }
+    log.info('Standalone npx binary directory', { binDir });
 
-  const symlinks = [
-    {
-      link: path.join(binDir, 'node'),
-      target: path.resolve(process.execPath),
-    },
-    {
-      link: path.join(binDir, 'npm'),
-      target: '../lib/node_modules/npm/bin/npm-cli.js',
-    },
-    {
-      link: path.join(binDir, 'npx'),
-      target: '../lib/node_modules/npm/bin/npx-cli.js',
-    },
-  ];
-
-  for (const { target, link } of symlinks) {
-    if (fs.existsSync(link)) {
-      fs.unlinkSync(link);
+    if (!fs.existsSync(binDir)) {
+      fs.mkdirSync(binDir, { recursive: true });
     }
 
-    log.info(`Creating symlink: ${link} -> ${target}`);
-    fs.symlinkSync(target, link);
+    log.info({ execPath: process.execPath });
+    log.info({ resolveExecPath: path.resolve(process.execPath) });
+
+    const symlinks = [
+      {
+        link: path.join(binDir, 'node'),
+        target: path.resolve(process.execPath),
+      },
+      {
+        link: path.join(binDir, 'npm'),
+        target: '../lib/node_modules/npm/bin/npm-cli.js',
+      },
+      {
+        link: path.join(binDir, 'npx'),
+        target: '../lib/node_modules/npm/bin/npx-cli.js',
+      },
+    ];
+
+    for (const { target, link } of symlinks) {
+      if (fs.existsSync(link)) {
+        fs.unlinkSync(link);
+      }
+
+      log.info(`Creating symlink: ${link} -> ${target}`);
+      fs.symlinkSync(target, link);
+    }
+  } catch (error) {
+    log.error('Failed to create standalone npx symlinks');
+    log.error(error);
   }
 };
 

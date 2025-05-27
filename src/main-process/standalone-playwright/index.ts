@@ -15,31 +15,32 @@ const userDataPath = app.getPath('userData');
  * It also sets up the necessary symlinks for Playwright CLI commands.
  */
 export const copyStandalonePlaywrightToUserData = async (): Promise<void> => {
-  log.info('Copying standalone Playwright to user data path', {
-    STANDALONE_PLAYWRIGHT_DIR_PATH,
-    userDataPath,
-  });
-  if (!fs.existsSync(STANDALONE_PLAYWRIGHT_DIR_PATH)) {
-    log.error('Standalone Playwright directory path does not exist', { STANDALONE_PLAYWRIGHT_DIR_PATH });
-    return;
-  }
-  if (!fs.existsSync(userDataPath)) {
-    log.error('User data path does not exist:', userDataPath);
-    return;
-  }
-  const targetPath = path.join(userDataPath, 'node_modules');
-  if (fs.existsSync(targetPath)) {
-    log.info('User data node_modules path already exists:', targetPath);
-    return;
-  }
-  log.info('Copying standalone Playwright node_modules to user data path:', userDataPath);
   try {
+    log.info('Copying standalone Playwright to user data path', {
+      STANDALONE_PLAYWRIGHT_DIR_PATH,
+      userDataPath,
+    });
+    if (!fs.existsSync(STANDALONE_PLAYWRIGHT_DIR_PATH)) {
+      log.error('Standalone Playwright directory path does not exist', { STANDALONE_PLAYWRIGHT_DIR_PATH });
+      return;
+    }
+    if (!fs.existsSync(userDataPath)) {
+      log.error('User data path does not exist:', userDataPath);
+      return;
+    }
+    const targetPath = path.join(userDataPath, 'node_modules');
+    if (fs.existsSync(targetPath)) {
+      log.info('User data node_modules path already exists:', targetPath);
+      return;
+    }
+    log.info('Copying standalone Playwright node_modules to user data path:', userDataPath);
     await _copyDirectory(STANDALONE_PLAYWRIGHT_DIR_PATH, userDataPath);
     log.info('Successfully copied standalone Playwright to user data path:', userDataPath);
     _replaceSymlinks();
     log.info('Updated symlinks for Playwright in user data path:', userDataPath);
   } catch (err) {
-    log.error('Error copying standalone Playwright node_modules to user data path:', err);
+    log.error('Error copying standalone Playwright node_modules to user data path');
+    log.error(err);
   }
 };
 
