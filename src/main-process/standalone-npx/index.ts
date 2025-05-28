@@ -218,16 +218,17 @@ const logNpxPathApplied = (pathWithStandaloneNpx: string): void => {
       const args = ['npx'];
       log.info('Trying to resolve npx on Windows with `where npx` command', { args, command });
       const whereNpx = spawnSync(command, args, spawnOptions);
-      log.info('Where npx output:', whereNpx.stdout.toString());
-      if (!whereNpx.stdout.toString().trim()) {
+      const whereNpxOutput = whereNpx.stdout?.toString();
+      log.info('Where npx output:', whereNpxOutput);
+      if (!(whereNpxOutput?.trim())) {
         const command = '(Get-Command npx).Source';
         log.info('Trying to resolve npx on Windows with `Get-Command npx` command', { command });
         const getCommandNpx = spawnSync(command, spawnOptions);
-        log.info('Get-Command npx output:', getCommandNpx.stdout.toString());
+        log.info('Get-Command npx output:', getCommandNpx.stdout?.toString());
       }
     }
     const whichNpx = spawnSync('which', ['npx'], spawnOptions);
-    log.info('Which npx output:', whichNpx.stdout.toString());
+    log.info('Which npx output:', whichNpx.stdout?.toString());
   } catch (error) {
     log.error('Failed to debug npx path');
     log.error(error);
