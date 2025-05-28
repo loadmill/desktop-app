@@ -190,14 +190,15 @@ export const getEnvPathWithStandaloneNpx = (): string => {
   const pathWithStandaloneNpx = npxDir + path.delimiter + process.env.PATH;
   log.info('PATH with standalone npx', { pathWithStandaloneNpx });
 
-  const whichNpx = spawnSync('which', ['npx'], { env: { ...process.env, PATH: pathWithStandaloneNpx } });
-  log.info('Resolved npx:', whichNpx.stdout.toString());
+  logNpxPathApplied(pathWithStandaloneNpx);
 
   return pathWithStandaloneNpx;
 };
 
 const getStandaloneNpxBinaryDir = (): string | undefined => {
-  const npxBinaryPath = path.join(STANDALONE_NPX_DIR_PATH, 'bin', 'npx');
+  const npxBinaryPath = process.platform === 'win32' ?
+    path.join(STANDALONE_NPX_DIR_PATH, 'npx') :
+    path.join(STANDALONE_NPX_DIR_PATH, 'bin', 'npx');
   if (!fs.existsSync(npxBinaryPath)) {
     log.error('npx binary not found', { npxBinaryPath });
     return;
@@ -206,4 +207,29 @@ const getStandaloneNpxBinaryDir = (): string | undefined => {
   const npxBinaryDir = path.dirname(npxBinaryPath);
   log.info('standalone npx binary directory', { npxBinaryDir });
   return npxBinaryDir;
+};
+
+const logNpxPathApplied = (pathWithStandaloneNpx: string): void => {
+  log.info('Logging if standalone npx path is applied correctly');
+  try {
+    const spawnOptions = { env: { ...process.env, PATH: pathWithStandaloneNpx } };
+    if (process.platform === 'win32') {
+      const command = 'where';
+      const args = ['npx'];
+      log.info('Trying to resolve npx on Windows with `where npx` command', { args, command });
+      const whereNpx = spawnSync(command, args, spawnOptions);
+      log.info('Where npx output:', whereNpx.stdout.toString());
+      if (!whereNpx.stdout.toString().trim()) {
+        const command = '(Get-Command npx).Source';
+        log.info('Trying to resolve npx on Windows with `Get-Command npx` command', { command });
+        const getCommandNpx = spawnSync(command, spawnOptions);
+        log.info('Get-Command npx output:', getCommandNpx.stdout.toString());
+      }
+    }
+    const whichNpx = spawnSync('which', ['npx'], spawnOptions);
+    log.info('Which npx output:', whichNpx.stdout.toString());
+  } catch (error) {
+    log.error('Failed to debug npx path');
+    log.error(error);
+  }
 };
