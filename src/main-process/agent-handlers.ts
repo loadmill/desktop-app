@@ -1,4 +1,7 @@
-import { ChildProcessWithoutNullStreams, fork } from 'child_process';
+import {
+  ChildProcessWithoutNullStreams,
+  fork,
+} from 'child_process';
 import path from 'path';
 
 import '@loadmill/agent/dist/cli';
@@ -38,6 +41,7 @@ import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
 import { getSettings } from './settings/settings-store';
+import { getEnvPathWithStandaloneNpx } from './standalone-npx';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -79,12 +83,16 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
     LOADMILL_AGENT_SERVER_URL,
     NODE_TLS_REJECT_UNAUTHORIZED,
   });
+
   return fork(LOADMILL_AGENT_PATH, {
     env: {
+      HOME_DIR: app.getPath('userData'),
       LOADMILL_AGENT_SERVER_URL,
       LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
+      PATH: getEnvPathWithStandaloneNpx(),
+      PLAYWRIGHT_BROWSERS_PATH: '0',
       UI_TESTS_ENABLED,
     },
     stdio: 'pipe',
