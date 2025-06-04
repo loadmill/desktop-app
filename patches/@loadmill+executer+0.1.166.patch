@@ -1,0 +1,172 @@
+diff --git a/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.d.ts b/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.d.ts
+index 6255650..4f60bd5 100644
+--- a/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.d.ts
++++ b/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.d.ts
+@@ -1,3 +1,4 @@
++export declare const PLAYWRIGHT_TEST_PACKAGE_CLI_PATH: string | undefined;
+ export declare const PLAYWRIGHT_FILES_DIR_PATH: string;
+ export declare const PLAYWRIGHT_TESTS_DIR = "tests";
+ export declare const EXTRACTED_EXEC_DATA_FILE_NAME = "extracted-exec-data.json";
+diff --git a/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.js b/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.js
+index 9f0d4d1..e8bd21d 100644
+--- a/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.js
++++ b/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.js
+@@ -1,6 +1,6 @@
+ "use strict";
+ Object.defineProperty(exports, "__esModule", { value: true });
+-exports.playwrightAttachmentsPath = exports.MAX_ATTACHMENTS_SIZE_PER_STEP = exports.validHtmlReportFileTypes = exports.REPORTS_GENERATION_TIMEOUT_MS = exports.REPORTS_GENERATION_INTERVAL_MS = exports.RESULT_HTML_ATTACHMENTS_DIR = exports.RESULT_HTML_FILE_NAME = exports.RESULT_HTML_DIR = exports.CONFIG_FILE_NAME = exports.RESULT_JSON_FILE_NAME = exports.EXTRACTED_EXEC_DATA_FILE_NAME = exports.PLAYWRIGHT_TESTS_DIR = exports.PLAYWRIGHT_FILES_DIR_PATH = void 0;
++exports.playwrightAttachmentsPath = exports.MAX_ATTACHMENTS_SIZE_PER_STEP = exports.validHtmlReportFileTypes = exports.REPORTS_GENERATION_TIMEOUT_MS = exports.REPORTS_GENERATION_INTERVAL_MS = exports.RESULT_HTML_ATTACHMENTS_DIR = exports.RESULT_HTML_FILE_NAME = exports.RESULT_HTML_DIR = exports.CONFIG_FILE_NAME = exports.RESULT_JSON_FILE_NAME = exports.EXTRACTED_EXEC_DATA_FILE_NAME = exports.PLAYWRIGHT_TESTS_DIR = exports.PLAYWRIGHT_FILES_DIR_PATH = exports.PLAYWRIGHT_TEST_PACKAGE_CLI_PATH = void 0;
+ var tslib_1 = require("tslib");
+ var path_1 = tslib_1.__importDefault(require("path"));
+ var os_1 = tslib_1.__importDefault(require("os"));
+@@ -10,6 +10,7 @@ var LOADMILL_DIR = '.loadmill';
+ var AGENT_DIR = 'loadmill-agent';
+ var PLAYWRIGHT_DIR = 'playwright';
+ var HOME_DIR = process.env.HOME_DIR || os_1.default.homedir();
++exports.PLAYWRIGHT_TEST_PACKAGE_CLI_PATH = process.env.PLAYWRIGHT_TEST_PACKAGE_CLI_PATH;
+ exports.PLAYWRIGHT_FILES_DIR_PATH = path_1.default.join(HOME_DIR, LOADMILL_DIR, AGENT_DIR, PLAYWRIGHT_DIR);
+ exports.PLAYWRIGHT_TESTS_DIR = 'tests';
+ exports.EXTRACTED_EXEC_DATA_FILE_NAME = 'extracted-exec-data.json';
+diff --git a/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.js.map b/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.js.map
+index 80fc648..691ebb6 100644
+--- a/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.js.map
++++ b/node_modules/@loadmill/executer/dist/step-handlers/playwright/constants.js.map
+@@ -1 +1 @@
+-{"version":3,"file":"constants.js","sourceRoot":"","sources":["../../../src/step-handlers/playwright/constants.ts"],"names":[],"mappings":";;;;AAAA,sDAAwB;AACxB,kDAAoB;AAEpB,0EAAyF;AAEzF,0DAA4B;AAE5B,IAAM,YAAY,GAAG,WAAW,CAAC;AACjC,IAAM,SAAS,GAAG,gBAAgB,CAAC;AACnC,IAAM,cAAc,GAAG,YAAY,CAAC;AACpC,IAAM,QAAQ,GAAG,OAAO,CAAC,GAAG,CAAC,QAAQ,IAAI,YAAE,CAAC,OAAO,EAAE,CAAC;AAEzC,QAAA,yBAAyB,GAAG,cAAI,CAAC,IAAI,CAAC,QAAQ,EAAE,YAAY,EAAE,SAAS,EAAE,cAAc,CAAC,CAAC;AACzF,QAAA,oBAAoB,GAAG,OAAO,CAAC;AAC/B,QAAA,6BAA6B,GAAG,0BAA0B,CAAC;AAC3D,QAAA,qBAAqB,GAAG,aAAa,CAAC;AACtC,QAAA,gBAAgB,GAAG,sBAAsB,CAAC;AAC1C,QAAA,eAAe,GAAG,aAAa,CAAC;AAChC,QAAA,qBAAqB,GAAG,YAAY,CAAC;AACrC,QAAA,2BAA2B,GAAG,MAAM,CAAC;AAErC,QAAA,8BAA8B,GAAG,GAAG,CAAC;AACrC,QAAA,6BAA6B,GAAG,IAAI,CAAC,CAAC,YAAY;AAElD,QAAA,wBAAwB,GAAG;IACtC,MAAM;IACN,OAAO;IACP,MAAM;CACP,CAAC;AAEW,QAAA,6BAA6B,GAAG,CAAC,GAAG,IAAI,GAAG,IAAI,CAAC,CAAC,OAAO;AAErE,IAAM,OAAO,GAAG,aAAG,CAAC,YAAY,GAAG,MAAM,CAAC;AAE7B,QAAA,yBAAyB,GAAG,UAAG,OAAO,cAAI,qCAAyB,MAAG,CAAC"}
+\ No newline at end of file
++{"version":3,"file":"constants.js","sourceRoot":"","sources":["../../../src/step-handlers/playwright/constants.ts"],"names":[],"mappings":";;;;AAAA,sDAAwB;AACxB,kDAAoB;AAEpB,0EAAyF;AAEzF,0DAA4B;AAE5B,IAAM,YAAY,GAAG,WAAW,CAAC;AACjC,IAAM,SAAS,GAAG,gBAAgB,CAAC;AACnC,IAAM,cAAc,GAAG,YAAY,CAAC;AACpC,IAAM,QAAQ,GAAG,OAAO,CAAC,GAAG,CAAC,QAAQ,IAAI,YAAE,CAAC,OAAO,EAAE,CAAC;AAEzC,QAAA,gCAAgC,GAAG,OAAO,CAAC,GAAG,CAAC,gCAAgC,CAAC;AAChF,QAAA,yBAAyB,GAAG,cAAI,CAAC,IAAI,CAAC,QAAQ,EAAE,YAAY,EAAE,SAAS,EAAE,cAAc,CAAC,CAAC;AACzF,QAAA,oBAAoB,GAAG,OAAO,CAAC;AAC/B,QAAA,6BAA6B,GAAG,0BAA0B,CAAC;AAC3D,QAAA,qBAAqB,GAAG,aAAa,CAAC;AACtC,QAAA,gBAAgB,GAAG,sBAAsB,CAAC;AAC1C,QAAA,eAAe,GAAG,aAAa,CAAC;AAChC,QAAA,qBAAqB,GAAG,YAAY,CAAC;AACrC,QAAA,2BAA2B,GAAG,MAAM,CAAC;AAErC,QAAA,8BAA8B,GAAG,GAAG,CAAC;AACrC,QAAA,6BAA6B,GAAG,IAAI,CAAC,CAAC,YAAY;AAElD,QAAA,wBAAwB,GAAG;IACtC,MAAM;IACN,OAAO;IACP,MAAM;CACP,CAAC;AAEW,QAAA,6BAA6B,GAAG,CAAC,GAAG,IAAI,GAAG,IAAI,CAAC,CAAC,OAAO;AAErE,IAAM,OAAO,GAAG,aAAG,CAAC,YAAY,GAAG,MAAM,CAAC;AAE7B,QAAA,yBAAyB,GAAG,UAAG,OAAO,cAAI,qCAAyB,MAAG,CAAC"}
+\ No newline at end of file
+diff --git a/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.d.ts b/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.d.ts
+index 5fdc169..4423d21 100644
+--- a/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.d.ts
++++ b/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.d.ts
+@@ -4,8 +4,10 @@ import { PlaywrightHTMLReportAttachment } from '@loadmill/core/dist/playwright-s
+ import { ExtractedExecData } from './types';
+ export declare class PlaywrightFilesManager {
+     private rootDir;
++    private playwrightCliPath?;
+     constructor();
+     getRootDir(): string;
++    getPlaywrightCliPath(): string | undefined;
+     cleanup(): void;
+     getResultFilePath(): string;
+     getTestResult(): JSONReport | undefined;
+diff --git a/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.js b/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.js
+index 9a32a80..b51c7b0 100644
+--- a/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.js
++++ b/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.js
+@@ -16,7 +16,14 @@ var PlaywrightFilesManager = /** @class */ (function () {
+             writable: true,
+             value: void 0
+         });
++        Object.defineProperty(this, "playwrightCliPath", {
++            enumerable: true,
++            configurable: true,
++            writable: true,
++            value: void 0
++        });
+         this.rootDir = path.join(constants_1.PLAYWRIGHT_FILES_DIR_PATH, (0, v4_1.default)());
++        this.playwrightCliPath = constants_1.PLAYWRIGHT_TEST_PACKAGE_CLI_PATH;
+     }
+     Object.defineProperty(PlaywrightFilesManager.prototype, "getRootDir", {
+         enumerable: false,
+@@ -26,6 +33,14 @@ var PlaywrightFilesManager = /** @class */ (function () {
+             return this.rootDir;
+         }
+     });
++    Object.defineProperty(PlaywrightFilesManager.prototype, "getPlaywrightCliPath", {
++        enumerable: false,
++        configurable: true,
++        writable: true,
++        value: function () {
++            return this.playwrightCliPath;
++        }
++    });
+     Object.defineProperty(PlaywrightFilesManager.prototype, "cleanup", {
+         enumerable: false,
+         configurable: true,
+diff --git a/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.js.map b/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.js.map
+index e52cfd0..03c25e2 100644
+--- a/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.js.map
++++ b/node_modules/@loadmill/executer/dist/step-handlers/playwright/files-manager.js.map
+@@ -1 +1 @@
+-{"version":3,"file":"files-manager.js","sourceRoot":"","sources":["../../../src/step-handlers/playwright/files-manager.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
++{"version":3,"file":"files-manager.js","sourceRoot":"","sources":["../../../src/step-handlers/playwright/files-manager.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
+diff --git a/node_modules/@loadmill/executer/dist/step-handlers/playwright/index.js b/node_modules/@loadmill/executer/dist/step-handlers/playwright/index.js
+index 6746201..30d2de6 100644
+--- a/node_modules/@loadmill/executer/dist/step-handlers/playwright/index.js
++++ b/node_modules/@loadmill/executer/dist/step-handlers/playwright/index.js
+@@ -11,7 +11,7 @@ var executePlaywrightStep = function (step, filesManager, params, cookies, playw
+         switch (_a.label) {
+             case 0:
+                 _generateAndSaveTestFiles(step, filesManager, params, cookies, playwrightOptions);
+-                return [4 /*yield*/, _runPlaywrightTest(filesManager.getConfigFilePath(), filesManager.getRootDir())];
++                return [4 /*yield*/, _runPlaywrightTest(filesManager.getConfigFilePath(), filesManager.getRootDir(), filesManager.getPlaywrightCliPath())];
+             case 1:
+                 output = (_a.sent()).output;
+                 log_1.default.debug('Playwright step execution output:', output.join('\n'));
+@@ -37,26 +37,38 @@ var _generateAndSaveTestFiles = function (step, filesManager, params, cookies, p
+     var testFile = (0, transformer_1.generateTestFile)(step, filesManager, params, cookies);
+     filesManager.writeTestFile(step, testFile);
+ };
+-var _runPlaywrightTest = function (configFilePath, executionDir) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
++var _runPlaywrightTest = function (configFilePath, executionDir, playwrightCliPath) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+     return tslib_1.__generator(this, function (_a) {
+         return [2 /*return*/, new Promise(function (resolve, reject) {
+                 var output = [];
+-                var process = (0, child_process_1.spawn)('npx', ['@playwright/test', 'test', '--config', configFilePath], {
+-                    stdio: ['ignore', 'pipe', 'pipe'],
+-                    cwd: executionDir,
+-                });
+-                process.stdout.on('data', function (data) {
+-                    output.push(data.toString());
+-                });
+-                process.stderr.on('data', function (data) {
+-                    output.push(data.toString());
+-                });
+-                process.on('close', function (code) {
+-                    log_1.default.debug('Playwright test execution completed', { code: code });
++                var playwrightProcess;
++                if (playwrightCliPath) { // Desktop App Private Agent
++                    playwrightProcess = (0, child_process_1.fork)(playwrightCliPath, ['test', '--config', configFilePath], {
++                        stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
++                        cwd: executionDir,
++                    });
++                }
++                else {
++                    playwrightProcess = (0, child_process_1.spawn)('npx', ['@playwright/test', 'test', '--config', configFilePath], {
++                        stdio: ['ignore', 'pipe', 'pipe'],
++                        cwd: executionDir,
++                    });
++                }
++                if (playwrightProcess.stdout) {
++                    playwrightProcess.stdout.on('data', function (data) {
++                        output.push(data.toString());
++                    });
++                }
++                if (playwrightProcess.stderr) {
++                    playwrightProcess.stderr.on('data', function (data) {
++                        output.push(data.toString());
++                    });
++                }
++                playwrightProcess.on('close', function (code) {
+                     resolve({ code: code, output: output });
+                 });
+-                process.on('error', function (error) {
+-                    log_1.default.debug('Error executing Playwright test', { error: error });
++                playwrightProcess.on('error', function (error) {
++                    log_1.default.error('Error running Playwright test:', output.join('\n'));
+                     reject(error);
+                 });
+             })];
+diff --git a/node_modules/@loadmill/executer/dist/step-handlers/playwright/index.js.map b/node_modules/@loadmill/executer/dist/step-handlers/playwright/index.js.map
+index ee7289f..3e9c614 100644
+--- a/node_modules/@loadmill/executer/dist/step-handlers/playwright/index.js.map
++++ b/node_modules/@loadmill/executer/dist/step-handlers/playwright/index.js.map
+@@ -1 +1 @@
+-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/step-handlers/playwright/index.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
++{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/step-handlers/playwright/index.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
