@@ -36,10 +36,13 @@ import { initSettingsOnStartup } from './settings';
 =======
 import { setProxyOnStartup } from './settings/proxy-server-setting';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { createStandaloneNpxSymlinks } from './standalone-npx-symlinks';
 >>>>>>> bebd489 (install standalone - also works in packaged (prod))
 =======
 import { createStandaloneNpxSymlinks } from './standalone-npx';
+=======
+>>>>>>> 3cd4afd (assume fork instead of spawn on loadmill/agent's executer side)
 import { copyStandalonePlaywrightToUserData } from './standalone-playwright';
 >>>>>>> 9289956 (refactor)
 import { initUpdater } from './update-electron-app';
@@ -67,7 +70,6 @@ const onStartup = () => {
 onStartup();
 
 const onReady = async () => {
-  createStandaloneNpxSymlinks();
   await copyStandalonePlaywrightToUserData();
   await initProxyServer();
   subscribeToAgentEventsFromRenderer();

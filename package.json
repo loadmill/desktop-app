@@ -20,8 +20,7 @@
     "package": "yarn prepare-standalones && electron-forge package",
     "package-mac": "yarn prepare-standalones && electron-forge package --arch=x64",
     "lint-and-test": "concurrently --raw 'yarn lint' 'yarn test'",
-    "prepare-standalones": "yarn prepare-standalone-npx && yarn prepare-standalone-playwright",
-    "prepare-standalone-npx": "tsx scripts/prepare-standalone-npx.ts",
+    "prepare-standalones": "yarn prepare-standalone-playwright",
     "prepare-standalone-playwright": "tsx scripts/prepare-standalone-playwright.ts",
     "start": "yarn prepare-standalones && electron-forge start",
     "test": "jest"
