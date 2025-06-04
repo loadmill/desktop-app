@@ -35,13 +35,13 @@ import {
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED,
+  PLAYWRIGHT_TEST_PACKAGE_CLI_PATH,
   UI_TESTS_ENABLED,
 } from './constants';
 import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
 import { getSettings } from './settings/settings-store';
-import { getEnvPathWithStandaloneNpx } from './standalone-npx';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -91,8 +91,8 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
       LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
-      PATH: getEnvPathWithStandaloneNpx(),
       PLAYWRIGHT_BROWSERS_PATH: '0',
+      PLAYWRIGHT_TEST_PACKAGE_CLI_PATH,
       UI_TESTS_ENABLED,
     },
     stdio: 'pipe',
