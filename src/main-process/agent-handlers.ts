@@ -1,4 +1,7 @@
-import { ChildProcessWithoutNullStreams, fork } from 'child_process';
+import {
+  ChildProcessWithoutNullStreams,
+  fork,
+} from 'child_process';
 import path from 'path';
 
 import '@loadmill/agent/dist/cli';
@@ -32,6 +35,7 @@ import {
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED,
+  PLAYWRIGHT_TEST_PACKAGE_CLI_PATH,
   UI_TESTS_ENABLED,
 } from './constants';
 import { subscribeToMainProcessMessage } from './main-events';
@@ -79,12 +83,16 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
     LOADMILL_AGENT_SERVER_URL,
     NODE_TLS_REJECT_UNAUTHORIZED,
   });
+
   return fork(LOADMILL_AGENT_PATH, {
     env: {
+      HOME_DIR: app.getPath('userData'),
       LOADMILL_AGENT_SERVER_URL,
       LOADMILL_AGENT_VERBOSE,
       NODE_OPTIONS,
       NODE_TLS_REJECT_UNAUTHORIZED,
+      PLAYWRIGHT_BROWSERS_PATH: '0',
+      PLAYWRIGHT_TEST_PACKAGE_CLI_PATH,
       UI_TESTS_ENABLED,
     },
     stdio: 'pipe',
