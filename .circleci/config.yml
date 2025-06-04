@@ -119,18 +119,18 @@ jobs:
       - run:
           name: Install Yarn
           command: npm install -g yarn
-      - restore_cache:
-          keys:
-            - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-windows-build-{{ .Branch }}-
-            - yarn-packages-windows-build-
+      # - restore_cache:
+      #     keys:
+      #       - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-windows-build-{{ .Branch }}-
+      #       - yarn-packages-windows-build-
       - run:
           name: Install dependencies
           command: yarn install
-      - save_cache:
-          paths:
-            - node_modules/
-          key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      # - save_cache:
+      #     paths:
+      #       - node_modules/
+      #     key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run Tests
           command: yarn test
