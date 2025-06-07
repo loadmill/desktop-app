@@ -20,7 +20,7 @@ Used by the main Electron desktop app. It contains:
 * 🔐 **Proxy Certificate**
 
   ```
-  ~/Library/Application Support/Loadmill/proxy/certs/ca.pem
+  $HOME/Library/Application Support/Loadmill/proxy/certs/ca.pem
   ```
 
 * 🪵 **Logs**
@@ -28,21 +28,21 @@ Used by the main Electron desktop app. It contains:
   * Agent log:
 
     ```
-    ~/Library/Application Support/Loadmill/agent.log
+    $HOME/Library/Application Support/Loadmill/agent.log
     ```
   * Proxy errors:
 
     ```
-    ~/Library/Application Support/Loadmill/proxy-errors.log
+    $HOME/Library/Application Support/Loadmill/proxy-errors.log
     ```
 
 ### 2. `loadmill-desktop-agent/`
 
-This folder is used by a different process or background service.
+This folder is used by a background process or helper component.
 
-It contains Chromium/Electron browser caches, preferences, and storage files:
+It contains Chromium/Electron cache, preferences, and storage:
 
-* `Cache/`, `Code Cache/`, `GPUCache/`, etc.
+* `Cache/`, `Code Cache/`, `GPUCache/`
 * `Preferences/`, `Local Storage/`, `Session Storage/`
 
 This folder does **not** contain logs or certificates.
@@ -51,14 +51,28 @@ This folder does **not** contain logs or certificates.
 
 ### 🧰 Helpful Commands (macOS Terminal)
 
+Navigate to the certificate directory:
+
+```bash
+cd "$HOME/Library/Application Support/Loadmill/proxy/certs/"
+```
+
 Find log files:
 
 ```bash
-find ~/Library/Application\ Support/Loadmill/ -iname "*log*"
+find "$HOME/Library/Application Support/Loadmill/" -iname "*log*"
 ```
 
 Tail the main agent log:
 
 ```bash
-tail -f ~/Library/Application\ Support/Loadmill/agent.log
+tail -f "$HOME/Library/Application Support/Loadmill/agent.log"
 ```
+
+List all Loadmill-related folders:
+
+```bash
+ls "$HOME/Library/Application Support/" | grep -i loadmill
+```
+
+> ℹ️ Use double quotes (`"`) to handle paths with spaces, and `$HOME` instead of `~` for better compatibility across environments.
