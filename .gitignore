@@ -96,3 +96,5 @@ out*/
 
 certs/
 keys/
+
+standalone_*

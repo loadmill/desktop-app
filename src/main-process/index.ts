@@ -32,6 +32,7 @@ import { initStore } from './persistence-store';
 import { initProxyServer } from './proxy';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { setProxyOnStartup } from './settings/proxy-server-setting';
+import { copyStandalonePlaywrightToUserData } from './standalone-playwright';
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
@@ -57,6 +58,7 @@ const onStartup = () => {
 onStartup();
 
 const onReady = async () => {
+  await copyStandalonePlaywrightToUserData();
   await initProxyServer();
   subscribeToAgentEventsFromRenderer();
   createWindow();

@@ -38,6 +38,9 @@ module.exports = {
     },
   ],
   packagerConfig: {
+    extraResource: [
+      'standalone_playwright',
+    ],
     icon: isWindowsOS ? './images/loadmill-icon-256-256' : './images/MyIcon',
     osxNotarize: {
       appleId: process.env.APPLE_ID,
