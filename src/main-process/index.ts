@@ -32,6 +32,7 @@ import { initStore } from './persistence-store';
 import { initProxyServer } from './proxy';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { setProxyOnStartup } from './settings/proxy-server-setting';
+import { setOnPremURLOnStartup } from './settings/web-app-settings';
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
@@ -51,8 +52,13 @@ if (require('electron-squirrel-startup')) {
 
 const onStartup = () => {
   initStore();
-  setProxyOnStartup();
+  initSettingsOnStartup();
 };
+
+function initSettingsOnStartup() {
+  setProxyOnStartup();
+  setOnPremURLOnStartup();
+}
 
 onStartup();
 

@@ -1,6 +1,6 @@
 import { WebContents } from 'electron';
 
-import { LOADMILL_WEB_APP_ORIGIN } from './constants';
+import { LOADMILL_WEB_APP_ORIGIN } from './settings/web-app-settings';
 
 let _webContents: WebContents;
 
@@ -8,18 +8,13 @@ export const setWebContents = (webContents: WebContents): void => {
   _webContents = webContents;
 };
 
-const defaultFilters: Electron.CookiesGetFilter = {
-  domain: new URL(LOADMILL_WEB_APP_ORIGIN).hostname,
-  name: 'loadmill.sid',
-};
+export const getCookie = async (): Promise<string> => {
 
-export const getCookie = async (
-  webContents: WebContents = _webContents,
-  filters: Electron.CookiesGetFilter = defaultFilters,
-): Promise<string> => {
   let _cookie = '';
-
-  const cookies = await webContents.session.cookies.get(filters);
+  const cookies = await _webContents.session.cookies.get({
+    domain: new URL(LOADMILL_WEB_APP_ORIGIN).hostname,
+    name: 'loadmill.sid',
+  });
 
   if (cookies?.length) {
     const c = cookies[0];

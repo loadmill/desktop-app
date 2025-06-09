@@ -16,6 +16,7 @@ import { SettingsForm } from './settings-form';
 export const SettingsPage = (): JSX.Element => {
   const [autoUpdateSetting, setAutoUpdateSetting] = useState<boolean>(defaultAutoUpdateSetting);
   const [proxySettings, setProxySettings] = useState<ProxySettings>(defaultProxySettings);
+  const [onPremUrl, setOnPremUrl] = useState<string>('');
 
   const [loadingSettings, setLoadingSettings] = useState<boolean>(true);
 
@@ -53,6 +54,7 @@ export const SettingsPage = (): JSX.Element => {
       const { settings } = data;
       setAutoUpdateSetting(settings.autoUpdate);
       setProxySettings(settings.proxy || { enabled: false, url: '' });
+      setOnPremUrl(settings.onPremURL || '');
     } else {
       setSnackBarMessage('Failed to get settings');
       setSnackBarSeverity('error');
@@ -107,9 +109,11 @@ export const SettingsPage = (): JSX.Element => {
       ) : (
         <SettingsForm
           autoUpdate={ autoUpdateSetting }
+          onPremURL={ onPremUrl }
           onSave={ saveChangedSetting }
           proxySettings={ proxySettings }
           setAutoUpdate={ setAutoUpdateSetting }
+          setOnPremURL={ setOnPremUrl }
         />
       )}
       {

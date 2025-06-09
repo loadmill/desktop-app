@@ -33,7 +33,9 @@ const onSettingChanged = async (
       if (name === 'proxy') {
         await handleProxySettings(value as ProxySettings);
       } else if (name === 'autoUpdate') {
-        handleAutoUpdateSettings(value as Settings['autoUpdate']);
+        updateSettingsAndRelaunch(value as Settings['autoUpdate'], 'autoUpdate');
+      } else if (name === 'onPremURL') {
+        updateSettingsAndRelaunch(value as Settings['onPremURL'], 'onPremURL');
       }
     }
   } catch (error) {
@@ -69,21 +71,29 @@ const onFetchSettings = (): void => {
   });
 };
 
-const handleAutoUpdateSettings = (newAutoUpdateSetting: Settings['autoUpdate']) => {
+const settingsChangeMessages = {
+  autoUpdate: 'Auto Update setting was changed',
+  onPremURL: 'On-Prem URL setting was changed',
+};
+
+const updateSettingsAndRelaunch = (
+  newSetting: Settings['autoUpdate'] | Settings['onPremURL'],
+  key: 'autoUpdate' | 'onPremURL',
+) => {
   const currentSettings = getSettings();
-  const hasChanged = newAutoUpdateSetting !== currentSettings?.autoUpdate;
+  const hasChanged = newSetting !== currentSettings?.[key];
   if (hasChanged) {
     const response = dialog.showMessageBoxSync({
       buttons: ['Restart', 'Cancel'],
       detail: 'For the changes to take effect the app needs to be restarted',
-      message: 'Auto Update setting was changed',
+      message: settingsChangeMessages[key],
       title: 'Settings',
       type: 'info',
     });
     if (response === 0) {
       setSettings({
         ...currentSettings,
-        autoUpdate: newAutoUpdateSetting,
+        [key]: newSetting,
       });
       relaunchDesktopApp();
     }

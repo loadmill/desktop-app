@@ -1,5 +1,6 @@
 export type Settings = {
   autoUpdate?: boolean;
+  onPremURL?: string;
   proxy?: ProxySettings;
 };
 

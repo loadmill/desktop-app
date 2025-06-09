@@ -1,11 +1,10 @@
 import http from 'http';
 import https from 'https';
 
-import { app } from 'electron';
 import { HttpsProxyAgent } from 'hpagent';
 
 import log from '../../log';
-import { LOADMILL_WEB_APP_ORIGIN } from '../constants';
+import { LOADMILL_WEB_APP_ORIGIN } from '../settings/web-app-settings';
 
 export enum HttpsProxyAgentType {
   DEFAULT = 'default',
@@ -67,7 +66,4 @@ const _destroyAgent = (): void => {
   }
 };
 
-const _isLocalHttpOrigin = () =>
-  !app.isPackaged &&
-  process.env.NODE_ENV === 'development' &&
-  LOADMILL_WEB_APP_ORIGIN.startsWith('http://');
+const _isLocalHttpOrigin = () => LOADMILL_WEB_APP_ORIGIN.startsWith('http://');

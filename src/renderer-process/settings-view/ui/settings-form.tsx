@@ -9,6 +9,7 @@ import {
 } from '../../../types/settings';
 
 import { AutoUpdateSettingForm } from './auto-update-setting-form';
+import { OnPremSettingForm } from './on-prem-setting-form';
 import { ProxySettingForm } from './proxy-settings-form';
 
 export const SettingsForm = ({
@@ -16,6 +17,8 @@ export const SettingsForm = ({
   onSave,
   proxySettings,
   setAutoUpdate,
+  setOnPremURL,
+  onPremURL,
 }: SettingsFormProps): JSX.Element => {
 
   return (
@@ -33,13 +36,21 @@ export const SettingsForm = ({
         onSave={ onSave }
         setAutoUpdate={ setAutoUpdate }
       />
+      <Divider />
+      <OnPremSettingForm
+        onPremURL={ onPremURL }
+        onSave={ onSave }
+        setOnPremURL={ setOnPremURL }
+      />
     </form>
   );
 };
 
 export type SettingsFormProps = {
   autoUpdate: boolean;
+  onPremURL: string;
   onSave: (changedSetting: ChangedSetting) => void;
   proxySettings: ProxySettings;
   setAutoUpdate: (autoUpdate: boolean) => void;
+  setOnPremURL: (onPremURL: string) => void;
 };
