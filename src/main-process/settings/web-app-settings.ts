@@ -1,4 +1,3 @@
-
 import { getSettings } from './settings-store';
 
 export let LOADMILL_WEB_APP_ORIGIN = process.env.LOADMILL_WEB_APP_ORIGIN || 'https://app.loadmill.com';

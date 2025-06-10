@@ -14,11 +14,11 @@ import { ProxySettingForm } from './proxy-settings-form';
 
 export const SettingsForm = ({
   autoUpdate,
+  onPremURL,
   onSave,
   proxySettings,
   setAutoUpdate,
   setOnPremURL,
-  onPremURL,
 }: SettingsFormProps): JSX.Element => {
 
   return (
