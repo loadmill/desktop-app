@@ -11,8 +11,14 @@ import { subscribeToMainProcessMessage } from '../main-events';
 import { relaunchDesktopApp } from '../relaunch';
 import { reloadViews } from '../views';
 
-import { applyProxySettings } from './proxy-server-setting';
+import { applyProxySettings, setProxyOnStartup } from './proxy-server-setting';
 import { getSettings, setSettings } from './settings-store';
+import { setOnPremURLOnStartup } from './web-app-settings';
+
+export function initSettingsOnStartup(): void {
+  setProxyOnStartup();
+  setOnPremURLOnStartup();
+}
 
 export const subscribeToSettingsEvents = (): void => {
   subscribeToFetchSettings();
@@ -32,8 +38,8 @@ const onSettingChanged = async (
       const { name, value } = changedSetting;
       if (name === 'proxy') {
         await handleProxySettings(value as ProxySettings);
-      } else if (name === 'autoUpdate') {
-        handleAutoUpdateSettings(value as Settings['autoUpdate']);
+      } else {
+        updateSettingsAndRelaunch(changedSetting);
       }
     }
   } catch (error) {
@@ -69,25 +75,38 @@ const onFetchSettings = (): void => {
   });
 };
 
-const handleAutoUpdateSettings = (newAutoUpdateSetting: Settings['autoUpdate']) => {
+const updateSettingsAndRelaunch = (
+  changedSetting: ChangedSetting,
+) => {
+  const { name, value: newSetting } = changedSetting;
   const currentSettings = getSettings();
-  const hasChanged = newAutoUpdateSetting !== currentSettings?.autoUpdate;
+  const hasChanged = newSetting !== currentSettings?.[name];
   if (hasChanged) {
     const response = dialog.showMessageBoxSync({
       buttons: ['Restart', 'Cancel'],
       detail: 'For the changes to take effect the app needs to be restarted',
-      message: 'Auto Update setting was changed',
+      message: getSettingsChangeMessage(name),
       title: 'Settings',
       type: 'info',
     });
     if (response === 0) {
       setSettings({
         ...currentSettings,
-        autoUpdate: newAutoUpdateSetting,
+        [name]: newSetting,
       });
       relaunchDesktopApp();
     }
   }
+};
+
+const getSettingsChangeMessage = (key: keyof Settings): string => {
+  if (key === 'autoUpdate') {
+    return 'Auto Update setting was changed';
+  }
+  if (key === 'onPremURL') {
+    return 'On-Prem URL setting was changed';
+  }
+  return 'Settings were changed';
 };
 
 const handleProxySettings = async (newProxySettings: ProxySettings) => {
