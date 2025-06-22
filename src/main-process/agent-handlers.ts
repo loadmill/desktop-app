@@ -41,18 +41,7 @@ import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
 import { getSettings } from './settings/settings-store';
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { LOADMILL_AGENT_SERVER_URL } from './settings/web-app-settings';
-=======
-import { getStandaloneNpxBinaryDir } from './standalone-npx-binary';
->>>>>>> bebd489 (install standalone - also works in packaged (prod))
-=======
-import { getEnvPathWithStandaloneNpx } from './standalone-npx';
->>>>>>> 9289956 (refactor)
-=======
->>>>>>> 3cd4afd (assume fork instead of spawn on loadmill/agent's executer side)
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
