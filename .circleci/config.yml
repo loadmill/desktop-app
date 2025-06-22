@@ -34,18 +34,18 @@ jobs:
       - run:
           name: suppress macOS codesign execution prompt
           command: 'security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD build.keychain'
-      # - restore_cache:
-      #     keys:
-      #       - yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      #       - yarn-packages-macos-build-{{ .Branch }}-
-      #       - yarn-packages-macos-build-
+      - restore_cache:
+          keys:
+            - yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-macos-build-{{ .Branch }}-
+            - yarn-packages-macos-build-
       - run:
           name: install dependencies
           command: yarn install
-      # - save_cache:
-      #     paths:
-      #       - node_modules/
-      #     key: yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - save_cache:
+          paths:
+            - node_modules/
+          key: yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: run tests
           command: yarn lint-and-test
@@ -119,18 +119,18 @@ jobs:
       - run:
           name: Install Yarn
           command: npm install -g yarn
-      # - restore_cache:
-      #     keys:
-      #       - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      #       - yarn-packages-windows-build-{{ .Branch }}-
-      #       - yarn-packages-windows-build-
+      - restore_cache:
+          keys:
+            - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-windows-build-{{ .Branch }}-
+            - yarn-packages-windows-build-
       - run:
           name: Install dependencies
           command: yarn install
-      # - save_cache:
-      #     paths:
-      #       - node_modules/
-      #     key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - save_cache:
+          paths:
+            - node_modules/
+          key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run Tests
           command: yarn test
