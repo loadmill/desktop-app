@@ -1,4 +1,7 @@
-import { ChildProcessWithoutNullStreams, fork } from 'child_process';
+import {
+  ChildProcessWithoutNullStreams,
+  fork,
+} from 'child_process';
 import path from 'path';
 
 import '@loadmill/agent/dist/cli';
@@ -31,6 +34,7 @@ import {
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED,
+  PLAYWRIGHT_TEST_PACKAGE_CLI_PATH,
   UI_TESTS_ENABLED,
 } from './constants';
 import { subscribeToMainProcessMessage } from './main-events';
@@ -75,18 +79,20 @@ const LOADMILL_AGENT = 'loadmill-agent';
 const LOADMILL_AGENT_PATH = path.join(PACKED_RELATIVE_PATH, LOADMILL_AGENT);
 
 const createAgentProcess = (): ChildProcessWithoutNullStreams => {
-  log.info('Creating agent process with env vars', {
+  const env = {
+    HOME_DIR: app.getPath('userData'),
     LOADMILL_AGENT_SERVER_URL,
+    LOADMILL_AGENT_VERBOSE,
+    NODE_OPTIONS,
     NODE_TLS_REJECT_UNAUTHORIZED,
-  });
+    PLAYWRIGHT_BROWSERS_PATH: '0',
+    PLAYWRIGHT_TEST_PACKAGE_CLI_PATH,
+    UI_TESTS_ENABLED,
+  };
+  log.info('Creating agent process with env vars', env);
+
   return fork(LOADMILL_AGENT_PATH, {
-    env: {
-      LOADMILL_AGENT_SERVER_URL,
-      LOADMILL_AGENT_VERBOSE,
-      NODE_OPTIONS,
-      NODE_TLS_REJECT_UNAUTHORIZED,
-      UI_TESTS_ENABLED,
-    },
+    env,
     stdio: 'pipe',
   });
 };
