@@ -128,6 +128,7 @@ module.exports = {
       config: {
         authToken: process.env.GITHUB_API_TOKEN,
         draft: false,
+        generateReleaseNotes: true,
         prerelease: false,
         repository: {
           name: 'desktop-app',
