@@ -10,7 +10,7 @@
   "main": ".webpack/main",
   "scripts": {
     "clean": "rm -rf .webpack/ out/",
-    "forge-publish": "prepare-standalones && electron-forge publish --arch=x64",
+    "forge-publish": "yarn prepare-standalones && electron-forge publish --arch=x64",
     "forge-publish-dry-run": "yarn prepare-standalones && electron-forge publish --dry-run --arch=x64",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --color",
     "make": "electron-forge make",
