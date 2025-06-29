@@ -8543,10 +8543,10 @@ loader-utils@^2.0.0:
     emojis-list "^3.0.0"
     json5 "^2.1.2"
 
-loadmill-http-mitm-proxy@0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/loadmill-http-mitm-proxy/-/loadmill-http-mitm-proxy-0.0.10.tgz#778d4012fb6ccd23b87aae73400e98e1869cb7ab"
-  integrity sha512-bDWs0crfh5aUnAEwh2OOZ/tYLKLIpavv9sCEW43QIZcW7okYR886K3b6FRW4Sss13ExGGZW1v+HGHmBOqyJaqA==
+loadmill-http-mitm-proxy@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/loadmill-http-mitm-proxy/-/loadmill-http-mitm-proxy-0.0.11.tgz#30424e540bd39b291b20d92c813ee9f01639874c"
+  integrity sha512-BncIyxaCY7BLylE3XVNv6scwv/LHjP74MT88GBwa2AFZXW+GNb7hfFtuUp5eibADeWlSKmhW32xMZiaobB83/Q==
   dependencies:
     async "^3.2.0"
     debug "^4.1.0"
