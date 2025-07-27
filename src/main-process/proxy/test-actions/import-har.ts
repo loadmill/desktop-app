@@ -9,6 +9,7 @@ export const importHar = async (har: string, suiteId: string): Promise<string> =
   const key = await uploadToS3(har);
   const token = await getTransformToken(key, `api/test-suites/${suiteId}/import`, {
     keepAllMimeTypes: true,
+    meta: { source: 'desktop app proxy' },
     profile: getProfile(),
   });
   return token;
