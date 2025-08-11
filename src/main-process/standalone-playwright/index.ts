@@ -28,11 +28,6 @@ export const copyStandalonePlaywrightToUserData = async (): Promise<void> => {
       log.error('User data path does not exist:', userDataPath);
       return;
     }
-    const targetPath = path.join(userDataPath, 'node_modules');
-    if (fs.existsSync(targetPath)) {
-      log.info('User data node_modules path already exists:', targetPath);
-      return;
-    }
     log.info('Copying standalone Playwright node_modules to user data path:', userDataPath);
     await _copyDirectory(STANDALONE_PLAYWRIGHT_DIR_PATH, userDataPath);
     log.info('Successfully copied standalone Playwright to user data path:', userDataPath);
@@ -46,15 +41,42 @@ export const copyStandalonePlaywrightToUserData = async (): Promise<void> => {
 
 const _copyDirectory = (src: string, dest: string) => {
   return new Promise<void>((resolve, reject) => {
-    fs.cp(src, dest, { recursive: true }, (err) => {
-      if (err) {
-        log.error('Error copying directory:', err);
-        reject(err);
-      } else {
-        log.info('Successfully copied directory:', src, 'to', dest);
-        resolve();
-      }
-    });
+    // Custom recursive copy to skip chromium-1155
+    const copyRecursive = (currentSrc: string, currentDest: string) => {
+      fs.readdir(currentSrc, { withFileTypes: true }, (err, entries) => {
+        if (err) {
+          log.error('Error reading directory:', err);
+          return reject(err);
+        }
+        fs.mkdirSync(currentDest, { recursive: true });
+        for (const entry of entries) {
+          const srcPath = path.join(currentSrc, entry.name);
+          const destPath = path.join(currentDest, entry.name);
+          // Skip chromium-1155 in .local-browsers
+          if (
+            entry.isDirectory() &&
+            entry.name === 'chromium-1155' &&
+            currentSrc.endsWith(path.join('playwright-core', '.local-browsers'))
+          ) {
+            log.info('Skipping chromium-1155 directory:', srcPath);
+            continue;
+          }
+          if (entry.isDirectory()) {
+            copyRecursive(srcPath, destPath);
+          } else {
+            fs.copyFileSync(srcPath, destPath);
+          }
+        }
+      });
+    };
+    try {
+      copyRecursive(src, dest);
+      log.info('Successfully copied directory (skipping chromium-1155 if present):', src, 'to', dest);
+      resolve();
+    } catch (err) {
+      log.error('Error copying directory:', err);
+      reject(err);
+    }
   });
 };
 
