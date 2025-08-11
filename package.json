@@ -22,6 +22,7 @@
     "lint-and-test": "concurrently --raw 'yarn lint' 'yarn test'",
     "prepare-standalones": "yarn prepare-standalone-playwright",
     "prepare-standalone-playwright": "tsx scripts/prepare-standalone-playwright.ts",
+    "postinstall": "patch-package",
     "start": "yarn prepare-standalones && electron-forge start",
     "test": "jest"
   },
@@ -70,6 +71,8 @@
     "husky": "^8.0.1",
     "jest": "^28.1.3",
     "node-loader": "^2.0.0",
+    "patch-package": "^8.0.0",
+    "postinstall-postinstall": "^2.1.0",
     "style-loader": "^3.0.0",
     "tar": "^7.4.3",
     "ts-jest": "^28.0.7",
