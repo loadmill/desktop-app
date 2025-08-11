@@ -2,6 +2,7 @@ import {
   ANALYZE_REQUESTS,
   ANALYZE_REQUESTS_COMPLETE,
   CLEAR_ALL_ENTRIES,
+  CODEGEN,
   COPY_URL,
   CREATE_TEST,
   CREATE_TEST_COMPLETE,
@@ -56,6 +57,7 @@ import {
 } from '../universal/constants';
 
 import { Navigation } from './navigation';
+import { PlaywrightStepLocation } from './playwright';
 import { ProxyEntry } from './proxy-entry';
 import { ChangedSetting, Settings } from './settings';
 import { SuiteOption } from './suite';
@@ -67,7 +69,7 @@ import { ViewName } from './views';
 interface IPCMessage {
   data?: {
     [key: string]: string[] | string | boolean | number | null |
-    Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | Settings | ChangedSetting
+    Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | Settings | ChangedSetting | PlaywrightStepLocation
   };
   type: string;
 }
@@ -89,6 +91,7 @@ export abstract class MainMessage implements IPCMessage {
     isConnected?: boolean;
     isRecording?: boolean;
     isSignedIn?: boolean;
+    playwrightStepLocation?: PlaywrightStepLocation;
     profile?: string;
     search?: string;
     suite?: SuiteOption | null;
@@ -171,8 +174,9 @@ export type AgentMessageTypes =
 
 export type MainMessageTypes =
   typeof ANALYZE_REQUESTS |
-  typeof COPY_URL |
   typeof CLEAR_ALL_ENTRIES |
+  typeof CODEGEN |
+  typeof COPY_URL |
   typeof CREATE_TEST |
   typeof DELETE_ENTRIES |
   typeof DELETE_ENTRY |
