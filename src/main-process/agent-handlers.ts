@@ -31,6 +31,7 @@ import {
   refreshConnectedStatus,
 } from './connected-status';
 import {
+  CALLBACK_URL,
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED,
@@ -80,6 +81,7 @@ const LOADMILL_AGENT_PATH = path.join(PACKED_RELATIVE_PATH, LOADMILL_AGENT);
 
 const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   const env = {
+    CALLBACK_URL,
     HOME_DIR: app.getPath('userData'),
     LOADMILL_AGENT_SERVER_URL,
     LOADMILL_AGENT_VERBOSE,

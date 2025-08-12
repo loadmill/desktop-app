@@ -29,18 +29,66 @@ export const copyStandalonePlaywrightToUserData = async (): Promise<void> => {
       return;
     }
     const targetPath = path.join(userDataPath, 'node_modules');
+    const packageJsonPath = path.join(userDataPath, 'package.json');
+    const packageLockPath = path.join(userDataPath, 'package-lock.json');
+    let shouldCopy = true;
     if (fs.existsSync(targetPath)) {
       log.info('User data node_modules path already exists:', targetPath);
-      return;
+      const localBrowsersPath = path.join(targetPath, 'playwright-core', '.local-browsers');
+      if (fs.existsSync(localBrowsersPath)) {
+        log.info('.local-browsers directory exists:', localBrowsersPath);
+        const browserDirs = fs.readdirSync(localBrowsersPath);
+        log.info('Browsers in .local-browsers:', browserDirs);
+        const hasChromiumHeadlessShell = browserDirs.some(dir => dir.startsWith('chromium_headless_shell'));
+        if (hasChromiumHeadlessShell) {
+          log.info('chromium_headless_shell found in .local-browsers, removing old Playwright install...');
+          if (!_removeOldPlaywright(targetPath, packageJsonPath, packageLockPath, 'user data path')) {
+            shouldCopy = false;
+          }
+        } else {
+          log.info('chromium_headless_shell not found, skipping copy.');
+          shouldCopy = false;
+        }
+      } else {
+        log.error('.local-browsers directory not found inside node_modules. Removing old Playwright install and will proceed to copy Playwright files.');
+        if (!_removeOldPlaywright(targetPath, packageJsonPath, packageLockPath, 'user data path (no .local-browsers)')) {
+          shouldCopy = false;
+        }
+      }
     }
-    log.info('Copying standalone Playwright node_modules to user data path:', userDataPath);
-    await _copyDirectory(STANDALONE_PLAYWRIGHT_DIR_PATH, userDataPath);
-    log.info('Successfully copied standalone Playwright to user data path:', userDataPath);
-    _replaceSymlinks();
-    log.info('Updated symlinks for Playwright in user data path:', userDataPath);
+
+    if (shouldCopy) {
+      log.info('Copying standalone Playwright node_modules to user data path:', userDataPath);
+      await _copyDirectory(STANDALONE_PLAYWRIGHT_DIR_PATH, userDataPath);
+      log.info('Successfully copied standalone Playwright to user data path:', userDataPath);
+      _replaceSymlinks();
+      log.info('Updated symlinks for Playwright in user data path:', userDataPath);
+    }
   } catch (err) {
     log.error('Error copying standalone Playwright node_modules to user data path');
     log.error(err);
+  }
+};
+
+const _removeOldPlaywright = (
+  targetPath: string,
+  packageJsonPath: string,
+  packageLockPath: string,
+  context: string,
+): boolean => {
+  try {
+    fs.rmSync(targetPath, { force: true, recursive: true });
+    if (fs.existsSync(packageJsonPath)) {
+      fs.rmSync(packageJsonPath, { force: true });
+    }
+    if (fs.existsSync(packageLockPath)) {
+      fs.rmSync(packageLockPath, { force: true });
+    }
+    log.info(`Removed old Playwright install from ${context}.`);
+    return true;
+  } catch (err) {
+    log.error(`Failed to remove old Playwright install from ${context}:`, err);
+    return false;
   }
 };
 
