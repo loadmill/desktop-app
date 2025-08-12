@@ -6,6 +6,7 @@ import {
 import { ApiForLoadmillBrowserView } from '../../types/api';
 import { LoadmillViewRendererMessage } from '../../types/messaging';
 import {
+  CODEGEN,
   LOADMILL_DESKTOP,
   MAGIC_TOKEN,
   SET_IS_USER_SIGNED_IN,
@@ -14,6 +15,8 @@ import {
 import { subscribeToLoadmillViewMessages } from '../renderer-events';
 
 export const WINDOW_API: ApiForLoadmillBrowserView = {
+  [CODEGEN]: (suiteId: string, flowId: string, stepId: string) =>
+    sendToMain(CODEGEN, { playwrightStepLocation: { flowId, stepId, suiteId } }),
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => sendToMain(SET_IS_USER_SIGNED_IN, { isSignedIn }),
 };
 

@@ -176,7 +176,7 @@ const installBrowsers = (): void => {
   logInfo('Installing Chromium browser with dependencies...');
 
   try {
-    const command = 'npx playwright install --with-deps --only-shell chromium';
+    const command = 'npx playwright install --with-deps chromium';
     logInfo('Running', { command });
     execSync(command, {
       cwd: TARGET_DIR,
