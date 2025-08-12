@@ -12,3 +12,4 @@ export const STANDALONE_PLAYWRIGHT_DIR_PATH = path.join(STANDALONES_PATH, 'stand
 export const PLAYWRIGHT_TEST_PACKAGE_CLI_PATH = path.join(app.getPath('userData'), 'node_modules', '@playwright', 'test', 'cli.js');
 export const NODE_TLS_REJECT_UNAUTHORIZED = process.env.NODE_TLS_REJECT_UNAUTHORIZED || '0';
 export const NODE_OPTIONS = process.env.NODE_OPTIONS || '--http-parser=legacy  --max-http-header-size=20000';
+export const CALLBACK_URL = process.env.CALLBACK_URL;

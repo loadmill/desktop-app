@@ -98,7 +98,7 @@ const verifyStructure = (): boolean => {
   const browsersPath = path.join(TARGET_DIR, 'node_modules', 'playwright-core', '.local-browsers');
   const browserDirs = fs.readdirSync(browsersPath);
 
-  const hasChromium = browserDirs.some(dir => dir.startsWith('chromium_headless_shell-'));
+  const hasChromium = browserDirs.some(dir => dir.startsWith('chromium-'));
   const hasFfmpeg = browserDirs.some(dir => dir.startsWith('ffmpeg'));
   const hasLinks = browserDirs.includes('.links');
 
@@ -176,7 +176,7 @@ const installBrowsers = (): void => {
   logInfo('Installing Chromium browser with dependencies...');
 
   try {
-    const command = 'npx playwright install --with-deps --only-shell chromium';
+    const command = 'npx playwright install --with-deps --no-shell chromium';
     logInfo('Running', { command });
     execSync(command, {
       cwd: TARGET_DIR,
