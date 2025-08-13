@@ -1,16 +1,15 @@
 import { appendFile, readFileSync } from 'fs';
 
-import { app } from 'electron';
-
 import log from '../../log';
 import { textToNonEmptyLines } from '../../universal/utils';
+import { USER_DATA_PATH } from '../constants';
 
 export const toFullPath = (fileName: string): string => {
-  return `${app.getPath('userData')}/${fileName}`;
+  return `${USER_DATA_PATH}/${fileName}`;
 };
 
 export const readFile = (fileName: string): string[] => {
-  const filePath = `${app.getPath('userData')}/${fileName}`;
+  const filePath = `${USER_DATA_PATH}/${fileName}`;
   const result = [];
   try {
     const buffer = readFileSync(filePath);
@@ -24,7 +23,7 @@ export const readFile = (fileName: string): string[] => {
 export type ReadFileFunction = typeof readFile;
 
 export const appendToFile = (text: string, fileName: string): void => {
-  const filePath = `${app.getPath('userData')}/${fileName}`;
+  const filePath = `${USER_DATA_PATH}/${fileName}`;
   appendFile(filePath, text, (err) => {
     if (err) {
       throw err;

@@ -58,6 +58,12 @@ module.exports = {
         'no-console': 'off',
       },
     },
+    {
+      files: 'forge.config.js',
+      rules: {
+        'no-console': 'off',
+      },
+    },
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
