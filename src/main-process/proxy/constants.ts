@@ -1,5 +1,5 @@
 import path from 'path';
 
-import { app } from 'electron';
+import { USER_DATA_PATH } from '../constants';
 
-export const PROXY_CERTIFICATES_DIR_PATH = path.join(app.getPath('userData'), 'proxy');
+export const PROXY_CERTIFICATES_DIR_PATH = path.join(USER_DATA_PATH, 'proxy');
