@@ -32,8 +32,8 @@ const _removePlaywrightPackageIfExists = (): void => {
 
 const _createSymlink = (): void => {
   const userDataPath = USER_DATA_PATH;
-  const src = path.join(STANDALONE_PLAYWRIGHT_DIR_PATH, 'node_modules', '@playwright');
-  const dest = path.join(userDataPath, 'node_modules', '@playwright');
+  const src = path.join(STANDALONE_PLAYWRIGHT_DIR_PATH, 'node_modules');
+  const dest = path.join(userDataPath, 'node_modules');
   if (fs.existsSync(dest)) {
     fs.rmSync(dest, { force: true, recursive: true });
   }
