@@ -12,6 +12,9 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     maxWidth: 70,
     overflow: 'auto',
     whiteSpace: 'nowrap',
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
   },
 }));
 
