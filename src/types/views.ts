@@ -1,4 +1,4 @@
-import { BrowserView } from 'electron';
+import { WebContentsView } from 'electron';
 
 export enum ViewName {
   AGENT = 'agent',
@@ -10,5 +10,5 @@ export enum ViewName {
 export type View = {
   id: number;
   name: ViewName;
-  view: BrowserView;
+  view: WebContentsView;
 };

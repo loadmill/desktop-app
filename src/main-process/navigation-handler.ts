@@ -1,4 +1,4 @@
-import { BrowserView, clipboard } from 'electron';
+import { clipboard, WebContentsView } from 'electron';
 
 import {
   sendFromMainWindowToRenderer,
@@ -15,7 +15,7 @@ import {
 
 import { subscribeToMainProcessMessage } from './main-events';
 
-export const subscribeToNavigationEvents = (webView: BrowserView): void => {
+export const subscribeToNavigationEvents = (webView: WebContentsView): void => {
   subscribeToMainProcessMessage(REFRESH_PAGE, () => {
     webView.webContents.reload();
   });

@@ -1,4 +1,4 @@
-import { BrowserView, BrowserWindow } from 'electron';
+import { BrowserWindow, WebContentsView } from 'electron';
 
 import { TOGGLE_MAXIMIZE_WINDOW } from '../universal/constants';
 
@@ -17,7 +17,7 @@ export const subscribeToToggleMaximizeWindow = (mainWindow: BrowserWindow): void
 const TITLE_BAR_HEIGHT = 44;
 const HEIGHT_OFFSET = process.platform === 'win32' ? (TITLE_BAR_HEIGHT * 2) : TITLE_BAR_HEIGHT;
 
-export const setBrowserViewSize = (view: BrowserView, bounds: Electron.Rectangle): void => {
+export const setBrowserViewSize = (view: WebContentsView, bounds: Electron.Rectangle): void => {
   const { width, height } = bounds;
 
   view.setBounds({

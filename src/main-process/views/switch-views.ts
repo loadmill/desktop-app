@@ -1,4 +1,4 @@
-import { BrowserView, BrowserWindow } from 'electron';
+import { BrowserWindow, WebContentsView } from 'electron';
 
 import { MainMessage } from '../../types/messaging';
 import { ViewName } from '../../types/views';
@@ -6,17 +6,17 @@ import { SWITCH_VIEW } from '../../universal/constants';
 import { subscribeToMainProcessMessage } from '../main-events';
 import { setBrowserViewSize } from '../screen-size';
 
-export const switchView = (mainWindow: BrowserWindow, view: BrowserView): void => {
+export const switchView = (mainWindow: BrowserWindow, view: WebContentsView): void => {
   setBrowserViewSize(view, mainWindow.getBounds());
-  mainWindow.setTopBrowserView(view);
+  mainWindow.contentView.addChildView(view);
 };
 
 export const subscribeToSwitchView = (
   mainWindow: BrowserWindow,
-  loadmillWebView: BrowserView,
-  proxyView: BrowserView,
-  agentView: BrowserView,
-  settingsView: BrowserView,
+  loadmillWebView: WebContentsView,
+  proxyView: WebContentsView,
+  agentView: WebContentsView,
+  settingsView: WebContentsView,
 ): void => {
   subscribeToMainProcessMessage(SWITCH_VIEW, (_event: Electron.IpcMainEvent, { view }: MainMessage['data']) => {
     switch (view) {

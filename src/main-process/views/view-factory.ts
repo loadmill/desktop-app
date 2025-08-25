@@ -1,4 +1,4 @@
-import { app, BrowserView, BrowserWindow } from 'electron';
+import { app, BrowserWindow, WebContentsView } from 'electron';
 
 import { RESIZE } from '../../universal/constants';
 import { subscribeToFindOnPageEvents } from '../find-on-page';
@@ -12,13 +12,13 @@ export const createView = (
     url,
     openDevTools = false,
   }: ViewOptions,
-): BrowserView => {
-  const view = new BrowserView({
+): WebContentsView => {
+  const view = new WebContentsView({
     webPreferences: {
       preload,
     },
   });
-  mainWindow.addBrowserView(view);
+  mainWindow.contentView.addChildView(view);
   setOpenLinksInBrowser(view.webContents);
   const handleWindowResize = (_e: Electron.Event) => {
     setBrowserViewSize(view, mainWindow.getBounds());
