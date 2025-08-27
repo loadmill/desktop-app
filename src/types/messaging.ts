@@ -46,6 +46,7 @@ import {
   SHOW_AUTH_TOKEN_INPUT,
   SHOW_FIND_ON_PAGE,
   START_AGENT,
+  STARTUP_PROGRESS,
   STDERR,
   STDOUT,
   STOP_AGENT,
@@ -61,6 +62,7 @@ import { Navigation } from './navigation';
 import { PlaywrightStepLocation } from './playwright';
 import { ProxyEntry } from './proxy-entry';
 import { ChangedSetting, Settings } from './settings';
+import { StartupProgress } from './startup-progress';
 import { SuiteOption } from './suite';
 import { ViewName } from './views';
 
@@ -95,6 +97,7 @@ export abstract class MainMessage implements IPCMessage {
     playwrightStepLocation?: PlaywrightStepLocation;
     profile?: string;
     search?: string;
+    startupProgress?: StartupProgress;
     suite?: SuiteOption | null;
     text?: string;
     toFind?: string;
@@ -109,7 +112,8 @@ export type RendererMessage =
   LoadmillViewRendererMessage |
   ProxyRendererMessage |
   AgentRendererMessage |
-  SettingsRendererMessage;
+  SettingsRendererMessage |
+  StartupRendererMessage;
 
 export abstract class MainWindowRendererMessage implements IPCMessage {
   data?: {
@@ -168,6 +172,13 @@ export abstract class SettingsRendererMessage implements IPCMessage {
   type: SettingsRendererMessageTypes;
 }
 
+export abstract class StartupRendererMessage implements IPCMessage {
+  data?: {
+    startupProgress?: StartupProgress;
+  };
+  type: StartupRendererMessageTypes;
+}
+
 export type AgentMessageTypes =
   typeof IS_AGENT_CONNECTED |
   typeof START_AGENT |
@@ -206,6 +217,7 @@ export type MainMessageTypes =
   typeof SET_IS_USER_SIGNED_IN |
   typeof SETTING_CHANGED |
   typeof START_AGENT |
+  typeof STARTUP_PROGRESS |
   typeof STOP_AGENT |
   typeof SWITCH_VIEW |
   typeof TOGGLE_MAXIMIZE_WINDOW;
@@ -251,3 +263,6 @@ export type AgentRendererMessageTypes =
 export type SettingsRendererMessageTypes =
   typeof FETCH_SETTINGS |
   typeof SETTING_CHANGED;
+
+export type StartupRendererMessageTypes =
+  typeof STARTUP_PROGRESS;

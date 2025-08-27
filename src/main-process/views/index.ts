@@ -6,6 +6,7 @@ import {
 import log from '../../log';
 import { View, ViewName } from '../../types/views';
 import { SWITCH_VIEW } from '../../universal/constants';
+import { registerStartupProgressTarget } from '../startup-progress';
 
 import { createAgentView } from './agent-view';
 import { createLoadmillWebView } from './loadmill-web-app-browserview';
@@ -20,10 +21,10 @@ export const initializeViews = (window: BrowserWindow): void => {
   mainWindow = window;
   const agentView = createAgentView(mainWindow);
   const proxyView = createProxyView(mainWindow);
-  const loadmillWebView = createLoadmillWebView(mainWindow);
   const settingsView = createSettingsView(mainWindow);
+  const loadmillWebView = createLoadmillWebView(mainWindow);
+  registerStartupProgressTarget(loadmillWebView, 'loadmillWebView');
   setViews(loadmillWebView, proxyView, agentView, settingsView);
-  mainWindow.contentView.addChildView(loadmillWebView);
   subscribeToSwitchView(mainWindow, loadmillWebView, proxyView, agentView, settingsView);
 };
 

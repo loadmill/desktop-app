@@ -34,6 +34,7 @@ import { initProxyServer } from './proxy';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initSettingsOnStartup } from './settings';
 import { symlinkPlaywright } from './standalone-playwright/symlink-playwright';
+import { registerStartupProgressTarget } from './startup-progress';
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
@@ -44,6 +45,8 @@ import {
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const STARTUP_WINDOW_WEBPACK_ENTRY: string;
+declare const STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 let forceQuit = false;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -67,6 +70,15 @@ const onReady = async () => {
 };
 
 const createWindow = () => {
+  log.info('creating startup window');
+  const startupWindow = new BrowserWindow({
+    webPreferences: {
+      preload: STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+  startupWindow.loadURL(STARTUP_WINDOW_WEBPACK_ENTRY);
+  registerStartupProgressTarget(startupWindow, 'startupWindow');
+
   log.info('creating window');
   const mainWindow = new BrowserWindow({
     show: false,
@@ -79,7 +91,6 @@ const createWindow = () => {
   setMainWindow(mainWindow);
   initUpdater(unsubscribeToCloseEvent);
   subscribeToCloseEvent(mainWindow);
-  mainWindow.maximize();
   sendFromMainWindowToRenderer({
     data: { mainWindowId: mainWindow.webContents.id },
     type: MAIN_WINDOW_ID,
