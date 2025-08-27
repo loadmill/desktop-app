@@ -1,0 +1,124 @@
+body, html {
+  background-color: #101e2c;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #101e2c;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.page-wrapper {
+  background: rgba(16, 30, 44, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding: 48px 32px;
+  max-width: 420px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: center;
+}
+
+.startup-title {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.loadmill-icon {
+  width: 64px;
+  height: 64px;
+  animation: spin 4s linear infinite;
+  display: block;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.progress-label-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 24px;
+}
+
+.progress-label {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dots {
+  display: inline-block;
+  font-family: 'Courier New', monospace;
+  margin-left: 4px;
+  width: 1.6em;
+  text-align: left;
+  vertical-align: bottom;
+}
+
+.progress-bar-container {
+  background: #233;
+  border-radius: 4px;
+  height: 8px;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+  background: linear-gradient(90deg, #6eb450, #ffb482);
+  height: 100%;
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+.ready-state {
+  color: #6eb450;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
