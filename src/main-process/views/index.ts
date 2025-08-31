@@ -1,4 +1,4 @@
-import { BrowserView, BrowserWindow } from 'electron';
+import { BrowserWindow, WebContentsView } from 'electron';
 
 import {
   sendFromMainWindowToRenderer,
@@ -23,15 +23,15 @@ export const initializeViews = (window: BrowserWindow): void => {
   const loadmillWebView = createLoadmillWebView(mainWindow);
   const settingsView = createSettingsView(mainWindow);
   setViews(loadmillWebView, proxyView, agentView, settingsView);
-  mainWindow.setTopBrowserView(loadmillWebView);
+  mainWindow.contentView.addChildView(loadmillWebView);
   subscribeToSwitchView(mainWindow, loadmillWebView, proxyView, agentView, settingsView);
 };
 
 const setViews = (
-  loadmillWebView: BrowserView,
-  proxyView: BrowserView,
-  agentView: BrowserView,
-  settingsView: BrowserView,
+  loadmillWebView: WebContentsView,
+  proxyView: WebContentsView,
+  agentView: WebContentsView,
+  settingsView: WebContentsView,
 ) => {
   appendView(agentView, ViewName.AGENT);
   appendView(proxyView, ViewName.PROXY);
@@ -39,7 +39,7 @@ const setViews = (
   appendView(settingsView, ViewName.SETTINGS);
 };
 
-const appendView = (view: BrowserView, name: ViewName) => {
+const appendView = (view: WebContentsView, name: ViewName) => {
   views.push({ id: view.webContents.id, name, view });
 };
 
@@ -75,6 +75,6 @@ export const reloadViews = (): void => {
   });
 };
 
-export const getViewByName = (name: ViewName): BrowserView | undefined => {
+export const getViewByName = (name: ViewName): WebContentsView | undefined => {
   return views.find((view) => view.name === name)?.view;
 };

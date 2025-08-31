@@ -1,6 +1,6 @@
 import {
-  BrowserView,
   BrowserWindow,
+  WebContentsView,
 } from 'electron';
 
 import { subscribeToSettingsEvents } from '../settings';
@@ -12,7 +12,7 @@ declare const SETTINGS_VIEW_PRELOAD_WEBPACK_ENTRY: string;
 
 export const createSettingsView = (
   mainWindow: BrowserWindow,
-): BrowserView => {
+): WebContentsView => {
   const settingsView = createView(mainWindow, {
     openDevTools: true,
     preload: SETTINGS_VIEW_PRELOAD_WEBPACK_ENTRY,

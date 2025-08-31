@@ -1,6 +1,6 @@
 import {
-  BrowserView,
   BrowserWindow,
+  WebContentsView,
 } from 'electron';
 
 import {
@@ -21,7 +21,7 @@ declare const LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY: string; // webpack hack 😒
 
 export const createLoadmillWebView = (
   mainWindow: BrowserWindow,
-): BrowserView => {
+): WebContentsView => {
   const loadmillWebView = createView(mainWindow, {
     openDevTools: true,
     preload: LOADMILL_VIEW_PRELOAD_WEBPACK_ENTRY,

@@ -1,6 +1,6 @@
 import {
-  BrowserView,
   BrowserWindow,
+  WebContentsView,
 } from 'electron';
 
 import { subscribeToFindOnPageEvents } from '../find-on-page';
@@ -15,7 +15,7 @@ declare const PROXY_VIEW_PRELOAD_WEBPACK_ENTRY: string;
 
 export const createProxyView = (
   mainWindow: BrowserWindow,
-): BrowserView => {
+): WebContentsView => {
   const proxyView = createView(mainWindow, {
     openDevTools: true,
     preload: PROXY_VIEW_PRELOAD_WEBPACK_ENTRY,
