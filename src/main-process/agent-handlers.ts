@@ -31,11 +31,13 @@ import {
   refreshConnectedStatus,
 } from './connected-status';
 import {
+  CALLBACK_URL,
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED,
   PLAYWRIGHT_TEST_PACKAGE_CLI_PATH,
   UI_TESTS_ENABLED,
+  USER_DATA_PATH,
 } from './constants';
 import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
@@ -80,7 +82,8 @@ const LOADMILL_AGENT_PATH = path.join(PACKED_RELATIVE_PATH, LOADMILL_AGENT);
 
 const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   const env = {
-    HOME_DIR: app.getPath('userData'),
+    CALLBACK_URL,
+    HOME_DIR: USER_DATA_PATH,
     LOADMILL_AGENT_SERVER_URL,
     LOADMILL_AGENT_VERBOSE,
     NODE_OPTIONS,

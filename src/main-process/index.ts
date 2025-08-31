@@ -32,7 +32,7 @@ import { initStore } from './persistence-store';
 import { initProxyServer } from './proxy';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initSettingsOnStartup } from './settings';
-import { copyStandalonePlaywrightToUserData } from './standalone-playwright';
+import { symlinkPlaywright } from './standalone-playwright/symlink-playwright';
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
@@ -58,7 +58,7 @@ const onStartup = () => {
 onStartup();
 
 const onReady = async () => {
-  await copyStandalonePlaywrightToUserData();
+  symlinkPlaywright();
   await initProxyServer();
   subscribeToAgentEventsFromRenderer();
   createWindow();

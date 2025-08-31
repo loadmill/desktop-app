@@ -38,6 +38,46 @@ module.exports = {
     },
   ],
   packagerConfig: {
+    afterCopyExtraResources: [
+      (buildPath, electronVersion, platform, arch, callback) => {
+        const path = require('path');
+        const fs = require('fs');
+        const glob = require('glob');
+        console.log('Running afterCopyExtraResources hook...');
+        console.log({ arch, buildPath, electronVersion, platform });
+
+        const chromiumDir = path.join(
+          buildPath,
+          'Loadmill.app',
+          'Contents',
+          'Resources',
+          'standalone_playwright',
+          'node_modules',
+          'playwright-core',
+          '.local-browsers',
+        );
+
+        console.log({ chromiumDir });
+
+        try {
+          const matches = glob.sync(
+            path.join(chromiumDir, '**/gpu_shader_cache.bin'),
+            { nodir: true },
+          );
+
+          matches.forEach(file => {
+            console.log(`Changing permissions for: ${file}`);
+            fs.chmodSync(file, 0o644);
+          });
+
+          console.log('Permissions changed successfully.');
+        } catch (err) {
+          console.warn('Permission fix failed (may be fine if files don’t exist):', err.message);
+        }
+
+        callback();
+      },
+    ],
     extraResource: [
       'standalone_playwright',
     ],
