@@ -1,6 +1,6 @@
-
 import { BrowserWindow, ipcMain, WebContentsView } from 'electron';
 
+import { sendFromStartupWindowToRenderer } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
 import { StartupProgress } from '../types/startup-progress';
 import { STARTUP_PROGRESS } from '../universal/constants';
@@ -66,7 +66,10 @@ const _handleLoadmillWebAppView = (startupProgress: StartupProgress, loadmillWeb
 
 const _handleStartupWindow = (startupProgress: StartupProgress, startupWindow: BrowserWindow): void => {
   try {
-    startupWindow.webContents.send(STARTUP_PROGRESS, { startupProgress });
+    sendFromStartupWindowToRenderer({
+      data: { startupProgress },
+      type: STARTUP_PROGRESS,
+    });
   } catch (error) {
     log.info('Failed to send STARTUP_PROGRESS to startup window', { error });
   }
