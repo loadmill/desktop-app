@@ -4,7 +4,6 @@ export enum ViewName {
   AGENT = 'agent',
   PROXY = 'proxy',
   SETTINGS = 'settings',
-  STARTUP = 'startup',
   WEB_PAGE = 'webPage',
 }
 

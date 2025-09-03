@@ -35,6 +35,7 @@ import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initSettingsOnStartup } from './settings';
 import { symlinkPlaywright } from './standalone-playwright/symlink-playwright';
 import { registerStartupProgressTarget } from './startup-progress';
+import { setStartupWindow } from './startup-window';
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
@@ -77,6 +78,7 @@ const createWindow = () => {
     },
   });
   startupWindow.loadURL(STARTUP_WINDOW_WEBPACK_ENTRY);
+  setStartupWindow(startupWindow);
   registerStartupProgressTarget(startupWindow, 'startupWindow');
 
   log.info('creating window');
