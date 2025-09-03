@@ -11,6 +11,8 @@ import {
   RendererMessageTypes,
   SettingsRendererMessage,
   SettingsRendererMessageTypes,
+  StartupRendererMessage,
+  StartupRendererMessageTypes,
 } from '../types/messaging';
 
 export enum Renderer {
@@ -51,6 +53,13 @@ export const subscribeToAgentViewMessages = (
 export const subscribeToSettingsViewMessages = (
   type: SettingsRendererMessageTypes,
   handler: (event?: Electron.IpcRendererEvent, data?: SettingsRendererMessage['data']) => void,
+): void => {
+  ipcRenderer.on(type, handler);
+};
+
+export const subscribeToStartupWindowMessages = (
+  type: StartupRendererMessageTypes,
+  handler: (event?: Electron.IpcRendererEvent, data?: StartupRendererMessage['data']) => void,
 ): void => {
   ipcRenderer.on(type, handler);
 };
