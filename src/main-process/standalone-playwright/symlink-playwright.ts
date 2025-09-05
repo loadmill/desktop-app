@@ -43,10 +43,12 @@ const _createSymlink = (): void => {
   const dest = path.join(userDataPath, 'node_modules');
 
   fs.mkdirSync(path.dirname(dest), { recursive: true });
+  log.info('Created directory for Playwright symlink:', dest);
 
   const symlinkType = process.platform === 'win32' ? 'junction' : 'dir';
   try {
     fs.symlinkSync(src, dest, symlinkType);
+    log.info('Symlink created successfully', { dest, src, symlinkType });
   } catch (err) {
     log.warn('Symlink failed, falling back to copy...', err);
     try {
