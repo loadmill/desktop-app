@@ -13,8 +13,13 @@ import {
  */
 export const symlinkPlaywright = (): void => {
   log.info('Starting to set up Playwright package in user data path...');
-  _removePlaywrightPackageIfExists();
-  _createSymlink();
+  try {
+    _removePlaywrightPackageIfExists();
+    _createSymlink();
+  } catch (error) {
+    log.error('Failed to set up Playwright package in user data path:', error);
+    return;
+  }
   log.info('Finished setting up Playwright package in user data path.');
 };
 
@@ -37,22 +42,15 @@ const _removePlaywrightPackageIfExists = (): void => {
 };
 
 const _createSymlink = (): void => {
-  log.info('Creating symlink for Playwright...');
   const userDataPath = USER_DATA_PATH;
   const src = path.join(STANDALONE_PLAYWRIGHT_DIR_PATH, 'node_modules');
   const dest = path.join(userDataPath, 'node_modules');
 
-  const symlinkType = process.platform === 'win32' ? 'junction' : 'dir';
-  try {
-    fs.symlinkSync(src, dest, symlinkType);
-    log.info('Symlink created successfully', { dest, src, symlinkType });
-  } catch (err) {
-    log.warn('Symlink failed, falling back to copy...', err);
-    try {
-      fs.cpSync(src, dest, { recursive: true });
-    } catch (copyErr) {
-      log.error('Copy also failed:', copyErr);
-      throw copyErr;
-    }
+  if (process.platform === 'win32') {
+    log.info('Running on Windows, using junction for symlink...');
+    fs.symlinkSync(src, dest, 'junction');
+  } else {
+    fs.symlinkSync(src, dest, 'dir');
   }
+  log.info('Symlink created successfully', { dest, src });
 };
