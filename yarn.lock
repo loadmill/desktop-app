@@ -2789,15 +2789,16 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@loadmill/agent@^0.1.174":
-  version "0.1.174"
-  resolved "https://registry.yarnpkg.com/@loadmill/agent/-/agent-0.1.174.tgz#94cff5ac8e540abd644c1597edb6c013a9660e34"
-  integrity sha512-OvM6ssScxElOT0pmn4APEA05hKmDCdra71HFySDrD5Uf2bSMqO2+yEY+cEpTCGDMQq6DxIBsSnUjrh7fFRobzQ==
+"@loadmill/agent@^0.1.175-rc.1":
+  version "0.1.175-rc.1"
+  resolved "https://registry.yarnpkg.com/@loadmill/agent/-/agent-0.1.175-rc.1.tgz#ef8f5b797cf15856ec4f842914e5728cc5a5613f"
+  integrity sha512-wmWlny3KP9PwJ3HzP3FaW/KpRvXRpD9w6xaVbbY/xvbIyeKZlFJBGwj/krGCfGj4gJ1lrLb22wjHR6wvKx7uPg==
   dependencies:
-    "@loadmill/executer" "0.1.172"
-    "@loadmill/universal" "0.3.166"
+    "@loadmill/executer" "0.1.173-rc.1"
+    "@loadmill/universal" "0.3.167-rc.1"
     commander "^6.1.0"
     js-yaml "^3.14.0"
+    lodash "^4.17.21"
     protobufjs "^7.2.5"
     socket.io-client "4.6.2"
     superagent "^10.0.1"
@@ -2805,16 +2806,16 @@
     uuid "^3.0.1"
     workerpool "^9.1.2"
 
-"@loadmill/core@0.3.171":
-  version "0.3.171"
-  resolved "https://registry.yarnpkg.com/@loadmill/core/-/core-0.3.171.tgz#fc306d6821cc3fa6a426e7db08546280aa5dfab5"
-  integrity sha512-M23tr5QiNDGhiPGncgudaiPxhyke5rdqYZsGMuMDQrzy1B5Tqd1n/sLEwGtmwqzubRJTfirS7JgPSosbieqWag==
+"@loadmill/core@0.3.172-rc.1":
+  version "0.3.172-rc.1"
+  resolved "https://registry.yarnpkg.com/@loadmill/core/-/core-0.3.172-rc.1.tgz#f1b00377b1f5cdd50fd5ab9c7b150a7c802b9a82"
+  integrity sha512-3DoqWKA2Ky/I87K9RzUMpnS2OdVxZItERFwCSkc40mKDmGNEabPFFwAayvCVUvVk3ai1OBb99ANPoangCdJX6w==
   dependencies:
     "@aws-crypto/sha256-js" "2.0.0"
     "@aws-sdk/client-cognito-identity" "~3.58.0"
     "@aws-sdk/client-firehose" "~3.58.0"
     "@aws-sdk/types" "~3.55.0"
-    "@loadmill/universal" "0.3.166"
+    "@loadmill/universal" "0.3.167-rc.1"
     "@xmldom/xmldom" "^0.8.10"
     cheerio "^0.22.0"
     crypto-js "^4.1.1"
@@ -2830,28 +2831,33 @@
     mime-types "^2.1.35"
     pluralize "^8.0.0"
     randexp "^0.5.3"
+    randomstring "^1.1.5"
     seedrandom "3.0.5"
+    superagent "^10.0.1"
     tslib "^2.8.1"
     urijs "^1.18.1"
     validator "^13.7.0"
     xml2js "^0.6.2"
     xpath "^0.0.32"
 
-"@loadmill/executer@0.1.172":
-  version "0.1.172"
-  resolved "https://registry.yarnpkg.com/@loadmill/executer/-/executer-0.1.172.tgz#0982c6e3747bcf1ef4ae3657c3a279105ebe8915"
-  integrity sha512-PIQwuqXrximUyg1AVcjE22f/vhvtsO9oGHOUrpdFE+n7xTtCaCZ87vDsRdwjtX78oWjKavAUqB+Ihq1RknFvEQ==
+"@loadmill/executer@0.1.173-rc.1":
+  version "0.1.173-rc.1"
+  resolved "https://registry.yarnpkg.com/@loadmill/executer/-/executer-0.1.173-rc.1.tgz#221542697a690c477701dd11eea8e4f3887f932a"
+  integrity sha512-zKVlQXePkCOfoA25OmXsIJzB2jzM+fUE+jhtURCDQjrmhmRGwhwrPZj/tXbEyHA0dwv93VpNPCq0JPMA2lulGQ==
   dependencies:
+    "@aws-sdk/client-cognito-identity" "~3.58.0"
+    "@aws-sdk/client-firehose" "~3.58.0"
     "@grpc/grpc-js" "^1.9.8"
     "@grpc/proto-loader" "^0.7.10"
-    "@loadmill/core" "0.3.171"
-    "@loadmill/universal" "0.3.166"
+    "@loadmill/core" "0.3.172-rc.1"
+    "@loadmill/universal" "0.3.167-rc.1"
     "@playwright/test" "1.50.0"
     "@types/estree" "^0.0.50"
     acorn "^8.4.1"
     agentkeepalive "^4.1.3"
     bluebird "^3.4.7"
     jsedn "^0.4.1"
+    jsonpath "^1.1.1"
     lodash "^4.17.21"
     protobufjs "^7.2.5"
     randomstring "^1.1.5"
@@ -2861,11 +2867,12 @@
     urijs "^1.18.1"
     uuid "^3.0.1"
     vm2 "^3.9.6"
+    ws "^7.2.4"
 
-"@loadmill/universal@0.3.166":
-  version "0.3.166"
-  resolved "https://registry.yarnpkg.com/@loadmill/universal/-/universal-0.3.166.tgz#1b392c580dc603d478b746019557e3cef209fb7b"
-  integrity sha512-ZLdPLr9XFX5kyL5GooOvyhz1X6dRZJOyRZMajlwPBU+2hNDOEyLIlFRnDnUv0qcZIytu5ev2yuqNfP2nzucerw==
+"@loadmill/universal@0.3.167-rc.1":
+  version "0.3.167-rc.1"
+  resolved "https://registry.yarnpkg.com/@loadmill/universal/-/universal-0.3.167-rc.1.tgz#a1068c2515112c98c8145d502c999101995ed259"
+  integrity sha512-RhZzx5Qy/6tRu2sXoI5nOQ1JECZS/fNnfqHuGreTKWK3xvnt1fE3p3HBS/fDbQAomSqdzBJQ1kwUAlEAVbzPdA==
   dependencies:
     acorn "^8.4.1"
     acorn-walk "^8.3.4"
@@ -2876,6 +2883,7 @@
     cronstrue "^1.83.0"
     dayjs "^1.10.5"
     globals "^16.3.0"
+    lodash "^4.17.21"
     log4js "6.4.0"
     quickselect "^2.0.0"
     source-map-support "^0.5.0"
@@ -11842,6 +11850,11 @@ ws@^3.3.3:
     async-limiter "~1.0.0"
     safe-buffer "~5.1.0"
     ultron "~1.1.0"
+
+ws@^7.2.4:
+  version "7.5.10"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.10.tgz#58b5c20dc281633f6c19113f39b349bd8bd558d9"
+  integrity sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==
 
 ws@^7.4.6:
   version "7.5.7"
