@@ -98,17 +98,11 @@ const verifyStructure = (): boolean => {
   const browsersPath = path.join(TARGET_DIR, 'node_modules', 'playwright-core', '.local-browsers');
   const browserDirs = fs.readdirSync(browsersPath);
 
-  const hasChromium = browserDirs.some(dir => dir.startsWith('chromium-'));
-  const hasFfmpeg = browserDirs.some(dir => dir.startsWith('ffmpeg'));
+  const hasWebkit = browserDirs.some(dir => dir.startsWith('webkit-'));
   const hasLinks = browserDirs.includes('.links');
 
-  if (!hasChromium) {
-    logError('Chromium browser not found in .local-browsers');
-    return false;
-  }
-
-  if (!hasFfmpeg) {
-    logError('FFmpeg not found in .local-browsers');
+  if (!hasWebkit) {
+    logError('WebKit browser not found in .local-browsers');
     return false;
   }
 
@@ -173,10 +167,10 @@ const installPlaywright = (): void => {
 };
 
 const installBrowsers = (): void => {
-  logInfo('Installing Chromium browser with dependencies...');
+  logInfo('Installing Safari browser with dependencies...');
 
   try {
-    const command = 'npx playwright install --with-deps --no-shell chromium';
+    const command = 'npx playwright install --with-deps --no-shell webkit';
     logInfo('Running', { command });
     execSync(command, {
       cwd: TARGET_DIR,
@@ -187,9 +181,9 @@ const installBrowsers = (): void => {
       stdio: 'inherit',
     });
 
-    logInfo('✅ Chromium browser installed');
+    logInfo('✅ Safari browser installed');
   } catch (error) {
-    logError('❌ Failed to install Chromium browser:', error);
+    logError('❌ Failed to install Safari browser:', error);
     throw error;
   }
 };
