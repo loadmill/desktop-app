@@ -46,7 +46,7 @@ module.exports = {
         console.log('Running afterCopyExtraResources hook...');
         console.log({ arch, buildPath, electronVersion, platform });
 
-        const chromiumDir = path.join(
+        const localBrowsersDir = path.join(
           buildPath,
           'Loadmill.app',
           'Contents',
@@ -57,22 +57,41 @@ module.exports = {
           '.local-browsers',
         );
 
-        console.log({ chromiumDir });
+        console.log({ localBrowsersDir });
 
         try {
-          const matches = glob.sync(
-            path.join(chromiumDir, '**/gpu_shader_cache.bin'),
-            { nodir: true },
-          );
+          console.log('Attempting to remove .tbd files from .local-browsers...');
+          // Check if the localBrowsers directory exists
+          if (fs.existsSync(localBrowsersDir)) {
+            console.log('.local-browsers directory found, searching for .tbd files...');
 
-          matches.forEach(file => {
-            console.log(`Changing permissions for: ${file}`);
-            fs.chmodSync(file, 0o644);
-          });
+            // Find all .tbd files recursively in the .local-browsers directory
+            const tbdFiles = glob.sync('**/*.tbd', {
+              absolute: true,
+              cwd: localBrowsersDir,
+            });
 
-          console.log('Permissions changed successfully.');
+            console.log(`Found ${tbdFiles.length} .tbd files:`, tbdFiles);
+
+            let removedCount = 0;
+            tbdFiles.forEach(tbdFile => {
+              try {
+                console.log(`Removing... ${tbdFile}`);
+                fs.unlinkSync(tbdFile);
+                console.log(`Removed: ${tbdFile}`);
+                removedCount++;
+              } catch (unlinkErr) {
+                console.warn(`Failed to remove ${tbdFile}:`, unlinkErr.message);
+              }
+            });
+
+            console.log('Finished removing .tbd files');
+            console.log(`Total .tbd files removed: ${removedCount}`);
+          } else {
+            console.log('.local-browsers directory not found, skipping .tbd file removal');
+          }
         } catch (err) {
-          console.warn('Permission fix failed (may be fine if files don’t exist):', err.message);
+          console.warn('Removing .tbd files failed', err.message);
         }
 
         callback();
