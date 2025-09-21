@@ -190,7 +190,7 @@ const installBrowsers = (): void => {
     logInfo('✅ Chromium browser installed');
   } catch (error) {
     logError('❌ Failed to install Chromium browser:', error);
-    throw new Error(error);
+    throw error;
   }
 };
 
