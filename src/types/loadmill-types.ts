@@ -5,6 +5,7 @@ export type LoadmillRequest = {
   id: string;
   irrelevant?: boolean;
   method: string;
+  postScript?: string;
   url: string;
 };
 export type TransformResult = { conf: { requests: LoadmillRequest[] } };

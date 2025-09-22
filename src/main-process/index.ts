@@ -20,6 +20,7 @@ import {
 } from '../universal/constants';
 
 import { killAgentProcess, subscribeToAgentEventsFromRenderer } from './agent-handlers';
+import { subscribeToCodegenEvents } from './codegen';
 import './deep-link';
 import './keybindings';
 import {
@@ -61,6 +62,7 @@ const onReady = async () => {
   symlinkPlaywright();
   await initProxyServer();
   subscribeToAgentEventsFromRenderer();
+  subscribeToCodegenEvents();
   createWindow();
 };
 

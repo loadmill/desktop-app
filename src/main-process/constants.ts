@@ -14,3 +14,6 @@ export const PLAYWRIGHT_TEST_PACKAGE_CLI_PATH = path.join(STANDALONE_PLAYWRIGHT_
 export const NODE_TLS_REJECT_UNAUTHORIZED = process.env.NODE_TLS_REJECT_UNAUTHORIZED || '0';
 export const NODE_OPTIONS = process.env.NODE_OPTIONS || '--http-parser=legacy  --max-http-header-size=20000';
 export const CALLBACK_URL = process.env.CALLBACK_URL;
+export const PLAYWRIGHT_TEST_PACKAGE_CLI_PATH_FOR_CODEGEN = path.join(
+  STANDALONE_PLAYWRIGHT_DIR_PATH,
+  'node_modules', '@playwright', 'test', 'cli.js');

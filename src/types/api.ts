@@ -1,6 +1,7 @@
 import {
   ANALYZE_REQUESTS,
   CLEAR_ALL_ENTRIES,
+  CODEGEN,
   COPY_URL,
   CREATE_TEST,
   DELETE_ENTRIES,
@@ -64,6 +65,7 @@ export type ApiForMainWindow = {
 };
 
 export type ApiForLoadmillBrowserView = {
+  [CODEGEN]: (suiteId: string, flowId: string, stepId: string) => void;
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => void;
 };
 
