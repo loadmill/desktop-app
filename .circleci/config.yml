@@ -6,7 +6,7 @@ orbs:
 jobs:
   build_macos:
     macos:
-      xcode: "15.3.0"
+      xcode: "16.4.0"
     resource_class: macos.m1.medium.gen1
     steps:
       - checkout
@@ -312,6 +312,20 @@ workflows:
             branches:
               ignore:
                 - /agent-version-.*/
+          pre-steps:
+            - run:
+                name: Use Node 20
+                command: |
+                  export NVM_DIR="$HOME/.nvm"
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                  nvm install 20
+                  nvm use 20
+                  npm install -g yarn
+            - run:
+                name: Persist Node 20 in environment for subsequent steps (silenced output)
+                command: |
+                  echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
+                  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 20 > /dev/null 2>&1' >> $BASH_ENV
       - build_windows:
           filters:
             branches:
