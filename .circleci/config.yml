@@ -9,6 +9,16 @@ jobs:
       xcode: "16.4.0"
     resource_class: macos.m1.medium.gen1
     steps:
+      - run:
+          name: Check Node version
+          command: |
+            echo "System Node version:"
+            node -v
+            echo "Available Node versions (via nvm):"
+            nvm ls
+      - run:
+          name: Set default Node version
+          command: echo "nvm use 20" >> $BASH_ENV
       - checkout
       - run:
           name: create-keychain
