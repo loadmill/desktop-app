@@ -34,9 +34,18 @@ jobs:
       - run:
           name: suppress macOS codesign execution prompt
           command: 'security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD build.keychain'
+      - restore_cache:
+          keys:
+            - yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-macos-build-{{ .Branch }}-
+            - yarn-packages-macos-build-
       - run:
           name: install dependencies
           command: yarn install
+      - save_cache:
+          paths:
+            - node_modules/
+          key: yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: run tests
           command: yarn lint-and-test
@@ -313,10 +322,10 @@ workflows:
                   nvm use 20
                   npm install -g yarn
             - run:
-                name: Persist Node 20 in environment for subsequent steps
+                name: Persist Node 20 in environment for subsequent steps (silenced output)
                 command: |
                   echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-                  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 20' >> $BASH_ENV
+                  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 20 > /dev/null 2>&1' >> $BASH_ENV
       - build_windows:
           filters:
             branches:
