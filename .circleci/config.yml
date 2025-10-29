@@ -17,8 +17,17 @@ jobs:
             echo "Available Node versions (via nvm):"
             nvm ls
       - run:
-          name: Set default Node version
-          command: echo "nvm use 20" >> $BASH_ENV
+          name: Set Node version for all subsequent steps
+          command: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 20
+            echo "nvm use 20" >> $BASH_ENV
+      - run:
+          name: Verify Node version is set to 20
+          command: |
+            echo "Node version after setting to 20:"
+            node -v
       - checkout
       - run:
           name: create-keychain
