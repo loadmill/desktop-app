@@ -13,6 +13,7 @@ export const runPlaywrightCodegen = async (url?: string): Promise<string> => {
     args.push(url);
   }
   args.push('--output', tempFile);
+  args.push('--test-id-attribute=data-testid');
   try {
     await forkAsync(PLAYWRIGHT_TEST_PACKAGE_CLI_PATH_FOR_CODEGEN, args, {
       env: {
