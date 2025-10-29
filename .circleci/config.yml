@@ -304,17 +304,17 @@ workflows:
               ignore:
                 - /agent-version-.*/
           pre-steps:
-            run:
-              name: Use Node 20
-              command: |
-                node -v
-                export NVM_DIR="$HOME/.nvm"
-                [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                nvm install 20
-                nvm use 20
-                node -v
-                npm install -g yarn
-                yarn -v
+            - run:
+                name: Use Node 20
+                command: |
+                  node -v
+                  export NVM_DIR="$HOME/.nvm"
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                  nvm install 20
+                  nvm use 20
+                  node -v
+                  npm install -g yarn
+                  yarn -v
       - build_windows:
           filters:
             branches:
