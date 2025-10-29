@@ -9,33 +9,6 @@ jobs:
       xcode: "16.4.0"
     resource_class: macos.m1.medium.gen1
     steps:
-      - run:
-          name: Check Node version
-          command: |
-            echo "System Node version:"
-            node -v
-            echo "Available Node versions (via nvm):"
-            nvm ls
-      - run:
-          name: Set Node version for all subsequent steps
-          command: |
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install 20
-            echo "export NVM_DIR=\"$HOME/.nvm\"; [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\"; nvm use 20" >> $BASH_ENV
-      - run:
-          name: Verify Node version is set to 20
-          command: |
-            echo "Node version after setting to 20:"
-            node -v
-      - run:
-          name: Install Yarn
-          command: npm install -g yarn
-      - run:
-          name: Verify Yarn installation for Node 20
-          command: |
-            echo "Yarn version:"
-            yarn -v
       - checkout
       - run:
           name: create-keychain
@@ -61,18 +34,9 @@ jobs:
       - run:
           name: suppress macOS codesign execution prompt
           command: 'security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD build.keychain'
-      - restore_cache:
-          keys:
-            - yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-macos-build-{{ .Branch }}-
-            - yarn-packages-macos-build-
       - run:
           name: install dependencies
           command: yarn install
-      - save_cache:
-          paths:
-            - node_modules/
-          key: yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: run tests
           command: yarn lint-and-test
@@ -339,6 +303,18 @@ workflows:
             branches:
               ignore:
                 - /agent-version-.*/
+          pre-steps:
+            run:
+              name: Use Node 20
+              command: |
+                node -v
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                nvm install 20
+                nvm use 20
+                node -v
+                npm install -g yarn
+                yarn -v
       - build_windows:
           filters:
             branches:

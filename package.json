@@ -94,7 +94,6 @@
     "is-base64": "^1.1.0",
     "is-html": "^3.0.0",
     "loadmill-http-mitm-proxy": "^0.0.11",
-    "macos-alias": "~0.2.5",
     "node-fetch": "^3.3.0",
     "pretty": "^2.0.0",
     "re-resizable": "^6.9.9",
