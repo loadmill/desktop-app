@@ -56,6 +56,7 @@ import {
   UPDATED_SUITES,
 } from '../universal/constants';
 
+import { IpAddressFamily } from './ip-address';
 import { Navigation } from './navigation';
 import { PlaywrightStepLocation } from './playwright';
 import { ProxyEntry } from './proxy-entry';
@@ -87,7 +88,7 @@ export abstract class MainMessage implements IPCMessage {
     entryId?: string;
     entryIds?: string[];
     filterRegex?: string;
-    ipvFamily?: 'IPv4' | 'IPv6';
+    ipvFamily?: IpAddressFamily;
     isConnected?: boolean;
     isRecording?: boolean;
     isSignedIn?: boolean;
