@@ -35,6 +35,7 @@ import {
   TOGGLE_MAXIMIZE_WINDOW,
 } from '../universal/constants';
 
+import { IpAddressFamily } from './ip-address';
 import { ChangedSetting } from './settings';
 import { SuiteOption } from './suite';
 import { ViewName } from './views';
@@ -79,7 +80,7 @@ export type ApiForLoadmillProxyView = {
   [EXPORT_AS_HAR]: (entryIds: string[]) => void;
   [FETCH_PROFILES]: (search?: string) => void;
   [FETCH_SUITES]: (search?: string) => void;
-  [GET_IP_ADDRESS]: (family?: 'IPv4' | 'IPv6') => void;
+  [GET_IP_ADDRESS]: (family?: IpAddressFamily) => void;
   [GET_PORT]: () => void;
   [GET_PROFILE]: () => void;
   [IMPORT_HAR]: () => void;
