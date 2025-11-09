@@ -127,12 +127,20 @@ app.on(WINDOW_ALL_CLOSED, () => {
 app.on(ACTIVATE, () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  } else {
-    const mainWindow = getMainWindow();
-    if (mainWindow) {
-      mainWindow.show();
+  try {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    } else {
+      const mainWindow = getMainWindow();
+      if (mainWindow) {
+        mainWindow.show();
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Cannot create BrowserWindow before app is ready')) {
+      log.warn('Tried to show main window before app was ready, probably dock icon is clicked too early');
+    } else {
+      throw error;
     }
   }
 });
