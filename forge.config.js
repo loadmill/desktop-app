@@ -113,6 +113,14 @@ module.exports = {
               },
             },
             {
+              html: './src/renderer-process/startup-window/index.html',
+              js: './src/renderer-process/startup-window/renderer.ts',
+              name: 'startup_window',
+              preload: {
+                js: './src/renderer-process/startup-window/preload.ts',
+              },
+            },
+            {
               html: './src/renderer-process/loadmill-view/index.html',
               js: './src/renderer-process/loadmill-view/renderer.ts',
               name: 'loadmill_view',

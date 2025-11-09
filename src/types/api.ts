@@ -30,6 +30,7 @@ import {
   SET_PROFILE,
   SETTING_CHANGED,
   START_AGENT,
+  STARTUP_PROGRESS,
   STOP_AGENT,
   SWITCH_VIEW,
   TOGGLE_MAXIMIZE_WINDOW,
@@ -37,6 +38,7 @@ import {
 
 import { IpAddressFamily } from './ip-address';
 import { ChangedSetting } from './settings';
+import { StartupProgress } from './startup-progress';
 import { SuiteOption } from './suite';
 import { ViewName } from './views';
 
@@ -51,7 +53,8 @@ type DesktopApi =
   ApiForLoadmillBrowserView &
   ApiForLoadmillProxyView &
   ApiForLoadmillAgentView &
-  ApiForSettingsView;
+  ApiForSettingsView &
+  ApiForStartupWindow;
 
 export type ApiForMainWindow = {
   [COPY_URL]: () => void;
@@ -68,6 +71,7 @@ export type ApiForMainWindow = {
 export type ApiForLoadmillBrowserView = {
   [CODEGEN]: (suiteId: string, flowId: string, stepId: string) => void;
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => void;
+  [STARTUP_PROGRESS]: (startupProgress: StartupProgress) => void;
 };
 
 export type ApiForLoadmillProxyView = {
@@ -100,4 +104,8 @@ export type ApiForLoadmillAgentView = {
 export type ApiForSettingsView = {
   [FETCH_SETTINGS]: () => void;
   [SETTING_CHANGED]: (changedSetting: ChangedSetting) => void;
+};
+
+export type ApiForStartupWindow = {
+  [STARTUP_PROGRESS]: (startupProgress: StartupProgress) => void;
 };

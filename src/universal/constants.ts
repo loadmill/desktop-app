@@ -60,6 +60,7 @@ export const
   SET_PROFILE = 'setProfile',
   SHOW_AUTH_TOKEN_INPUT = 'showAuthTokenInput',
   SHOW_FIND_ON_PAGE = 'showFindOnPage',
+  STARTUP_PROGRESS = 'startupProgress',
   START_AGENT = 'startAgent',
   STDERR = 'stderr',
   STDOUT = 'stdout',

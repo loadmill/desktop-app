@@ -34,6 +34,8 @@ import { initProxyServer } from './proxy';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initSettingsOnStartup } from './settings';
 import { symlinkPlaywright } from './standalone-playwright/symlink-playwright';
+import { registerStartupProgressTarget } from './startup-progress';
+import { setStartupWindow } from './startup-window';
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
@@ -44,6 +46,8 @@ import {
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const STARTUP_WINDOW_WEBPACK_ENTRY: string;
+declare const STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 let forceQuit = false;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -67,6 +71,16 @@ const onReady = async () => {
 };
 
 const createWindow = () => {
+  log.info('creating startup window');
+  const startupWindow = new BrowserWindow({
+    webPreferences: {
+      preload: STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+  startupWindow.loadURL(STARTUP_WINDOW_WEBPACK_ENTRY);
+  setStartupWindow(startupWindow);
+  registerStartupProgressTarget(startupWindow, 'startupWindow');
+
   log.info('creating window');
   const mainWindow = new BrowserWindow({
     show: false,
@@ -79,7 +93,6 @@ const createWindow = () => {
   setMainWindow(mainWindow);
   initUpdater(unsubscribeToCloseEvent);
   subscribeToCloseEvent(mainWindow);
-  mainWindow.maximize();
   sendFromMainWindowToRenderer({
     data: { mainWindowId: mainWindow.webContents.id },
     type: MAIN_WINDOW_ID,
@@ -114,12 +127,20 @@ app.on(WINDOW_ALL_CLOSED, () => {
 app.on(ACTIVATE, () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  } else {
-    const mainWindow = getMainWindow();
-    if (mainWindow) {
-      mainWindow.show();
+  try {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    } else {
+      const mainWindow = getMainWindow();
+      if (mainWindow) {
+        mainWindow.show();
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Cannot create BrowserWindow before app is ready')) {
+      log.warn('Tried to show main window before app was ready, probably dock icon is clicked too early');
+    } else {
+      throw error;
     }
   }
 });
