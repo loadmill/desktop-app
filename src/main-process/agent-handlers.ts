@@ -5,7 +5,7 @@ import {
 import path from 'path';
 
 import '@loadmill/agent/dist/cli';
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 
 import {
   sendFromAgentViewToRenderer,
@@ -16,6 +16,8 @@ import { AgentMessage, MainMessage } from '../types/messaging';
 import { Token } from '../types/token';
 import {
   DATA,
+  FETCH_PROFILES,
+  FETCH_SUITES,
   IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
   SET_IS_USER_SIGNED_IN,
@@ -211,6 +213,9 @@ const handleSetIsUserSignedInEvent = async (_event: Electron.IpcMainEvent, { isS
 };
 
 const handleUserIsSignedIn = async () => {
+  ipcMain.emit(FETCH_SUITES);
+  ipcMain.emit(FETCH_PROFILES);
+
   if (!shouldStartAgent()) {
     return;
   }
