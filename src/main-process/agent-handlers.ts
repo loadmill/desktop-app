@@ -44,8 +44,10 @@ import {
 import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
+import { clearProfiles } from './profiles';
 import { getSettings } from './settings/settings-store';
 import { LOADMILL_AGENT_SERVER_URL } from './settings/web-app-settings';
+import { clearSuites } from './suites';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -241,6 +243,8 @@ const shouldStartAgent = (): boolean => {
 };
 
 const handleUserIsSignedOut = () => {
+  clearSuites();
+  clearProfiles();
   if (isAgentConnected()) {
     log.info('Agent is connected, stopping agent...');
     stopAgent();

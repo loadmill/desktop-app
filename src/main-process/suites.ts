@@ -41,3 +41,10 @@ const onFetchSuites = async (_event: Electron.IpcMainEvent, data?: MainMessage['
     type: UPDATED_SUITES,
   });
 };
+
+export const clearSuites = (): void => {
+  sendFromProxyViewToRenderer({
+    data: { suites: [] },
+    type: UPDATED_SUITES,
+  });
+};
