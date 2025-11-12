@@ -57,8 +57,6 @@ export const ProxyDashboard = (): JSX.Element => {
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
 
   useEffect(() => {
-    window.desktopApi.fetchProfiles();
-    window.desktopApi.fetchSuites();
     window.desktopApi.getIpAddress();
     window.desktopApi.getProfile();
     window.desktopApi.initFilterRegex();

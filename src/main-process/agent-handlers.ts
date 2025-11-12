@@ -5,7 +5,7 @@ import {
 import path from 'path';
 
 import '@loadmill/agent/dist/cli';
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 
 import {
   sendFromAgentViewToRenderer,
@@ -16,6 +16,8 @@ import { AgentMessage, MainMessage } from '../types/messaging';
 import { Token } from '../types/token';
 import {
   DATA,
+  FETCH_PROFILES,
+  FETCH_SUITES,
   IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
   SET_IS_USER_SIGNED_IN,
@@ -42,8 +44,10 @@ import {
 import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
+import { clearProfiles } from './profiles';
 import { getSettings } from './settings/settings-store';
 import { LOADMILL_AGENT_SERVER_URL } from './settings/web-app-settings';
+import { clearSuites } from './suites';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
@@ -211,6 +215,9 @@ const handleSetIsUserSignedInEvent = async (_event: Electron.IpcMainEvent, { isS
 };
 
 const handleUserIsSignedIn = async () => {
+  ipcMain.emit(FETCH_SUITES);
+  ipcMain.emit(FETCH_PROFILES);
+
   if (!shouldStartAgent()) {
     return;
   }
@@ -236,6 +243,8 @@ const shouldStartAgent = (): boolean => {
 };
 
 const handleUserIsSignedOut = () => {
+  clearSuites();
+  clearProfiles();
   if (isAgentConnected()) {
     log.info('Agent is connected, stopping agent...');
     stopAgent();

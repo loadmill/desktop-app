@@ -33,10 +33,18 @@ export const subscribeToFetchSuites = (): void => {
   subscribeToMainProcessMessage(FETCH_SUITES, onFetchSuites);
 };
 
-const onFetchSuites = async (_event: Electron.IpcMainEvent, { search }: MainMessage['data']) => {
+const onFetchSuites = async (_event: Electron.IpcMainEvent, data?: MainMessage['data']) => {
+  const search = data?.search;
   const suites = await fetchSuites(search);
   sendFromProxyViewToRenderer({
     data: { search, suites },
+    type: UPDATED_SUITES,
+  });
+};
+
+export const clearSuites = (): void => {
+  sendFromProxyViewToRenderer({
+    data: { suites: [] },
     type: UPDATED_SUITES,
   });
 };

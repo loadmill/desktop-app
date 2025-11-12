@@ -85,3 +85,10 @@ export const subscribeToProfileEvents = (): void => {
   subscribeToSetProfile();
   subscribeToGetProfile();
 };
+
+export const clearProfiles = (): void => {
+  sendFromProxyViewToRenderer({
+    data: { profiles: [] },
+    type: UPDATED_PROFILES,
+  });
+};
