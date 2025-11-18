@@ -37,7 +37,6 @@ export const ProxySettingForm = ({
 }: ProxySettingsFormProps): JSX.Element => {
   const [enabled, setEnabled] = useState<boolean>(!!proxySettings?.enabled);
 
-  // Initialize from either structured fields or by parsing URL
   const initialValues = proxySettings?.host
     ? proxySettings
     : { ...proxySettings, ...parseProxyUrl(proxySettings?.url || '') };
@@ -52,11 +51,9 @@ export const ProxySettingForm = ({
   const [portError, setPortError] = useState<string>('');
 
   const validateAndSave = () => {
-    // Clear previous errors
     setHostError('');
     setPortError('');
 
-    // Validate if enabled
     if (enabled) {
       let hasError = false;
 
@@ -80,7 +77,6 @@ export const ProxySettingForm = ({
         return;
       }
 
-      // Build settings with validated values
       const portNum = parseInt(port, 10);
       const newSettings: ProxySettings = {
         enabled,
@@ -93,7 +89,6 @@ export const ProxySettingForm = ({
       };
       onSave({ name: 'proxy', value: newSettings });
     } else {
-      // Proxy disabled - save with current values
       const newSettings: ProxySettings = {
         enabled,
         host,
@@ -113,7 +108,6 @@ export const ProxySettingForm = ({
 
   const onHostChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setHost(event.target.value);
-    // Clear error when user types
     if (hostError) {
       setHostError('');
     }
@@ -121,7 +115,6 @@ export const ProxySettingForm = ({
 
   const onPortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPort(event.target.value);
-    // Clear error when user types
     if (portError) {
       setPortError('');
     }

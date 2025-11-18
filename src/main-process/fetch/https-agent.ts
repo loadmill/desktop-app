@@ -4,7 +4,7 @@ import https from 'https';
 import { HttpsProxyAgent } from 'hpagent';
 
 import log from '../../log';
-import type { ProxySettings } from '../../types/settings';
+import { ProxySettings } from '../../types/settings';
 import { LOADMILL_WEB_APP_ORIGIN } from '../settings/web-app-settings';
 
 export enum HttpsProxyAgentType {
@@ -37,8 +37,6 @@ export const useProxyHttpsAgent = (proxySettings: ProxySettings): void => {
 };
 
 const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent => {
-  // For hpagent (main process), we use proxy URL WITH credentials
-  // hpagent has native support for Basic authentication when credentials are in the URL
   const proxyUrl = _buildProxyUrlWithCredentials(proxySettings);
   const cleanUrl = _buildCleanProxyUrl(proxySettings);
 
@@ -54,7 +52,7 @@ const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent =
 
   return new HttpsProxyAgent({
     ...httpsAgentOptions,
-    proxy: proxyUrl, // URL with embedded credentials for hpagent
+    proxy: proxyUrl,
     scheduling: 'lifo',
   });
 };
@@ -65,13 +63,11 @@ const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent =
  * hpagent natively handles Basic authentication when credentials are in the URL
  */
 const _buildProxyUrlWithCredentials = (proxySettings: ProxySettings): string => {
-  // If structured fields are provided, use them (preferred)
   if (proxySettings.host && proxySettings.port) {
     const protocol = proxySettings.protocol || 'http';
     const { username, password } = proxySettings;
 
     if (username && password) {
-      // Encode credentials for URL
       const encodedUser = encodeURIComponent(username);
       const encodedPass = encodeURIComponent(password);
       return `${protocol}://${encodedUser}:${encodedPass}@${proxySettings.host}:${proxySettings.port}`;
@@ -80,7 +76,7 @@ const _buildProxyUrlWithCredentials = (proxySettings: ProxySettings): string => 
     return `${protocol}://${proxySettings.host}:${proxySettings.port}`;
   }
 
-  // Fall back to using the URL field as-is (may already contain credentials)
+  // Fall back to parsing the URL field (for backward compatibility)
   if (proxySettings.url) {
     return proxySettings.url;
   }
@@ -93,7 +89,6 @@ const _buildProxyUrlWithCredentials = (proxySettings: ProxySettings): string => 
  * Format: protocol://host:port
  */
 const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
-  // If structured fields are provided, use them (preferred)
   if (proxySettings.host && proxySettings.port) {
     const protocol = proxySettings.protocol || 'http';
     return `${protocol}://${proxySettings.host}:${proxySettings.port}`;
@@ -114,9 +109,6 @@ const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
   throw new Error('Proxy settings must include either (host + port) or url');
 };
 
-/**
- * Sanitizes proxy settings for logging (removes password)
- */
 const _sanitizeProxySettingsForLog = (proxySettings: ProxySettings): Record<string, unknown> => {
   const { password, ...sanitized } = proxySettings;
   return {

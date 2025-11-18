@@ -9,10 +9,8 @@ import {
 
 import { getSettings } from './settings-store';
 
-// Store credentials for app.on('login') handler
 let proxyCredentials: { password: string, username: string; } | null = null;
 
-// Type for Node.js errors with a code property
 interface NodeError extends Error {
   code?: string;
 }
@@ -55,7 +53,6 @@ export const applyProxySettings = async (
 ): Promise<boolean> => {
   const enabledChanged = newProxySettings.enabled !== currentProxySettings.enabled;
   const settingsChanged =
-    newProxySettings.url !== currentProxySettings.url ||
     newProxySettings.host !== currentProxySettings.host ||
     newProxySettings.port !== currentProxySettings.port ||
     newProxySettings.username !== currentProxySettings.username ||
@@ -81,7 +78,7 @@ export const applyProxySettings = async (
 };
 
 const _hasValidProxyConfig = (proxySettings: ProxySettings): boolean => {
-  return !!(proxySettings.url || (proxySettings.host && proxySettings.port));
+  return !!((proxySettings.host && proxySettings.port) || proxySettings.url);
 };
 
 const _setProxy = async (proxySettings: ProxySettings) => {
@@ -193,7 +190,6 @@ const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
   if (proxySettings.url) {
     try {
       const parsedUrl = new URL(proxySettings.url);
-      // Remove username/password from URL if present
       return `${parsedUrl.protocol}//${parsedUrl.host}`;
     } catch (error) {
       log.error('Failed to parse proxy URL', { error, url: proxySettings.url });
@@ -222,7 +218,6 @@ const _parseProxyUrlToSettings = (proxyUrl: string): ProxySettings => {
       url: proxyUrl,
     };
 
-    // Extract credentials if present
     if (parsedUrl.username) {
       settings.username = decodeURIComponent(parsedUrl.username);
     }
@@ -243,7 +238,6 @@ const _parseProxyUrlToSettings = (proxyUrl: string): ProxySettings => {
  */
 export const initProxyAuthHandler = (): void => {
   app.on('login', (event, webContents, authenticationResponseDetails, authInfo, callback) => {
-    // Only handle proxy authentication
     if (authInfo.isProxy && proxyCredentials) {
       log.info('Providing proxy credentials for Chromium authentication', {
         proxyHost: authInfo.host,

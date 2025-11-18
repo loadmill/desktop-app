@@ -58,7 +58,7 @@ if (require('electron-squirrel-startup')) {
 
 const onStartup = () => {
   initStore();
-  initProxyAuthHandler(); // Must be called before any proxy settings are applied
+  initProxyAuthHandler();
   initSettingsOnStartup();
 };
 
