@@ -4,8 +4,17 @@ export type Settings = {
   proxy?: ProxySettings;
 };
 
-export type ProxySettings = {
+export type ProxySettings = DeprecatedProxySettings & {
   enabled: boolean;
+  host?: string;
+  password?: string;
+  port?: number;
+  protocol?: 'http' | 'https';
+  username?: string;
+};
+
+// Kept for backward compatibility
+type DeprecatedProxySettings = {
   url: string;
 };
 

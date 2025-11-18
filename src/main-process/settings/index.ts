@@ -1,11 +1,11 @@
-import { dialog } from 'electron';
+import { dialog, ipcMain } from 'electron';
 
 import {
   sendFromSettingsViewToRenderer,
 } from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../log';
 import { ChangedSetting, ProxySettings, Settings } from '../../types/settings';
-import { FETCH_SETTINGS, SETTING_CHANGED } from '../../universal/constants';
+import { FETCH_PROFILES, FETCH_SETTINGS, FETCH_SUITES, SETTING_CHANGED } from '../../universal/constants';
 import { defaultProxySettings } from '../../universal/default-settings';
 import { subscribeToMainProcessMessage } from '../main-events';
 import { relaunchDesktopApp } from '../relaunch';
@@ -130,6 +130,9 @@ const handleProxySettings = async (newProxySettings: ProxySettings) => {
         type: 'info',
       });
       reloadViews();
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      ipcMain.emit(FETCH_SUITES);
+      ipcMain.emit(FETCH_PROFILES);
     }
   }
 };

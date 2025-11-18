@@ -33,6 +33,7 @@ import { initStore } from './persistence-store';
 import { initProxyServer } from './proxy';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initSettingsOnStartup } from './settings';
+import { initProxyAuthHandler } from './settings/proxy-server-setting';
 import { symlinkPlaywright } from './standalone-playwright/symlink-playwright';
 import { registerStartupProgressTarget } from './startup-progress';
 import { setStartupWindow } from './startup-window';
@@ -57,6 +58,7 @@ if (require('electron-squirrel-startup')) {
 
 const onStartup = () => {
   initStore();
+  initProxyAuthHandler();
   initSettingsOnStartup();
 };
 

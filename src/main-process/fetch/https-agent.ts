@@ -4,6 +4,7 @@ import https from 'https';
 import { HttpsProxyAgent } from 'hpagent';
 
 import log from '../../log';
+import { ProxySettings } from '../../types/settings';
 import { LOADMILL_WEB_APP_ORIGIN } from '../settings/web-app-settings';
 
 export enum HttpsProxyAgentType {
@@ -29,18 +30,91 @@ const httpsAgentOptions = {
   rejectUnauthorized: false,
 };
 
-export const useProxyHttpsAgent = (proxyUrl: string): void => {
+export const useProxyHttpsAgent = (proxySettings: ProxySettings): void => {
   _destroyAgent();
-  log.info('Using proxy HTTPS agent', { proxyUrl });
-  agent = _createProxyHttpsAgent(proxyUrl);
+  log.info('Using proxy HTTPS agent', { proxySettings: _sanitizeProxySettingsForLog(proxySettings) });
+  agent = _createProxyHttpsAgent(proxySettings);
 };
 
-const _createProxyHttpsAgent = (proxyUrl: string): HttpsProxyAgent => {
+const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent => {
+  const proxyUrl = _buildProxyUrlWithCredentials(proxySettings);
+  const cleanUrl = _buildCleanProxyUrl(proxySettings);
+
+  // Verify credentials are embedded by checking if URL contains '@'
+  const hasEmbeddedCredentials = proxyUrl.includes('@');
+
+  log.info('Proxy agent configured', {
+    cleanProxyUrl: cleanUrl,
+    hasCredentials: !!(proxySettings.username && proxySettings.password),
+    hasEmbeddedCredentials,
+    username: proxySettings.username,
+  });
+
   return new HttpsProxyAgent({
     ...httpsAgentOptions,
     proxy: proxyUrl,
     scheduling: 'lifo',
   });
+};
+
+/**
+ * Builds a proxy URL WITH embedded credentials for hpagent (main process)
+ * Format: protocol://username:password@host:port
+ * hpagent natively handles Basic authentication when credentials are in the URL
+ */
+const _buildProxyUrlWithCredentials = (proxySettings: ProxySettings): string => {
+  if (proxySettings.host && proxySettings.port) {
+    const protocol = proxySettings.protocol || 'http';
+    const { username, password } = proxySettings;
+
+    if (username && password) {
+      const encodedUser = encodeURIComponent(username);
+      const encodedPass = encodeURIComponent(password);
+      return `${protocol}://${encodedUser}:${encodedPass}@${proxySettings.host}:${proxySettings.port}`;
+    }
+
+    return `${protocol}://${proxySettings.host}:${proxySettings.port}`;
+  }
+
+  // Fall back to parsing the URL field (for backward compatibility)
+  if (proxySettings.url) {
+    return proxySettings.url;
+  }
+
+  throw new Error('Proxy settings must include either (host + port) or url');
+};
+
+/**
+ * Builds a clean proxy URL without embedded credentials (for Chromium/renderer)
+ * Format: protocol://host:port
+ */
+const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
+  if (proxySettings.host && proxySettings.port) {
+    const protocol = proxySettings.protocol || 'http';
+    return `${protocol}://${proxySettings.host}:${proxySettings.port}`;
+  }
+
+  // Fall back to parsing the URL field (for backward compatibility)
+  if (proxySettings.url) {
+    try {
+      const parsedUrl = new URL(proxySettings.url);
+      // Remove username/password from URL if present
+      return `${parsedUrl.protocol}//${parsedUrl.host}`;
+    } catch (error) {
+      log.error('Failed to parse proxy URL', { error, url: proxySettings.url });
+      throw new Error(`Invalid proxy URL: ${proxySettings.url}`);
+    }
+  }
+
+  throw new Error('Proxy settings must include either (host + port) or url');
+};
+
+const _sanitizeProxySettingsForLog = (proxySettings: ProxySettings): Record<string, unknown> => {
+  const { password, ...sanitized } = proxySettings;
+  return {
+    ...sanitized,
+    password: password ? '***' : undefined,
+  };
 };
 
 export const useDefaultHttpsAgent = (): void => {
