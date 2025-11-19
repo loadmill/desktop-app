@@ -41,6 +41,7 @@ import {
   UI_TESTS_ENABLED,
   USER_DATA_PATH,
 } from './constants';
+import { buildProxyUrlWithCredentials } from './fetch/https-agent';
 import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
@@ -90,6 +91,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
     HOME_DIR: USER_DATA_PATH,
     LOADMILL_AGENT_SERVER_URL,
     LOADMILL_AGENT_VERBOSE,
+    ...(getSettings()?.proxy?.enabled && { LOADMILL_PROXY_URL: buildProxyUrlWithCredentials(getSettings()?.proxy) }),
     NODE_OPTIONS,
     NODE_TLS_REJECT_UNAUTHORIZED,
     PLAYWRIGHT_BROWSERS_PATH: '0',

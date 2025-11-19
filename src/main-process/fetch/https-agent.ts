@@ -37,7 +37,7 @@ export const useProxyHttpsAgent = (proxySettings: ProxySettings): void => {
 };
 
 const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent => {
-  const proxyUrl = _buildProxyUrlWithCredentials(proxySettings);
+  const proxyUrl = buildProxyUrlWithCredentials(proxySettings);
   const cleanUrl = _buildCleanProxyUrl(proxySettings);
 
   // Verify credentials are embedded by checking if URL contains '@'
@@ -62,7 +62,7 @@ const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent =
  * Format: protocol://username:password@host:port
  * hpagent natively handles Basic authentication when credentials are in the URL
  */
-const _buildProxyUrlWithCredentials = (proxySettings: ProxySettings): string => {
+export const buildProxyUrlWithCredentials = (proxySettings: ProxySettings): string => {
   if (proxySettings.host && proxySettings.port) {
     const protocol = proxySettings.protocol || 'http';
     const { username, password } = proxySettings;
