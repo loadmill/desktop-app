@@ -1,15 +1,14 @@
-import { dialog, ipcMain } from 'electron';
+import { app, dialog } from 'electron';
 
 import {
   sendFromSettingsViewToRenderer,
 } from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../log';
 import { ChangedSetting, ProxySettings, Settings } from '../../types/settings';
-import { FETCH_PROFILES, FETCH_SETTINGS, FETCH_SUITES, SETTING_CHANGED } from '../../universal/constants';
+import { FETCH_SETTINGS, SETTING_CHANGED } from '../../universal/constants';
 import { defaultProxySettings } from '../../universal/default-settings';
 import { subscribeToMainProcessMessage } from '../main-events';
 import { relaunchDesktopApp } from '../relaunch';
-import { reloadViews } from '../views';
 
 import { applyProxySettings, setProxyOnStartup } from './proxy-server-setting';
 import { getSettings, setSettings } from './settings-store';
@@ -123,16 +122,13 @@ const handleProxySettings = async (newProxySettings: ProxySettings) => {
 
     if (hasProxySettingsApplied) {
       dialog.showMessageBoxSync({
-        buttons: ['Reload'],
-        detail: 'For the changes to take effect some of the tabs need to be reloaded',
+        buttons: ['Quit'],
+        detail: 'For the changes to take effect the app needs to be restarted',
         message: 'The new settings were saved successfully',
         title: 'Settings',
         type: 'info',
       });
-      reloadViews();
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      ipcMain.emit(FETCH_SUITES);
-      ipcMain.emit(FETCH_PROFILES);
+      app.quit();
     }
   }
 };
