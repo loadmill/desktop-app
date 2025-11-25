@@ -15,6 +15,7 @@ import { getSettings, setSettings } from './settings-store';
 import { setOnPremURLOnStartup } from './web-app-settings';
 
 export function initSettingsOnStartup(): void {
+  log.info('Initializing settings on startup');
   setProxyOnStartup();
   setOnPremURLOnStartup();
 }
