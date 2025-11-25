@@ -57,6 +57,7 @@ if (require('electron-squirrel-startup')) {
 }
 
 const onStartup = () => {
+  log.info('App is on start up');
   initStore();
   initProxyAuthHandler();
   initSettingsOnStartup();
