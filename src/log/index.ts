@@ -9,10 +9,10 @@ import {
 log.info('Main logger created.');
 
 const setMainLogLevels = () => {
-  log.transports.console.level = 'debug';
-  // Now log.debug will show in both console and file modes
+  log.transports.console.level = 'silly';
+  // Now log.debug will show in console mode (dev) but not in file mode (prod)
   if (log.transports.file) {
-    log.transports.file.level = 'debug';
+    log.transports.file.level = 'info';
     log.info('Writing to file: ', log.transports.file?.getFile().path);
   }
 };
@@ -22,8 +22,8 @@ setMainLogLevels();
 export const createLogger = (
   logId: string,
   filePath: string,
-  fileLevel: LevelOption = 'debug',
-  consoleLevel: LevelOption = 'debug',
+  fileLevel: LevelOption = 'info',
+  consoleLevel: LevelOption = 'silly',
 ): Logger => {
   const logger = log.create({ logId }) as Logger;
   logger.initialize();

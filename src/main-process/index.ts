@@ -33,6 +33,7 @@ import { initStore } from './persistence-store';
 import { initProxyServer } from './proxy';
 import { subscribeToToggleMaximizeWindow } from './screen-size';
 import { initSettingsOnStartup } from './settings';
+import { collectProxyServerData } from './settings/proxy-server-data-collection';
 import { initProxyAuthHandler } from './settings/proxy-server-setting';
 import { symlinkPlaywright } from './standalone-playwright/symlink-playwright';
 import { registerStartupProgressTarget } from './startup-progress';
@@ -66,6 +67,7 @@ const onStartup = () => {
 onStartup();
 
 const onReady = async () => {
+  await collectProxyServerData();
   symlinkPlaywright();
   await initProxyServer();
   subscribeToAgentEventsFromRenderer();

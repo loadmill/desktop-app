@@ -138,6 +138,7 @@ const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
 export const initProxyAuthHandler = (): void => {
   log.info('Initializing proxy authentication handler');
   app.on('login', (event, webContents, authenticationResponseDetails, authInfo, callback) => {
+    log.info('Received login event for authentication', { authInfo, authenticationResponseDetails, event });
     if (authInfo.isProxy && proxyCredentials) {
       log.info('Providing proxy credentials for Chromium authentication', {
         proxyHost: authInfo.host,
@@ -151,6 +152,8 @@ export const initProxyAuthHandler = (): void => {
         proxyHost: authInfo.host,
         proxyPort: authInfo.port,
       });
+    } else {
+      log.info('Non-proxy authentication requested, ignoring in proxy handler');
     }
   });
   log.info('Proxy authentication handler initialized');
