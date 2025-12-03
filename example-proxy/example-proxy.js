@@ -37,6 +37,7 @@ const expectedAuthHeader = (() => {
 
 function checkProxyAuth(headers) {
   if (!REQUIRE_AUTH) return true;
+  log({ headers });
   const header = headers['proxy-authorization'];
   return header === expectedAuthHeader;
 }
@@ -178,4 +179,14 @@ server.listen(PROXY_PORT, () => {
   if (REQUIRE_AUTH) {
     log(`Username: ${PROXY_USER}, Password: ${PROXY_PASS}`);
   }
+  log('Proxy settings', {
+    host: 'localhost',
+    port: PROXY_PORT,
+    protocol: 'http',
+    ...(REQUIRE_AUTH ? { username: PROXY_USER, password: PROXY_PASS } : {}),
+  })
+  log('Proxy URL:', (() => {
+    const authPart = REQUIRE_AUTH ? `${PROXY_USER}:${PROXY_PASS}@` : '';
+    return `http://${authPart}localhost:${PROXY_PORT}`;
+  })());
 });

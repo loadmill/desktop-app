@@ -1,9 +1,8 @@
-import { app, session } from 'electron';
+import { app } from 'electron';
 
 import log from '../../log';
 import { ProxySettings } from '../../types/settings';
 import {
-  useDefaultHttpsAgent,
   useProxyHttpsAgent,
 } from '../fetch/https-agent';
 
@@ -16,34 +15,15 @@ interface NodeError extends Error {
 }
 
 export const setProxyOnStartup = async (): Promise<void> => {
-  if (process.env.PROXY_SERVER) {
-    const proxySettings = _parseProxyUrlToSettings(process.env.PROXY_SERVER);
-    _setProxyOnAppStart(proxySettings, 'env var PROXY_SERVER');
-    return;
-  }
   const settings = getSettings();
   if (settings?.proxy?.enabled) {
+    log.info('Setting proxy server on app start');
     _setProxyOnAppStart(settings.proxy, 'previous saved setting');
   }
 };
 
 const _setProxyOnAppStart = (proxySettings: ProxySettings, source: string): void => {
-  const cleanProxyUrl = _buildCleanProxyUrl(proxySettings);
-  log.info(`Setting proxy server on app start with ${source}`, {
-    hasCredentials: !!(proxySettings.username && proxySettings.password),
-    proxyUrl: cleanProxyUrl,
-  });
-
-  // Store credentials for Chromium's app.on('login') handler
-  if (proxySettings.username && proxySettings.password) {
-    proxyCredentials = {
-      password: proxySettings.password,
-      username: proxySettings.username,
-    };
-    log.info('Proxy credentials stored for Chromium authentication at startup');
-  }
-
-  app.commandLine.appendSwitch('proxy-server', cleanProxyUrl);
+  _setProxyForRendererProcess(proxySettings, source);
   _setProxyForMainProcess(proxySettings);
 };
 
@@ -61,112 +41,62 @@ export const applyProxySettings = async (
 
   const { enabled } = newProxySettings;
 
-  let hasApplied = false;
+  const isValidConfig = _hasValidProxyConfig(newProxySettings);
+  log.debug('Proxy config validation', { isValidConfig, newProxySettings });
 
-  const shouldSetNewProxy = enabled && (enabledChanged || settingsChanged) && _hasValidProxyConfig(newProxySettings);
+  const shouldSetNewProxy = enabled && (enabledChanged || settingsChanged) && isValidConfig;
   const shouldDisableProxy = !enabled && enabledChanged;
 
-  if (shouldSetNewProxy) {
-    await _setProxy(newProxySettings);
-    hasApplied = true;
-  } else if (shouldDisableProxy) {
-    await _disableProxy();
-    hasApplied = true;
-  }
+  log.debug('applyProxySettings decision', { enabledChanged, settingsChanged, shouldDisableProxy, shouldSetNewProxy });
 
-  return hasApplied;
+  return shouldSetNewProxy || shouldDisableProxy;
 };
 
 const _hasValidProxyConfig = (proxySettings: ProxySettings): boolean => {
-  return !!((proxySettings.host && proxySettings.port) || proxySettings.url);
+  const valid = !!((proxySettings.host && proxySettings.port) || proxySettings.url);
+  if (!valid) {
+    log.warn('Proxy config is invalid', { proxySettings });
+  }
+  return valid;
 };
 
-const _setProxy = async (proxySettings: ProxySettings) => {
-  _setProxyForMainProcess(proxySettings);
-  await _setProxyForRendererProcess(proxySettings);
-};
-
-const _disableProxy = async () => {
-  _disableProxyForMainProcess();
-  await _disableProxyForRendererProcess();
-};
-
-const _setProxyForRendererProcess = async (proxySettings: ProxySettings) => {
+const _setProxyForRendererProcess = (proxySettings: ProxySettings, source: string) => {
+  log.info('Setting proxy server for renderer process');
   const cleanProxyUrl = _buildCleanProxyUrl(proxySettings);
-  log.info('Setting proxy server for renderer process', {
+  log.info(`Setting proxy server on app start with ${source}`, {
     hasCredentials: !!(proxySettings.username && proxySettings.password),
     proxyUrl: cleanProxyUrl,
   });
-  try {
-    // Store credentials for app.on('login') handler
-    if (proxySettings.username && proxySettings.password) {
-      proxyCredentials = {
-        password: proxySettings.password,
-        username: proxySettings.username,
-      };
-      log.info('Proxy credentials stored for Chromium authentication');
-    } else {
-      proxyCredentials = null;
-    }
 
-    await session.defaultSession.setProxy({
-      proxyRules: cleanProxyUrl,
-    });
-  } catch (error: unknown) {
-    const err = error as NodeError;
-    log.error('Error setting proxy server for renderer process', {
-      error: err.message || error,
-      errorCode: err.code,
-      stack: err.stack,
-    });
-    throw error;
+  // Store credentials for Chromium's app.on('login') handler
+  if (proxySettings.username && proxySettings.password) {
+    proxyCredentials = {
+      password: proxySettings.password,
+      username: proxySettings.username,
+    };
+    log.info('Proxy credentials stored for Chromium authentication at startup');
   }
-};
 
-const _disableProxyForRendererProcess = async () => {
-  log.info('Disabling proxy setting for renderer process');
-  try {
-    proxyCredentials = null;
-    await session.defaultSession.setProxy({
-      proxyRules: null,
-    });
-  } catch (error: unknown) {
-    const err = error as NodeError;
-    log.error('Error disabling proxy setting for renderer process', {
-      error: err.message || error,
-      errorCode: err.code,
-      stack: err.stack,
-    });
-    throw error;
-  }
+  log.info('Applying proxy server for renderer process', {
+    proxyUrl: cleanProxyUrl,
+  });
+  app.commandLine.appendSwitch('proxy-server', cleanProxyUrl);
+  log.info('Proxy server applied for renderer process');
 };
 
 const _setProxyForMainProcess = (proxySettings: ProxySettings) => {
+  log.info('Setting proxy server for main process');
   const cleanProxyUrl = _buildCleanProxyUrl(proxySettings);
-  log.info('Setting proxy server for main process', {
+  log.info({
     hasCredentials: !!(proxySettings.username && proxySettings.password),
     proxyUrl: cleanProxyUrl,
   });
   try {
     useProxyHttpsAgent(proxySettings);
+    log.info('Proxy server set for main process');
   } catch (error: unknown) {
     const err = error as NodeError;
     log.error('Error setting proxy server for main process', {
-      error: err.message || error,
-      errorCode: err.code,
-      stack: err.stack,
-    });
-    throw error;
-  }
-};
-
-const _disableProxyForMainProcess = () => {
-  log.info('Disabling proxy settings for main process');
-  try {
-    useDefaultHttpsAgent();
-  } catch (error: unknown) {
-    const err = error as NodeError;
-    log.error('Error disabling proxy setting for main process', {
       error: err.message || error,
       errorCode: err.code,
       stack: err.stack,
@@ -197,39 +127,8 @@ const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
     }
   }
 
+  log.error('Proxy settings missing required fields', { proxySettings });
   throw new Error('Proxy settings must include either (host + port) or url');
-};
-
-/**
- * Parses a proxy URL string (possibly with embedded credentials) into ProxySettings
- * Supports formats:
- * - http://host:port
- * - http://username:password@host:port
- * - https://host:port
- */
-const _parseProxyUrlToSettings = (proxyUrl: string): ProxySettings => {
-  try {
-    const parsedUrl = new URL(proxyUrl);
-    const settings: ProxySettings = {
-      enabled: true,
-      host: parsedUrl.hostname,
-      port: parseInt(parsedUrl.port, 10),
-      protocol: parsedUrl.protocol.replace(':', '') as 'http' | 'https',
-      url: proxyUrl,
-    };
-
-    if (parsedUrl.username) {
-      settings.username = decodeURIComponent(parsedUrl.username);
-    }
-    if (parsedUrl.password) {
-      settings.password = decodeURIComponent(parsedUrl.password);
-    }
-
-    return settings;
-  } catch (error) {
-    log.error('Failed to parse proxy URL', { error, proxyUrl });
-    throw new Error(`Invalid proxy URL: ${proxyUrl}`);
-  }
 };
 
 /**
@@ -237,7 +136,9 @@ const _parseProxyUrlToSettings = (proxyUrl: string): ProxySettings => {
  * This must be called early in the app lifecycle
  */
 export const initProxyAuthHandler = (): void => {
+  log.info('Initializing proxy authentication handler');
   app.on('login', (event, webContents, authenticationResponseDetails, authInfo, callback) => {
+    log.info('Received login event for authentication', { authInfo, authenticationResponseDetails, event });
     if (authInfo.isProxy && proxyCredentials) {
       log.info('Providing proxy credentials for Chromium authentication', {
         proxyHost: authInfo.host,
@@ -251,6 +152,8 @@ export const initProxyAuthHandler = (): void => {
         proxyHost: authInfo.host,
         proxyPort: authInfo.port,
       });
+    } else {
+      log.info('Non-proxy authentication requested, ignoring in proxy handler');
     }
   });
   log.info('Proxy authentication handler initialized');
