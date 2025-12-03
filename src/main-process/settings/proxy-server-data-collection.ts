@@ -160,7 +160,7 @@ export const startChromiumNetLog = async (): Promise<void> => {
     setTimeout(async () => {
       await netLog.stopLogging();
       log.info('Net log stopped', { logPath });
-    }, 180000); // 3 minutes of logging
+    }, 60000); // 1 minute of logging
   } catch (error) {
     log.error('Error starting Chromium Net Log', {
       error: (error as Error).message || error,
