@@ -136,7 +136,7 @@ jobs:
           command: yarn test
       - run:
           name: Package Application
-          command: DEBUG=* CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
+          command: CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
       - run:
           name: Print project directory contents
           command: ls -la
@@ -144,11 +144,11 @@ jobs:
           name: Print /out directory contents
           command: ls -la out
       - run:
+          name: Create distribution files
+          command: DEBUG=* yarn only-make
+      - run:
           name: Print /out/make directory contents
           command: ls -la out/make
-      - run:
-          name: Create distribution files
-          command: yarn only-make
       - store_artifacts:
           name: Store Artifacts
           path: out/make/
