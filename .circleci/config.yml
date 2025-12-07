@@ -139,13 +139,13 @@ jobs:
           command: DEBUG=* CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
       - run:
           name: Print project directory contents
-          command: dir /a
+          command: ls -la
       - run:
           name: Print /out directory contents
-          command: dir /a out
+          command: ls -la out
       - run:
           name: Print /out/make directory contents
-          command: dir /a out\make
+          command: ls -la out/make
       - run:
           name: Create distribution files
           command: yarn only-make
