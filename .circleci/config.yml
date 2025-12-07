@@ -136,7 +136,16 @@ jobs:
           command: yarn test
       - run:
           name: Package Application
-          command: CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
+          command: DEBUG=* CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
+      - run:
+          name: Print project directory contents
+          command: dir /a
+      - run:
+          name: Print /out directory contents
+          command: dir /a out
+      - run:
+          name: Print /out/make directory contents
+          command: dir /a out\make
       - run:
           name: Create distribution files
           command: yarn only-make
@@ -312,6 +321,7 @@ workflows:
             branches:
               ignore:
                 - /agent-version-.*/
+                - windows-certificate
           pre-steps:
             - run:
                 name: Use Node 20
@@ -331,5 +341,3 @@ workflows:
             branches:
               ignore:
                 - /agent-version-.*/
-          requires:
-            - build_macos
