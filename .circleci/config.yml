@@ -311,6 +311,194 @@ jobs:
                   )
                   echo "UPLOAD_ASSET_RESPONSE"
                   echo "$UPLOAD_ASSET_RESPONSE" | jq .
+  windows-test-certificate-and-signing:
+    executor:
+      name: win/default
+      shell: powershell.exe
+    steps:
+      - checkout
+
+      - run:
+          name: Create Self-Signed Certificate
+          command: |
+            Write-Host "Creating self-signed certificate..."
+
+            # Create a self-signed code signing certificate
+            $cert = New-SelfSignedCertificate `
+              -Type CodeSigningCert `
+              -Subject "CN=Loadmill Test Certificate, O=Loadmill LTD, C=US" `
+              -KeyAlgorithm RSA `
+              -KeyLength 2048 `
+              -Provider "Microsoft Enhanced RSA and AES Cryptographic Provider" `
+              -CertStoreLocation "Cert:\CurrentUser\My" `
+              -NotAfter (Get-Date).AddYears(2)
+
+            Write-Host "✓ Certificate created in store"
+            Write-Host "  Thumbprint: $($cert.Thumbprint)"
+            Write-Host "  Subject: $($cert.Subject)"
+            Write-Host "  NotAfter: $($cert.NotAfter)"
+
+            # Export to PFX file
+            $password = ConvertTo-SecureString -String "TestPassword123" -Force -AsPlainText
+            Export-PfxCertificate -Cert $cert -FilePath "cert.pfx" -Password $password
+
+            Write-Host "✓ Certificate exported to cert.pfx"
+
+            # Verify the PFX file was created
+            if (Test-Path cert.pfx) {
+              $pfxFile = Get-Item cert.pfx
+              Write-Host "✓ cert.pfx file size: $($pfxFile.Length) bytes"
+            } else {
+              Write-Host "✗ ERROR: cert.pfx was not created!"
+              exit 1
+            }
+
+      - run:
+          name: Verify Certificate with certutil
+          command: |
+            Write-Host "Dumping certificate info..."
+            certutil -dump -v cert.pfx
+
+            Write-Host "`n=== Certificate Details ==="
+            certutil -dump cert.pfx | Select-String -Pattern "Subject:|Issuer:|NotBefore:|NotAfter:"
+
+      - run:
+          name: Create Dummy EXE to Sign
+          command: |
+            Write-Host "Creating a dummy executable..."
+
+            # Create a simple C# program
+            $code = @"
+            using System;
+            class Program {
+                static void Main() {
+                    Console.WriteLine("Hello from signed executable!");
+                }
+            }
+            "@
+
+            # Save the code
+            $code | Out-File -FilePath "test.cs" -Encoding ASCII
+
+            # Compile it (csc.exe is in .NET Framework)
+            $cscPath = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
+
+            if (Test-Path $cscPath) {
+              Write-Host "Compiling test.cs..."
+              & $cscPath /out:test.exe test.cs
+
+              if (Test-Path test.exe) {
+                Write-Host "✓ test.exe created successfully"
+                $exeFile = Get-Item test.exe
+                Write-Host "  Size: $($exeFile.Length) bytes"
+              } else {
+                Write-Host "✗ ERROR: Failed to create test.exe"
+                exit 1
+              }
+            } else {
+              Write-Host "✗ ERROR: C# compiler not found at $cscPath"
+              Write-Host "Creating a dummy file instead..."
+              "MZ" | Out-File -FilePath test.exe -Encoding ASCII -NoNewline
+            }
+
+      - run:
+          name: Sign the EXE with signtool
+          command: |
+            Write-Host "Attempting to sign test.exe..."
+
+            # Find signtool.exe (usually in Windows SDK)
+            $signtoolPaths = @(
+              "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe",
+              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe",
+              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
+            )
+
+            $signtool = $null
+            foreach ($path in $signtoolPaths) {
+              if (Test-Path $path) {
+                $signtool = $path
+                Write-Host "✓ Found signtool at: $path"
+                break
+              }
+            }
+
+            if (-not $signtool) {
+              Write-Host "✗ ERROR: signtool.exe not found!"
+              Write-Host "Searching for signtool..."
+              $found = Get-ChildItem "C:\Program Files (x86)\Windows Kits\" -Recurse -Filter "signtool.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+              if ($found) {
+                $signtool = $found.FullName
+                Write-Host "✓ Found signtool at: $signtool"
+              } else {
+                Write-Host "Installing Windows SDK..."
+                choco install windows-sdk-10.1 -y
+                exit 1
+              }
+            }
+
+            # Sign the file
+            Write-Host "`nSigning test.exe with certificate..."
+            $certPath = Resolve-Path "cert.pfx"
+
+            & $signtool sign /f $certPath /p "TestPassword123" /fd SHA256 /v /debug test.exe
+
+            $exitCode = $LASTEXITCODE
+            Write-Host "`nSigntool exit code: $exitCode"
+
+            if ($exitCode -eq 0) {
+              Write-Host "✓✓✓ SUCCESS! File signed successfully! ✓✓✓"
+            } else {
+              Write-Host "✗✗✗ FAILED! Signing failed with exit code $exitCode ✗✗✗"
+              exit 1
+            }
+
+      - run:
+          name: Verify Signature
+          command: |
+            Write-Host "Verifying signature on test.exe..."
+
+            # Find signtool
+            $signtoolPaths = @(
+              "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe",
+              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe",
+              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
+            )
+
+            $signtool = $signtoolPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
+
+            if ($signtool) {
+              & $signtool verify /pa /v test.exe
+              Write-Host "`nNote: Verification will fail because it's self-signed (not trusted)"
+              Write-Host "But the signature itself should be present!"
+            }
+
+            # Check if signature exists using PowerShell
+            Write-Host "`nChecking signature with Get-AuthenticodeSignature..."
+            $sig = Get-AuthenticodeSignature test.exe
+            Write-Host "Status: $($sig.Status)"
+            Write-Host "StatusMessage: $($sig.StatusMessage)"
+            Write-Host "SignerCertificate: $($sig.SignerCertificate.Subject)"
+
+            if ($sig.SignerCertificate) {
+              Write-Host "`n✓✓✓ SIGNATURE EXISTS! ✓✓✓"
+            } else {
+              Write-Host "`n✗✗✗ NO SIGNATURE FOUND ✗✗✗"
+            }
+
+      - run:
+          name: Summary
+          command: |
+            Write-Host "`n========================================="
+            Write-Host "           TEST SUMMARY"
+            Write-Host "========================================="
+            Write-Host "✓ Certificate created: cert.pfx"
+            Write-Host "✓ Password: TestPassword123"
+            Write-Host "✓ Test file signed: test.exe"
+            Write-Host "`nNext steps:"
+            Write-Host "1. Use the same PowerShell commands in your main build"
+            Write-Host "2. Replace 'TestPassword123' with your actual password"
+            Write-Host "3. Apply to electron-forge config"
+            Write-Host "========================================="
 
 workflows:
   version: 2
@@ -341,3 +529,5 @@ workflows:
             branches:
               ignore:
                 - /agent-version-.*/
+                - windows-certificate
+      - windows-test-certificate-and-signing
