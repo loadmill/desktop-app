@@ -357,10 +357,10 @@ jobs:
           name: Verify Certificate with certutil
           command: |
             Write-Host "Dumping certificate info..."
-            certutil -dump -v cert.pfx
+            certutil -dump -v -p "TestPassword123" cert.pfx
 
             Write-Host "`n=== Certificate Details ==="
-            certutil -dump cert.pfx | Select-String -Pattern "Subject:|Issuer:|NotBefore:|NotAfter:"
+            certutil -dump -v -p "TestPassword123" cert.pfx | Select-String -Pattern "Subject:|Issuer:|NotBefore:|NotAfter:"
 
       - run:
           name: Create Dummy EXE to Sign
