@@ -501,7 +501,9 @@ jobs:
             Write-Host "========================================="
       - run:
           name: Install Node 20.19.5
-          command: nvm install 20.19.5 && nvm use 20.19.5
+          command: |
+            nvm install 20.19.5
+            nvm use 20.19.5
       - run:
           name: Install Yarn
           command: npm install -g yarn
@@ -525,16 +527,18 @@ jobs:
           command: yarn package
       - run:
           name: Print project directory contents
-          command: ls -la
+          command: Get-ChildItem -Force
       - run:
           name: Print /out directory contents
-          command: ls -la out
+          command: Get-ChildItem -Force out
       - run:
           name: Create distribution files
-          command: DEBUG=* yarn only-make
+          command: |
+            $env:DEBUG="*"
+            yarn only-make
       - run:
           name: Print /out/make directory contents
-          command: ls -la out/make
+          command: Get-ChildItem -Force out/make
 
 workflows:
   version: 2
