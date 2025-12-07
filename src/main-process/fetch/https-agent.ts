@@ -5,6 +5,7 @@ import { HttpsProxyAgent } from 'hpagent';
 
 import log from '../../log';
 import { ProxySettings } from '../../types/settings';
+import { sanitizeProxySettings } from '../settings/secret-sanitization';
 import { LOADMILL_WEB_APP_ORIGIN } from '../settings/web-app-settings';
 
 export enum HttpsProxyAgentType {
@@ -32,15 +33,14 @@ const httpsAgentOptions = {
 
 export const useProxyHttpsAgent = (proxySettings: ProxySettings): void => {
   _destroyAgent();
-  log.info('Using proxy HTTPS agent', { proxySettings: _sanitizeProxySettingsForLog(proxySettings) });
+  log.info('Using proxy HTTPS agent', { proxySettings: sanitizeProxySettings(proxySettings) });
   agent = _createProxyHttpsAgent(proxySettings);
 };
 
 const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent => {
-  const proxyUrl = _buildProxyUrlWithCredentials(proxySettings);
+  const proxyUrl = buildProxyUrlWithCredentials(proxySettings);
   const cleanUrl = _buildCleanProxyUrl(proxySettings);
 
-  // Verify credentials are embedded by checking if URL contains '@'
   const hasEmbeddedCredentials = proxyUrl.includes('@');
 
   log.info('Proxy agent configured', {
@@ -62,26 +62,32 @@ const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent =
  * Format: protocol://username:password@host:port
  * hpagent natively handles Basic authentication when credentials are in the URL
  */
-const _buildProxyUrlWithCredentials = (proxySettings: ProxySettings): string => {
-  if (proxySettings.host && proxySettings.port) {
-    const protocol = proxySettings.protocol || 'http';
-    const { username, password } = proxySettings;
+export const buildProxyUrlWithCredentials = (proxySettings: ProxySettings): string => {
+  try {
+    if (proxySettings.host && proxySettings.port) {
+      const protocol = proxySettings.protocol || 'http';
+      const { username, password } = proxySettings;
 
-    if (username && password) {
-      const encodedUser = encodeURIComponent(username);
-      const encodedPass = encodeURIComponent(password);
-      return `${protocol}://${encodedUser}:${encodedPass}@${proxySettings.host}:${proxySettings.port}`;
+      if (username && password) {
+        const encodedUser = encodeURIComponent(username);
+        const encodedPass = encodeURIComponent(password);
+        return `${protocol}://${encodedUser}:${encodedPass}@${proxySettings.host}:${proxySettings.port}`;
+      }
+
+      return `${protocol}://${proxySettings.host}:${proxySettings.port}`;
     }
 
-    return `${protocol}://${proxySettings.host}:${proxySettings.port}`;
-  }
+    // Fall back to parsing the URL field (for backward compatibility)
+    if (proxySettings.url) {
+      return proxySettings.url;
+    }
 
-  // Fall back to parsing the URL field (for backward compatibility)
-  if (proxySettings.url) {
-    return proxySettings.url;
+    log.error('Proxy settings missing required fields for credentials', { proxySettings });
+    throw new Error('Proxy settings must include either (host + port) or url');
+  } catch (error) {
+    log.error('Error building proxy URL with credentials', { error, proxySettings });
+    throw error;
   }
-
-  throw new Error('Proxy settings must include either (host + port) or url');
 };
 
 /**
@@ -106,15 +112,8 @@ const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
     }
   }
 
+  log.error('Proxy settings missing required fields for clean URL', { proxySettings });
   throw new Error('Proxy settings must include either (host + port) or url');
-};
-
-const _sanitizeProxySettingsForLog = (proxySettings: ProxySettings): Record<string, unknown> => {
-  const { password, ...sanitized } = proxySettings;
-  return {
-    ...sanitized,
-    password: password ? '***' : undefined,
-  };
 };
 
 export const useDefaultHttpsAgent = (): void => {
@@ -137,7 +136,13 @@ const _destroyAgent = (): void => {
     log.info('Destroying HTTPS agent');
     agent.destroy();
     agent = null;
+  } else {
+    log.debug('No HTTPS agent to destroy');
   }
 };
 
-const _isLocalHttpOrigin = () => LOADMILL_WEB_APP_ORIGIN.startsWith('http://');
+const _isLocalHttpOrigin = () => {
+  const isLocal = LOADMILL_WEB_APP_ORIGIN.startsWith('http://');
+  log.debug('Checking if origin is local HTTP', { isLocal, origin: LOADMILL_WEB_APP_ORIGIN });
+  return isLocal;
+};
