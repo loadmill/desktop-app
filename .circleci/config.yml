@@ -454,7 +454,7 @@ jobs:
               exit 1
             }
 
-      -run: 
+      - run: 
           name: Verify SIGNTOOL env var
           command: |
             Write-Host "SIGNSTOOL env var: $env:SIGNSTOOL"
