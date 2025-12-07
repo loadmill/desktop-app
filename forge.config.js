@@ -15,7 +15,7 @@ module.exports = {
         setupIcon: './images/loadmill-icon-256-256.ico',
         // windowsSign: {
         //   // tell signtool where to find the certificate and password
-        signWithParams: `/f ./cert.pfx /p ${process.env.CERTIFICATE_PASSWORD} /fd SHA256 /v /debug`,
+        signWithParams: '/f ./cert.pfx /p TestPassword123 /fd SHA256 /v /debug',
         // },
       },
       name: '@electron-forge/maker-squirrel',

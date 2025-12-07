@@ -499,6 +499,42 @@ jobs:
             Write-Host "2. Replace 'TestPassword123' with your actual password"
             Write-Host "3. Apply to electron-forge config"
             Write-Host "========================================="
+            - run:
+          name: Install Node 20.19.5
+          command: nvm install 20.19.5 && nvm use 20.19.5
+      - run:
+          name: Install Yarn
+          command: npm install -g yarn
+      - restore_cache:
+          keys:
+            - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-windows-build-{{ .Branch }}-
+            - yarn-packages-windows-build-
+      - run:
+          name: Install dependencies
+          command: yarn install
+      - save_cache:
+          paths:
+            - node_modules/
+          key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run Tests
+          command: yarn test
+      - run:
+          name: Package Application
+          command: yarn package
+      - run:
+          name: Print project directory contents
+          command: ls -la
+      - run:
+          name: Print /out directory contents
+          command: ls -la out
+      - run:
+          name: Create distribution files
+          command: DEBUG=* yarn only-make
+      - run:
+          name: Print /out/make directory contents
+          command: ls -la out/make
 
 workflows:
   version: 2
