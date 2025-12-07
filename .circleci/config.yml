@@ -499,7 +499,7 @@ jobs:
             Write-Host "2. Replace 'TestPassword123' with your actual password"
             Write-Host "3. Apply to electron-forge config"
             Write-Host "========================================="
-            - run:
+      - run:
           name: Install Node 20.19.5
           command: nvm install 20.19.5 && nvm use 20.19.5
       - run:
