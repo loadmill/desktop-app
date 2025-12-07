@@ -13,10 +13,10 @@ module.exports = {
         iconUrl: 'https://loadmill.com/favicon.ico',
         setupExe: `${productName}-${name}-${version}-Setup.exe`,
         setupIcon: './images/loadmill-icon-256-256.ico',
-        windowsSign: {
-          // tell signtool where to find the certificate and password
-          signWithParams: `/f ./cert.pfx /p ${process.env.CERTIFICATE_PASSWORD} /fd SHA256 /v /debug`,
-        },
+        // windowsSign: {
+        //   // tell signtool where to find the certificate and password
+        //   signWithParams: `/f ./cert.pfx /p ${process.env.CERTIFICATE_PASSWORD} /fd SHA256 /v /debug`,
+        // },
       },
       name: '@electron-forge/maker-squirrel',
     },
