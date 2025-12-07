@@ -532,6 +532,12 @@ jobs:
           name: Print /out directory contents
           command: Get-ChildItem -Force out
       - run:
+          name: Print /out/Loadmill-win32-x64 directory contents
+          command: Get-ChildItem -Force -Recurse out/Loadmill-win32-x64
+      - run: 
+          name: Print signature of ffmpeg.dll
+          command: signtool verify /pa "out\Loadmill-win32-x64\ffmpeg.dll"
+      - run:
           name: Create distribution files
           command: |
             $env:DEBUG="*"
