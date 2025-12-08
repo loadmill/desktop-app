@@ -7,92 +7,97 @@ import log from '../../log';
 import { ProxySettings } from '../../types/settings';
 import { sanitizeProxySettings } from '../settings/secret-sanitization';
 
-export type HttpsAgent = https.Agent | HttpsProxyAgent | null | undefined;
-export type HttpAgent = http.Agent | HttpProxyAgent | null | undefined;
-let httpsAgent: HttpsAgent;
-let httpAgent: HttpAgent;
+export type HttpsAgent = https.Agent | HttpsProxyAgent | null;
+export type HttpAgent = http.Agent | HttpProxyAgent | null;
+
+type AgentType = 'http' | 'https';
+type Agent = HttpAgent | HttpsAgent;
+
+const agents: Record<AgentType, Agent> = {
+  http: null,
+  https: null,
+};
+
+const agentOptions = {
+  keepAlive: true,
+  keepAliveMsecs: 1000,
+  maxFreeSockets: 256,
+  maxSockets: 256,
+  rejectUnauthorized: false,
+};
 
 export const getHttpsAgent = (): HttpsAgent => {
-  if (!httpsAgent) {
-    useDefaultHttpsAgent();
+  if (!agents.https) {
+    _useDefaultAgent('https');
   }
-  return httpsAgent;
+  return agents.https as HttpsAgent;
 };
 
 export const getHttpAgent = (): HttpAgent => {
-  if (!httpAgent) {
-    useDefaultHttpsAgent();
+  if (!agents.http) {
+    _useDefaultAgent('http');
   }
-  return httpAgent;
+  return agents.http as HttpAgent;
 };
 
-const httpsAgentOptions = {
-  keepAlive: true,
-  keepAliveMsecs: 1000,
-  maxFreeSockets: 256,
-  maxSockets: 256,
-  rejectUnauthorized: false,
+export const useProxyAgent = (proxySettings: ProxySettings): void => {
+  _useProxyAgent('https', proxySettings);
+  _useProxyAgent('http', proxySettings);
 };
 
-const httpAgentOptions = {
-  keepAlive: true,
-  keepAliveMsecs: 1000,
-  maxFreeSockets: 256,
-  maxSockets: 256,
-  rejectUnauthorized: false,
+const _useProxyAgent = (type: AgentType, proxySettings: ProxySettings): void => {
+  _destroyAgent(type);
+  log.info(`Using proxy ${type.toUpperCase()} agent`, {
+    proxySettings: sanitizeProxySettings(proxySettings),
+  });
+  agents[type] = _createProxyAgent(type, proxySettings);
 };
 
-export const useProxyHttpsAgent = (proxySettings: ProxySettings): void => {
-  _destroyHttpsAgent();
-  log.info('Using proxy HTTPS agent', { proxySettings: sanitizeProxySettings(proxySettings) });
-  httpsAgent = _createProxyHttpsAgent(proxySettings);
+const _useDefaultAgent = (type: AgentType): void => {
+  _destroyAgent(type);
+  log.info(`Using default ${type.toUpperCase()} agent`);
+  agents[type] = _createDefaultAgent(type);
 };
 
-export const useProxyHttpAgent = (proxySettings: ProxySettings): void => {
-  _destroyHttpAgent();
-  log.info('Using proxy HTTP agent', { proxySettings: sanitizeProxySettings(proxySettings) });
-  httpAgent = _createProxyHttpAgent(proxySettings);
-};
-
-const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent => {
+const _createProxyAgent = (
+  type: AgentType,
+  proxySettings: ProxySettings,
+): HttpProxyAgent | HttpsProxyAgent => {
   const proxyUrl = buildProxyUrlWithCredentials(proxySettings);
   const cleanUrl = _buildCleanProxyUrl(proxySettings);
-
   const hasEmbeddedCredentials = proxyUrl.includes('@');
 
-  log.info('Proxy https agent configured', {
+  log.info(`Proxy ${type} agent configured`, {
     cleanProxyUrl: cleanUrl,
     hasCredentials: !!(proxySettings.username && proxySettings.password),
     hasEmbeddedCredentials,
     username: proxySettings.username,
   });
 
-  return new HttpsProxyAgent({
-    ...httpsAgentOptions,
+  const AgentClass = type === 'https' ? HttpsProxyAgent : HttpProxyAgent;
+  return new AgentClass({
+    ...agentOptions,
     proxy: proxyUrl,
     scheduling: 'lifo',
   });
 };
 
-const _createProxyHttpAgent = (proxySettings: ProxySettings): HttpProxyAgent => {
-  const proxyUrl = buildProxyUrlWithCredentials(proxySettings);
-  const cleanUrl = _buildCleanProxyUrl(proxySettings);
-
-  const hasEmbeddedCredentials = proxyUrl.includes('@');
-
-  log.info('Proxy http agent configured', {
-    cleanProxyUrl: cleanUrl,
-    hasCredentials: !!(proxySettings.username && proxySettings.password),
-    hasEmbeddedCredentials,
-    username: proxySettings.username,
-  });
-
-  return new HttpProxyAgent({
-    ...httpAgentOptions,
-    proxy: proxyUrl,
-    scheduling: 'lifo',
-  });
+const _createDefaultAgent = (type: AgentType): http.Agent | https.Agent => {
+  const AgentClass = type === 'https' ? https.Agent : http.Agent;
+  return new AgentClass(agentOptions);
 };
+
+const _destroyAgent = (type: AgentType): void => {
+  const agent = agents[type];
+  if (agent) {
+    log.info(`Destroying ${type.toUpperCase()} agent`);
+    agent.destroy();
+    agents[type] = null;
+  } else {
+    log.debug(`No ${type.toUpperCase()} agent to destroy`);
+  }
+};
+
 /**
  * Builds a proxy URL WITH embedded credentials for hpagent (main process)
  * Format: protocol://username:password@host:port
@@ -150,44 +155,4 @@ const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
 
   log.error('Proxy settings missing required fields for clean URL', { proxySettings });
   throw new Error('Proxy settings must include either (host + port) or url');
-};
-
-export const useDefaultHttpsAgent = (): void => {
-  _destroyHttpsAgent();
-  log.info('Using default HTTPS agent');
-  httpsAgent = _createDefaultHttpsAgent();
-};
-
-export const useDefaultHttpAgent = (): void => {
-  _destroyHttpAgent();
-  log.info('Using default HTTP agent');
-  httpAgent = _createDefaultHttpAgent();
-};
-
-const _createDefaultHttpsAgent = (): https.Agent => {
-  return new https.Agent(httpsAgentOptions);
-};
-
-const _createDefaultHttpAgent = (): http.Agent => {
-  return new http.Agent(httpAgentOptions);
-};
-
-const _destroyHttpsAgent = (): void => {
-  if (httpsAgent) {
-    log.info('Destroying HTTPS agent');
-    httpsAgent.destroy();
-    httpsAgent = null;
-  } else {
-    log.debug('No HTTPS agent to destroy');
-  }
-};
-
-const _destroyHttpAgent = (): void => {
-  if (httpAgent) {
-    log.info('Destroying HTTP agent');
-    httpAgent.destroy();
-    httpAgent = null;
-  } else {
-    log.debug('No HTTP agent to destroy');
-  }
 };
