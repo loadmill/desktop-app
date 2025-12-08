@@ -451,13 +451,15 @@ jobs:
             # Sign the file
             echo ""
             echo "Signing test.exe with certificate..."
-            CERT_PATH=$(pwd)/cert.pfx
-            echo "CERT_PATH: $CERT_PATH"
-            echo "SIGNTOOL: $SIGNTOOL"
-            # printing the command for debugging
-            echo '"$SIGNTOOL" sign /f "$CERT_PATH" /p "TestPassword123" /fd SHA256 /v /debug test.exe'
 
-            "$SIGNTOOL" sign /f "$CERT_PATH" /p "TestPassword123" /fd SHA256 /v /debug test.exe
+            CERT_PATH=$(pwd)/cert.pfx
+            CERT_PATH_WIN=$(cygpath -w "$CERT_PATH")
+
+            echo "CERT_PATH (Unix): $CERT_PATH"
+            echo "CERT_PATH (Windows): $CERT_PATH_WIN"
+            echo "SIGNTOOL: $SIGNTOOL"
+
+            "$SIGNTOOL" sign /f "$CERT_PATH_WIN" /p "TestPassword123" /fd SHA256 /v /debug test.exe
 
             EXIT_CODE=$?
             echo ""
