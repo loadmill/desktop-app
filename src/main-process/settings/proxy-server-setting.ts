@@ -3,6 +3,7 @@ import { app } from 'electron';
 import log from '../../log';
 import { ProxySettings } from '../../types/settings';
 import {
+  useProxyHttpAgent,
   useProxyHttpsAgent,
 } from '../fetch/https-agent';
 
@@ -93,6 +94,7 @@ const _setProxyForMainProcess = (proxySettings: ProxySettings) => {
   });
   try {
     useProxyHttpsAgent(proxySettings);
+    useProxyHttpAgent(proxySettings);
     log.info('Proxy server set for main process');
   } catch (error: unknown) {
     const err = error as NodeError;
