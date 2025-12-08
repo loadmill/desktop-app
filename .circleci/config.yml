@@ -324,13 +324,13 @@ jobs:
           command: |
             echo "Creating self-signed certificate..."
 
-            # Generate private key
+            echo "Generating private key..."
             openssl genrsa -out test-key.pem 2048
 
             echo "✓ Private key created"
 
-            # Create self-signed certificate
-            openssl req -new -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out test-cert.pem -subj "//C=US//O=Loadmill LTD//CN=Loadmill Test Certificate"
+            echo "Creating self-signed certificate using the private key..."
+            MSYS_NO_PATHCONV=1 openssl req -new -key test-key.pem -x509 -days 365 -out test-cert.pem -subj "/C=US/O=Loadmill LTD/CN=Loadmill Test Certificate"
 
             echo "Verifying certificate creation..."
             openssl x509 -in test-cert.pem -text -noout
@@ -359,7 +359,6 @@ jobs:
               exit 1
             fi
             echo "File creation complete."
-
       - run:
           name: Verify Certificate
           command: |
