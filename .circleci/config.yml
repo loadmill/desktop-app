@@ -314,270 +314,211 @@ jobs:
   windows-test-certificate-and-signing:
     executor:
       name: win/default
-      shell: powershell.exe
+      shell: bash.exe
+
     steps:
       - checkout
 
       - run:
           name: Create Self-Signed Certificate
           command: |
-            Write-Host "Creating self-signed certificate..."
+            echo "Creating self-signed certificate..."
 
-            # Create a self-signed code signing certificate
-            $cert = New-SelfSignedCertificate `
-              -Type CodeSigningCert `
-              -Subject "CN=Loadmill Test Certificate, O=Loadmill LTD, C=US" `
-              -KeyAlgorithm RSA `
-              -KeyLength 2048 `
-              -Provider "Microsoft Enhanced RSA and AES Cryptographic Provider" `
-              -CertStoreLocation "Cert:\CurrentUser\My" `
-              -NotAfter (Get-Date).AddYears(2)
+            # Generate private key
+            openssl genrsa -out test-key.pem 2048
 
-            Write-Host "✓ Certificate created in store"
-            Write-Host "  Thumbprint: $($cert.Thumbprint)"
-            Write-Host "  Subject: $($cert.Subject)"
-            Write-Host "  NotAfter: $($cert.NotAfter)"
+            # Create self-signed certificate
+            openssl req -new -x509 -key test-key.pem -out test-cert.pem -days 730 \
+              -subj "/C=US/O=Loadmill LTD/CN=Loadmill Test Certificate"
 
-            # Export to PFX file
-            $password = ConvertTo-SecureString -String "TestPassword123" -Force -AsPlainText
-            Export-PfxCertificate -Cert $cert -FilePath "cert.pfx" -Password $password
+            echo "✓ Certificate and key created"
 
-            Write-Host "✓ Certificate exported to cert.pfx"
+            # Create PFX from cert and key
+            openssl pkcs12 -export -out cert.pfx \
+              -inkey test-key.pem \
+              -in test-cert.pem \
+              -passout pass:TestPassword123
+
+            # Cleanup temp files
+            rm test-key.pem test-cert.pem
+
+            echo "✓ Certificate exported to cert.pfx"
 
             # Verify the PFX file was created
-            if (Test-Path cert.pfx) {
-              $pfxFile = Get-Item cert.pfx
-              Write-Host "✓ cert.pfx file size: $($pfxFile.Length) bytes"
-            } else {
-              Write-Host "✗ ERROR: cert.pfx was not created!"
+            if [ -f cert.pfx ]; then
+              echo "✓ cert.pfx file created successfully"
+              ls -lh cert.pfx
+            else
+              echo "✗ ERROR: cert.pfx was not created!"
               exit 1
-            }
+            fi
 
       - run:
           name: Verify Certificate with certutil
           command: |
-            Write-Host "Dumping certificate info..."
-            certutil -dump -v -p "TestPassword123" cert.pfx
+            echo "Dumping certificate info..."
 
-            Write-Host "`n=== Certificate Details ==="
-            certutil -dump -v -p "TestPassword123" cert.pfx | Select-String -Pattern "Subject:|Issuer:|NotBefore:|NotAfter:"
+            # Verify with OpenSSL
+            openssl pkcs12 -info -in cert.pfx \
+              -passin pass:TestPassword123 \
+              -passout pass:TestPassword123 \
+              -nokeys
+
+            echo ""
+            echo "=== Certificate Details ==="
+            openssl pkcs12 -info -in cert.pfx \
+              -passin pass:TestPassword123 \
+              -passout pass:TestPassword123 \
+              -nokeys | grep -E "subject=|issuer="
 
       - run:
           name: Create Dummy EXE to Sign
           command: |
-            Write-Host "Creating a dummy executable..."
+            echo "Creating a dummy executable..."
 
             # Create a simple C# program
-            $code = @"
+            cat > test.cs \<< 'EOF'
             using System;
             class Program {
                 static void Main() {
                     Console.WriteLine("Hello from signed executable!");
                 }
             }
-            "@
-
-            # Save the code
-            $code | Out-File -FilePath "test.cs" -Encoding ASCII
+            EOF
 
             # Compile it (csc.exe is in .NET Framework)
-            $cscPath = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
+            CSC_PATH="/c/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
 
-            if (Test-Path $cscPath) {
-              Write-Host "Compiling test.cs..."
-              & $cscPath /out:test.exe test.cs
+            if [ -f "$CSC_PATH" ]; then
+              echo "Compiling test.cs..."
+              "$CSC_PATH" /out:test.exe test.cs
 
-              if (Test-Path test.exe) {
-                Write-Host "✓ test.exe created successfully"
-                $exeFile = Get-Item test.exe
-                Write-Host "  Size: $($exeFile.Length) bytes"
-              } else {
-                Write-Host "✗ ERROR: Failed to create test.exe"
+              if [ -f test.exe ]; then
+                echo "✓ test.exe created successfully"
+                ls -lh test.exe
+              else
+                echo "✗ ERROR: Failed to create test.exe"
                 exit 1
-              }
-            } else {
-              Write-Host "✗ ERROR: C# compiler not found at $cscPath"
-              Write-Host "Creating a dummy file instead..."
-              "MZ" | Out-File -FilePath test.exe -Encoding ASCII -NoNewline
-            }
+              fi
+            else
+              echo "✗ ERROR: C# compiler not found at $CSC_PATH"
+              echo "Creating a dummy PE file instead..."
+              echo -ne "MZ\x90\x00" > test.exe
+              echo "✓ Dummy test.exe created"
+            fi
 
       - run:
           name: Sign the EXE with signtool
           command: |
-            Write-Host "Attempting to sign test.exe..."
+            echo "Attempting to sign test.exe..."
 
             # Find signtool.exe (usually in Windows SDK)
-            $signtoolPaths = @(
-              "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe",
-              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe",
-              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
+            SIGNTOOL_PATHS=(
+              "/c/Program Files (x86)/Windows Kits/10/bin/x64/signtool.exe"
+              "/c/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe"
+              "/c/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/signtool.exe"
             )
 
-            $signtool = $null
-            foreach ($path in $signtoolPaths) {
-              if (Test-Path $path) {
-                $signtool = $path
-                Write-Host "✓ Found signtool at: $path"
+            SIGNTOOL=""
+            for path in "${SIGNTOOL_PATHS[@]}"; do
+              if [ -f "$path" ]; then
+                SIGNTOOL="$path"
+                echo "✓ Found signtool at: $path"
                 break
-              }
-            }
+              fi
+            done
 
-            if (-not $signtool) {
-              Write-Host "✗ ERROR: signtool.exe not found!"
-              Write-Host "Searching for signtool..."
-              $found = Get-ChildItem "C:\Program Files (x86)\Windows Kits\" -Recurse -Filter "signtool.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
-              if ($found) {
-                $signtool = $found.FullName
-                Write-Host "✓ Found signtool at: $signtool"
-              } else {
-                Write-Host "Installing Windows SDK..."
-                choco install windows-sdk-10.1 -y
+            if [ -z "$SIGNTOOL" ]; then
+              echo "✗ ERROR: signtool.exe not found!"
+              echo "Searching for signtool..."
+              FOUND=$(find "/c/Program Files (x86)/Windows Kits/" -name "signtool.exe" 2>/dev/null | head -1)
+              if [ -n "$FOUND" ]; then
+                SIGNTOOL="$FOUND"
+                echo "✓ Found signtool at: $SIGNTOOL"
+              else
+                echo "signtool.exe not found anywhere!"
                 exit 1
-              }
-            }
+              fi
+            fi
 
             # Sign the file
-            Write-Host "`nSigning test.exe with certificate..."
-            $certPath = Resolve-Path "cert.pfx"
+            echo ""
+            echo "Signing test.exe with certificate..."
+            CERT_PATH=$(pwd)/cert.pfx
 
-            & $signtool sign /f $certPath /p "TestPassword123" /fd SHA256 /v /debug test.exe
+            "$SIGNTOOL" sign /f "$CERT_PATH" /p "TestPassword123" /fd SHA256 /v /debug test.exe
 
-            $exitCode = $LASTEXITCODE
-            Write-Host "`nSigntool exit code: $exitCode"
+            EXIT_CODE=$?
+            echo ""
+            echo "Signtool exit code: $EXIT_CODE"
 
-            if ($exitCode -eq 0) {
-              Write-Host "✓✓✓ SUCCESS! File signed successfully! ✓✓✓"
-            } else {
-              Write-Host "✗✗✗ FAILED! Signing failed with exit code $exitCode ✗✗✗"
+            if [ $EXIT_CODE -eq 0 ]; then
+              echo "✓✓✓ SUCCESS! File signed successfully! ✓✓✓"
+            else
+              echo "✗✗✗ FAILED! Signing failed with exit code $EXIT_CODE ✗✗✗"
               exit 1
-            }
+            fi
 
       - run:
           name: Verify Signature
           command: |
-            Write-Host "Verifying signature on test.exe..."
+            echo "Verifying signature on test.exe..."
 
             # Find signtool
-            $signtoolPaths = @(
-              "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe",
-              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe",
-              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
+            SIGNTOOL_PATHS=(
+              "/c/Program Files (x86)/Windows Kits/10/bin/x64/signtool.exe"
+              "/c/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe"
+              "/c/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/signtool.exe"
             )
 
-            $signtool = $signtoolPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
+            SIGNTOOL=""
+            for path in "${SIGNTOOL_PATHS[@]}"; do
+              if [ -f "$path" ]; then
+                SIGNTOOL="$path"
+                break
+              fi
+            done
 
-            if ($signtool) {
-              & $signtool verify /pa /v test.exe
-              Write-Host "`nNote: Verification will fail because it's self-signed (not trusted)"
-              Write-Host "But the signature itself should be present!"
-            }
+            if [ -n "$SIGNTOOL" ]; then
+              "$SIGNTOOL" verify /pa /v test.exe || true
+              echo ""
+              echo "Note: Verification will fail because it's self-signed (not trusted)"
+              echo "But the signature itself should be present!"
+            fi
 
             # Check if signature exists using PowerShell
-            Write-Host "`nChecking signature with Get-AuthenticodeSignature..."
-            $sig = Get-AuthenticodeSignature test.exe
-            Write-Host "Status: $($sig.Status)"
-            Write-Host "StatusMessage: $($sig.StatusMessage)"
-            Write-Host "SignerCertificate: $($sig.SignerCertificate.Subject)"
+            echo ""
+            echo "Checking signature with Get-AuthenticodeSignature..."
+            powershell.exe -Command "
+              \$sig = Get-AuthenticodeSignature test.exe
+              Write-Host \"Status: \$(\$sig.Status)\"
+              Write-Host \"StatusMessage: \$(\$sig.StatusMessage)\"
+              Write-Host \"SignerCertificate: \$(\$sig.SignerCertificate.Subject)\"
 
-            if ($sig.SignerCertificate) {
-              Write-Host "`n✓✓✓ SIGNATURE EXISTS! ✓✓✓"
-            } else {
-              Write-Host "`n✗✗✗ NO SIGNATURE FOUND ✗✗✗"
-            }
+              if (\$sig.SignerCertificate) {
+                Write-Host \"\`n✓✓✓ SIGNATURE EXISTS! ✓✓✓\"
+              } else {
+                Write-Host \"\`n✗✗✗ NO SIGNATURE FOUND ✗✗✗\"
+              }
+            "
 
       - run:
           name: Summary
           command: |
-            Write-Host "`n========================================="
-            Write-Host "           TEST SUMMARY"
-            Write-Host "========================================="
-            Write-Host "✓ Certificate created: cert.pfx"
-            Write-Host "✓ Password: TestPassword123"
-            Write-Host "✓ Test file signed: test.exe"
-            Write-Host "`nNext steps:"
-            Write-Host "1. Use the same PowerShell commands in your main build"
-            Write-Host "2. Replace 'TestPassword123' with your actual password"
-            Write-Host "3. Apply to electron-forge config"
-            Write-Host "========================================="
-      - run:
-          name: Install Node 20.19.5
-          command: |
-            nvm install 20.19.5
-            nvm use 20.19.5
-      - run:
-          name: Install Yarn
-          command: npm install -g yarn
-      - restore_cache:
-          keys:
-            - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-windows-build-{{ .Branch }}-
-            - yarn-packages-windows-build-
-      - run:
-          name: Install dependencies
-          command: yarn install
-      - save_cache:
-          paths:
-            - node_modules/
-          key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Run Tests
-          command: yarn test
-      - run:
-          name: Package Application
-          command: yarn package
-      - run:
-          name: Print project directory contents
-          command: Get-ChildItem -Force
-      - run:
-          name: Print /out directory contents
-          command: Get-ChildItem -Force out
-      - run:
-          name: Print /out/Loadmill-win32-x64 directory contents
-          command: Get-ChildItem -Force -Recurse out/Loadmill-win32-x64
-      - run: 
-          name: Print signature of ffmpeg.dll
-          command: |
-            Write-Host "Verifying signature of ffmpeg.dll..."
-            $signtoolPaths = @(
-              "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe",
-              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe",
-              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
-            )
-            $signtool = $signtoolPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
-            & $signtool verify /pa "out\Loadmill-win32-x64\ffmpeg.dll"
-      - run:
-          name: Create distribution files
-          command: |
-            $env:DEBUG="*"
-            yarn only-make
-      - run:
-          name: Print /out/make directory contents
-          command: Get-ChildItem -Force out/make
+            echo ""
+            echo "========================================="
+            echo "           TEST SUMMARY"
+            echo "========================================="
+            echo "✓ Certificate created: cert.pfx"
+            echo "✓ Password: TestPassword123"
+            echo "✓ Test file signed: test.exe"
+            echo ""
+            echo "Next steps:"
+            echo "1. Use the same bash/OpenSSL commands in your main build"
+            echo "2. Replace 'TestPassword123' with your actual password"
+            echo "3. Apply to electron-forge config"
+            echo "========================================="
 
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build_macos:
-          filters:
-            branches:
-              ignore:
-                - /agent-version-.*/
-                - windows-certificate
-          pre-steps:
-            - run:
-                name: Use Node 20
-                command: |
-                  export NVM_DIR="$HOME/.nvm"
-                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                  nvm install 20
-                  nvm use 20
-                  npm install -g yarn
-            - run:
-                name: Persist Node 20 in environment for subsequent steps (silenced output)
-                command: |
-                  echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-                  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 20 > /dev/null 2>&1' >> $BASH_ENV
       - build_windows:
           filters:
             branches:
