@@ -454,12 +454,14 @@ jobs:
 
             CERT_PATH=$(pwd)/cert.pfx
             CERT_PATH_WIN=$(cygpath -w "$CERT_PATH")
+            SIGNTOOL_WIN=$(cygpath -w "$SIGNTOOL")
 
             echo "CERT_PATH (Unix): $CERT_PATH"
             echo "CERT_PATH (Windows): $CERT_PATH_WIN"
-            echo "SIGNTOOL: $SIGNTOOL"
+            echo "SIGNTOOL (Windows): $SIGNTOOL_WIN"
 
-            "$SIGNTOOL" sign /f "$CERT_PATH_WIN" /p "TestPassword123" /fd SHA256 /v /debug test.exe
+            # Use cmd.exe to run signtool to avoid Bash argument parsing issues
+            cmd.exe /c "\"$SIGNTOOL_WIN\" sign /f \"$CERT_PATH_WIN\" /p TestPassword123 /fd SHA256 /v /debug test.exe"
 
             EXIT_CODE=$?
             echo ""
