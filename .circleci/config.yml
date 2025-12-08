@@ -327,9 +327,13 @@ jobs:
             # Generate private key
             openssl genrsa -out test-key.pem 2048
 
+            echo "✓ Private key created"
+
             # Create self-signed certificate
-            openssl req -new -x509 -key test-key.pem -out test-cert.pem -days 730 \
-              -subj "/C=US/O=Loadmill LTD/CN=Loadmill Test Certificate"
+            openssl req -new -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out test-cert.pem -subj "/C=US/O=Loadmill LTD/CN=Loadmill Test Certificate"
+
+            echo "Verifying certificate creation..."
+            openssl x509 -in test-cert.pem -text -noout
 
             echo "✓ Certificate and key created"
 
@@ -339,12 +343,14 @@ jobs:
               -in test-cert.pem \
               -passout pass:TestPassword123
 
+            echo "✓ PFX file created"
+
             # Cleanup temp files
             rm test-key.pem test-cert.pem
 
             echo "✓ Certificate exported to cert.pfx"
 
-            # Verify the PFX file was created
+            echo "Verifying the PFX file was created"
             if [ -f cert.pfx ]; then
               echo "✓ cert.pfx file created successfully"
               ls -lh cert.pfx
@@ -352,17 +358,18 @@ jobs:
               echo "✗ ERROR: cert.pfx was not created!"
               exit 1
             fi
+            echo "File creation complete."
 
       - run:
-          name: Verify Certificate with certutil
+          name: Verify Certificate
           command: |
-            echo "Dumping certificate info..."
-
-            # Verify with OpenSSL
+            echo "Verifying certificate with openssl..."
             openssl pkcs12 -info -in cert.pfx \
               -passin pass:TestPassword123 \
               -passout pass:TestPassword123 \
               -nokeys
+
+            echo "Dumping certificate info..."
 
             echo ""
             echo "=== Certificate Details ==="
@@ -371,6 +378,7 @@ jobs:
               -passout pass:TestPassword123 \
               -nokeys | grep -E "subject=|issuer="
 
+            echo "Finished verifying certificate."
       - run:
           name: Create Dummy EXE to Sign
           command: |
