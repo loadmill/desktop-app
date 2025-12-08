@@ -452,6 +452,10 @@ jobs:
             echo ""
             echo "Signing test.exe with certificate..."
             CERT_PATH=$(pwd)/cert.pfx
+            echo "CERT_PATH: $CERT_PATH"
+            echo "SIGNTOOL: $SIGNTOOL"
+            # printing the command for debugging
+            echo '"$SIGNTOOL" sign /f "$CERT_PATH" /p "TestPassword123" /fd SHA256 /v /debug test.exe'
 
             "$SIGNTOOL" sign /f "$CERT_PATH" /p "TestPassword123" /fd SHA256 /v /debug test.exe
 
