@@ -519,10 +519,35 @@ jobs:
             echo "3. Apply to electron-forge config"
             echo "========================================="
 
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build_macos:
+          filters:
+            branches:
+              ignore:
+                - /agent-version-.*/
+                - windows-certificate
+          pre-steps:
+            - run:
+                name: Use Node 20
+                command: |
+                  export NVM_DIR="$HOME/.nvm"
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                  nvm install 20
+                  nvm use 20
+                  npm install -g yarn
+            - run:
+                name: Persist Node 20 in environment for subsequent steps (silenced output)
+                command: |
+                  echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
+                  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 20 > /dev/null 2>&1' >> $BASH_ENV
       - build_windows:
           filters:
             branches:
               ignore:
                 - /agent-version-.*/
                 - windows-certificate
+
       - windows-test-certificate-and-signing
