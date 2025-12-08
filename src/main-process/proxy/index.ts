@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import http from 'http';
+import https from 'https';
 
 import Proxy from 'loadmill-http-mitm-proxy';
 
@@ -10,6 +11,7 @@ import log from '../../log';
 import { Header } from '../../types/header';
 import { ProxyEntry, ProxyRequest, ProxyResponse } from '../../types/proxy-entry';
 import { PROXY } from '../../universal/constants';
+import { getHttpsAgent } from '../fetch/https-agent';
 
 import { subscribeToClearEntriesEvents } from './clear-entries-handlers';
 import { PROXY_CERTIFICATES_DIR_PATH } from './constants';
@@ -69,6 +71,7 @@ export const initProxyServer = async (): Promise<void> => {
   });
 
   proxy.listen({
+    httpsAgent: getHttpsAgent() as https.Agent,
     port: proxyPort,
     sslCaDir: PROXY_CERTIFICATES_DIR_PATH,
   }, () => log.info(`Proxy listening on port ${proxyPort}! and saving to ${PROXY_CERTIFICATES_DIR_PATH}`));
