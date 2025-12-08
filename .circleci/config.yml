@@ -418,8 +418,6 @@ jobs:
               if (Test-Path $path) {
                 $signtool = $path
                 Write-Host "✓ Found signtool at: $path"
-                # write to circleci env var
-                echo "export SIGNSTOOL=$path" >> $BASH_ENV
                 break
               }
             }
@@ -454,10 +452,6 @@ jobs:
               exit 1
             }
 
-      - run: 
-          name: Verify SIGNTOOL env var
-          command: |
-            Write-Host "SIGNSTOOL env var: $env:SIGNSTOOL"
       - run:
           name: Verify Signature
           command: |
@@ -543,8 +537,14 @@ jobs:
       - run: 
           name: Print signature of ffmpeg.dll
           command: |
-            Write-Host "SIGNSTOOL env var: $env:SIGNSTOOL"
-            $env:SIGNSTOOL verify /pa "out\Loadmill-win32-x64\ffmpeg.dll"
+            Write-Host "Verifying signature of ffmpeg.dll..."
+            $signtoolPaths = @(
+              "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe",
+              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe",
+              "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
+            )
+            $signtool = $signtoolPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
+            & $signtool verify /pa "out\Loadmill-win32-x64\ffmpeg.dll"
       - run:
           name: Create distribution files
           command: |
