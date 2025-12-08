@@ -533,7 +533,47 @@ jobs:
             echo "2. Replace 'TestPassword123' with your actual password"
             echo "3. Apply to electron-forge config"
             echo "========================================="
-
+      - run:
+          name: Install Node 20.19.5
+          command: |
+            nvm install 20.19.5
+            nvm use 20.19.5
+      - run:
+          name: Install Yarn
+          command: npm install -g yarn
+      - restore_cache:
+          keys:
+            - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-windows-build-{{ .Branch }}-
+            - yarn-packages-windows-build-
+      - run:
+          name: Install dependencies
+          command: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run Tests
+          command: yarn test
+      - run:
+          name: Package Application
+          command: yarn package
+      - run:
+          name: Print project directory contents
+          command: ls -la
+      - run:
+          name: Print /out directory contents
+          command: ls -la out
+      - run:
+          name: Create distribution files
+          command: DEBUG=* yarn only-make
+      - run:
+          name: Print /out/make directory contents
+          command: ls -la out/make
+      - store_artifacts:
+          name: Store Artifacts
+          path: out/make/
 workflows:
   version: 2
   build:
