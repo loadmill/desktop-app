@@ -1,29 +1,24 @@
 import http from 'http';
 import https from 'https';
 
-import { HttpsProxyAgent } from 'hpagent';
+import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
 
 import log from '../../log';
 import { ProxySettings } from '../../types/settings';
 import { sanitizeProxySettings } from '../settings/secret-sanitization';
-import { LOADMILL_WEB_APP_ORIGIN } from '../settings/web-app-settings';
 
-export enum HttpsProxyAgentType {
-  DEFAULT = 'default',
-  PROXY = 'proxy',
-}
+export type HttpsAgent = https.Agent | HttpsProxyAgent | null;
+export type HttpAgent = http.Agent | HttpProxyAgent | null;
 
-export type HttpAgent = http.Agent | https.Agent | HttpsProxyAgent | null | undefined;
-let agent: HttpAgent;
+type AgentType = 'http' | 'https';
+type Agent = HttpAgent | HttpsAgent;
 
-export const getHttpsAgent = (): HttpAgent => {
-  if (!agent) {
-    useDefaultHttpsAgent();
-  }
-  return agent;
+const agents: Record<AgentType, Agent> = {
+  http: null,
+  https: null,
 };
 
-const httpsAgentOptions = {
+const agentOptions = {
   keepAlive: true,
   keepAliveMsecs: 1000,
   maxFreeSockets: 256,
@@ -31,30 +26,76 @@ const httpsAgentOptions = {
   rejectUnauthorized: false,
 };
 
-export const useProxyHttpsAgent = (proxySettings: ProxySettings): void => {
-  _destroyAgent();
-  log.info('Using proxy HTTPS agent', { proxySettings: sanitizeProxySettings(proxySettings) });
-  agent = _createProxyHttpsAgent(proxySettings);
+export const getHttpsAgent = (): HttpsAgent => {
+  if (!agents.https) {
+    _useDefaultAgent('https');
+  }
+  return agents.https as HttpsAgent;
 };
 
-const _createProxyHttpsAgent = (proxySettings: ProxySettings): HttpsProxyAgent => {
+export const getHttpAgent = (): HttpAgent => {
+  if (!agents.http) {
+    _useDefaultAgent('http');
+  }
+  return agents.http as HttpAgent;
+};
+
+export const useProxyAgent = (proxySettings: ProxySettings): void => {
+  _useProxyAgent('https', proxySettings);
+  _useProxyAgent('http', proxySettings);
+};
+
+const _useProxyAgent = (type: AgentType, proxySettings: ProxySettings): void => {
+  _destroyAgent(type);
+  log.info(`Using proxy ${type.toUpperCase()} agent`, {
+    proxySettings: sanitizeProxySettings(proxySettings),
+  });
+  agents[type] = _createProxyAgent(type, proxySettings);
+};
+
+const _useDefaultAgent = (type: AgentType): void => {
+  _destroyAgent(type);
+  log.info(`Using default ${type.toUpperCase()} agent`);
+  agents[type] = _createDefaultAgent(type);
+};
+
+const _createProxyAgent = (
+  type: AgentType,
+  proxySettings: ProxySettings,
+): HttpProxyAgent | HttpsProxyAgent => {
   const proxyUrl = buildProxyUrlWithCredentials(proxySettings);
   const cleanUrl = _buildCleanProxyUrl(proxySettings);
-
   const hasEmbeddedCredentials = proxyUrl.includes('@');
 
-  log.info('Proxy agent configured', {
+  log.info(`Proxy ${type} agent configured`, {
     cleanProxyUrl: cleanUrl,
     hasCredentials: !!(proxySettings.username && proxySettings.password),
     hasEmbeddedCredentials,
     username: proxySettings.username,
   });
 
-  return new HttpsProxyAgent({
-    ...httpsAgentOptions,
+  const AgentClass = type === 'https' ? HttpsProxyAgent : HttpProxyAgent;
+  return new AgentClass({
+    ...agentOptions,
     proxy: proxyUrl,
     scheduling: 'lifo',
   });
+};
+
+const _createDefaultAgent = (type: AgentType): http.Agent | https.Agent => {
+  const AgentClass = type === 'https' ? https.Agent : http.Agent;
+  return new AgentClass(agentOptions);
+};
+
+const _destroyAgent = (type: AgentType): void => {
+  const agent = agents[type];
+  if (agent) {
+    log.info(`Destroying ${type.toUpperCase()} agent`);
+    agent.destroy();
+    agents[type] = null;
+  } else {
+    log.debug(`No ${type.toUpperCase()} agent to destroy`);
+  }
 };
 
 /**
@@ -114,35 +155,4 @@ const _buildCleanProxyUrl = (proxySettings: ProxySettings): string => {
 
   log.error('Proxy settings missing required fields for clean URL', { proxySettings });
   throw new Error('Proxy settings must include either (host + port) or url');
-};
-
-export const useDefaultHttpsAgent = (): void => {
-  _destroyAgent();
-  log.info('Using default HTTPS agent');
-  agent = _createDefaultHttpsAgent();
-};
-
-const _createDefaultHttpsAgent = (): https.Agent | http.Agent => {
-  if (_isLocalHttpOrigin()) {
-    log.info('Using HTTP agent for development');
-    return new http.Agent(httpsAgentOptions);
-  }
-
-  return new https.Agent(httpsAgentOptions);
-};
-
-const _destroyAgent = (): void => {
-  if (agent) {
-    log.info('Destroying HTTPS agent');
-    agent.destroy();
-    agent = null;
-  } else {
-    log.debug('No HTTPS agent to destroy');
-  }
-};
-
-const _isLocalHttpOrigin = () => {
-  const isLocal = LOADMILL_WEB_APP_ORIGIN.startsWith('http://');
-  log.debug('Checking if origin is local HTTP', { isLocal, origin: LOADMILL_WEB_APP_ORIGIN });
-  return isLocal;
 };
