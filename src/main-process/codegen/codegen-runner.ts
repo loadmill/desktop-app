@@ -26,6 +26,10 @@ export const runPlaywrightCodegen = async (url?: string): Promise<string> => {
     return content;
   } catch (error) {
     await fs.unlink(tempFile).catch(() => { });
+    if (error?.message.includes('net::ERR_NAME_NOT_RESOLVED')) {
+      throw new Error('The provided URL could not be resolved. Please check the URL and try again.');
+    }
+
     throw error;
   }
 };
