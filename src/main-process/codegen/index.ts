@@ -11,9 +11,9 @@ import { runPlaywrightCodegen } from './codegen-runner';
 
 export const subscribeToCodegenEvents = (): void => {
   subscribeToMainProcessMessage(CODEGEN, async (_event, data) => {
-    const { playwrightStepLocation } = data || {};
+    const { playwrightStepLocation, url } = data || {};
     try {
-      await handleCodegenEvent(playwrightStepLocation);
+      await handleCodegenEvent(playwrightStepLocation, url);
     } catch (error) {
       log.error('Error handling codegen event:', error);
       dialog.showErrorBox(
@@ -24,8 +24,8 @@ export const subscribeToCodegenEvents = (): void => {
   });
 };
 
-export const handleCodegenEvent = async (playwrightStepLocation: PlaywrightStepLocation): Promise<void> => {
-  const generatedCode = await runPlaywrightCodegen();
+export const handleCodegenEvent = async (playwrightStepLocation: PlaywrightStepLocation, url?: string): Promise<void> => {
+  const generatedCode = await runPlaywrightCodegen(url);
 
   const { suiteId, flowId, stepId } = playwrightStepLocation;
   const response = await callLoadmillApi(`api/test-suites/${suiteId}/flows/${flowId}`);

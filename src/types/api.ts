@@ -69,7 +69,7 @@ export type ApiForMainWindow = {
 };
 
 export type ApiForLoadmillBrowserView = {
-  [CODEGEN]: (suiteId: string, flowId: string, stepId: string) => void;
+  [CODEGEN]: (suiteId: string, flowId: string, stepId: string, url?: string) => void;
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => void;
   [STARTUP_PROGRESS]: (startupProgress: StartupProgress) => void;
 };

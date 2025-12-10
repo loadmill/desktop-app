@@ -17,8 +17,8 @@ import {
 import { subscribeToLoadmillViewMessages } from '../renderer-events';
 
 export const WINDOW_API: ApiForLoadmillBrowserView = {
-  [CODEGEN]: (suiteId: string, flowId: string, stepId: string) =>
-    sendToMain(CODEGEN, { playwrightStepLocation: { flowId, stepId, suiteId } }),
+  [CODEGEN]: (suiteId: string, flowId: string, stepId: string, url?: string) =>
+    sendToMain(CODEGEN, { playwrightStepLocation: { flowId, stepId, suiteId }, url }),
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => sendToMain(SET_IS_USER_SIGNED_IN, { isSignedIn }),
   [STARTUP_PROGRESS]: (startupProgress: StartupProgress) => sendToMain(STARTUP_PROGRESS, { startupProgress }),
 };

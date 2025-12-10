@@ -102,6 +102,7 @@ export abstract class MainMessage implements IPCMessage {
     text?: string;
     toFind?: string;
     token?: string;
+    url?: string;
     view?: ViewName;
   };
   type: MainMessageTypes;
