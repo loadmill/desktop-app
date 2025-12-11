@@ -8,6 +8,18 @@ import { checkForUpdates } from './updates';
 import { switchToAgentView, switchToSettingsView } from './views';
 
 const isMac = process.platform === 'darwin';
+const isWindows = process.platform === 'win32';
+
+const windowsHelpSubmenu = [
+  {
+    click: () => checkForUpdates(),
+    label: 'Check for Updates...',
+  },
+  {
+    click: () => app.showAboutPanel(),
+    label: 'About Loadmill Desktop App',
+  },
+];
 
 const template = [
   // { role: 'appMenu' }
@@ -120,6 +132,7 @@ const template = [
   {
     role: 'help',
     submenu: [
+      ...(isWindows ? windowsHelpSubmenu : []),
       {
         click: () => downloadMainLog(),
         label: 'Download App Logs',
