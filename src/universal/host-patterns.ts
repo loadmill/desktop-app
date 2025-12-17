@@ -20,6 +20,6 @@ export const validateBypassPatterns = (list: string): boolean => {
 
 export const parseBypassPatterns = (list: string = ''): string[] =>
   list
-    .split(/[;,]/)
+    .split(';')
     .map(e => e.trim())
     .filter(Boolean);

@@ -208,7 +208,7 @@ export const ProxySettingForm = ({
           disabled={ !enabled }
           error={ bypassPatternsList && !validateBypassPatterns(bypassPatternsList) }
           fullWidth
-          helperText='Comma-separated or semicolon-separated list of patterns to bypass proxy (e.g. localhost,127.0.0.1 or *.example.com; loca.internal.*)'
+          helperText='Semicolon-separated list of patterns to bypass proxy (e.g. localhost;127.0.0.1;*.example.com;loca.internal.*;142.0.*.*)'
           label='Bypass Patterns'
           onChange={ onBypassPatternsChange }
           value={ bypassPatternsList }
