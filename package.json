@@ -81,7 +81,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@loadmill/agent": "^0.1.183",
+    "@loadmill/agent": "^0.1.184",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.13",
     "async": "^3.2.4",
