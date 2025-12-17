@@ -10,7 +10,7 @@ import {
 import React, { useState } from 'react';
 
 import { ChangedSetting, ProxySettings } from '../../../types/settings';
-import { validateBypassPatterns } from '../../../universal/validate-host-patterns';
+import { validateBypassPatterns } from '../../../universal/host-patterns';
 
 import { SettingTitle } from './setting-title';
 

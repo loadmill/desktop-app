@@ -5,7 +5,7 @@ export const validateBypassPatterns = (list: string): boolean => {
     if (!list) {
       return true;
     }
-    const entries = list.split(';').map(e => e.trim()).filter(Boolean);
+    const entries = parseBypassPatterns(list);
     for (const entry of entries) {
       const isValid = BYPASS_ENTRY_REGEX.test(entry);
       if (!isValid) {
@@ -17,3 +17,9 @@ export const validateBypassPatterns = (list: string): boolean => {
     return false;
   }
 };
+
+export const parseBypassPatterns = (list: string = ''): string[] =>
+  list
+    .split(/[;,]/)
+    .map(e => e.trim())
+    .filter(Boolean);

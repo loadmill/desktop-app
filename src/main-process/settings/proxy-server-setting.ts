@@ -2,7 +2,7 @@ import { app } from 'electron';
 
 import log from '../../log';
 import { ProxySettings } from '../../types/settings';
-import { validateBypassPatterns } from '../../universal/validate-host-patterns';
+import { validateBypassPatterns } from '../../universal/host-patterns';
 import {
   useProxyAgent,
 } from '../fetch/https-agent';
