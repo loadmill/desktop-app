@@ -5,6 +5,7 @@ export type Settings = {
 };
 
 export type ProxySettings = DeprecatedProxySettings & {
+  bypassPatternsList?: string;
   enabled: boolean;
   host?: string;
   password?: string;

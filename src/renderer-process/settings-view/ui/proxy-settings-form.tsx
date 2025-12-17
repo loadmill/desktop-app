@@ -10,6 +10,7 @@ import {
 import React, { useState } from 'react';
 
 import { ChangedSetting, ProxySettings } from '../../../types/settings';
+import { validateBypassPatterns } from '../../../universal/host-patterns';
 
 import { SettingTitle } from './setting-title';
 
@@ -46,6 +47,7 @@ export const ProxySettingForm = ({
   const [port, setPort] = useState<string>(initialValues?.port?.toString() || '');
   const [username, setUsername] = useState<string>(initialValues?.username || '');
   const [password, setPassword] = useState<string>(initialValues?.password || '');
+  const [bypassPatternsList, setBypassPatternsList] = useState<string>(initialValues?.bypassPatternsList || '');
 
   const [hostError, setHostError] = useState<string>('');
   const [portError, setPortError] = useState<string>('');
@@ -79,17 +81,19 @@ export const ProxySettingForm = ({
 
       const portNum = parseInt(port, 10);
       const newSettings: ProxySettings = {
+        bypassPatternsList: bypassPatternsList || undefined,
         enabled,
         host,
         password: password || undefined,
         port: portNum,
         protocol,
-        url: `${protocol}://${host}:${port}`, // Keep for backward compatibility
+        url: `${protocol}://${host}:${port}`,
         username: username || undefined,
       };
       onSave({ name: 'proxy', value: newSettings });
     } else {
       const newSettings: ProxySettings = {
+        bypassPatternsList: bypassPatternsList || undefined,
         enabled,
         host,
         password: password || undefined,
@@ -118,6 +122,10 @@ export const ProxySettingForm = ({
     if (portError) {
       setPortError('');
     }
+  };
+
+  const onBypassPatternsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setBypassPatternsList(event.target.value);
   };
 
   return (
@@ -189,6 +197,21 @@ export const ProxySettingForm = ({
           onChange={ (event) => setPassword(event.target.value) }
           type='password'
           value={ password }
+        />
+      </Box>
+      <Box
+        display='flex'
+        gap={ 2 }
+        mt={ 2 }
+      >
+        <TextField
+          disabled={ !enabled }
+          error={ bypassPatternsList && !validateBypassPatterns(bypassPatternsList) }
+          fullWidth
+          helperText='Semicolon-separated list of patterns to bypass proxy (e.g. localhost;127.0.0.1;*.example.com;loca.internal.*;142.0.*.*)'
+          label='Bypass Patterns'
+          onChange={ onBypassPatternsChange }
+          value={ bypassPatternsList }
         />
       </Box>
       <Box mt={ 2 }>

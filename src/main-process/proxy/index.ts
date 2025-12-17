@@ -63,6 +63,10 @@ export const initProxyServer = async (): Promise<void> => {
       return callback();
     }
 
+    ctx.proxyToServerRequestOptions.agent = ctx.isSSL ?
+      getHttpsAgent(toFullUrl(ctx)) as https.Agent :
+      getHttpAgent(toFullUrl(ctx)) as http.Agent;
+
     const request = createRequest(ctx);
 
     handleResponse(request, ctx);
@@ -71,8 +75,6 @@ export const initProxyServer = async (): Promise<void> => {
   });
 
   proxy.listen({
-    httpAgent: getHttpAgent() as http.Agent,
-    httpsAgent: getHttpsAgent() as https.Agent,
     port: proxyPort,
     sslCaDir: PROXY_CERTIFICATES_DIR_PATH,
   }, () => log.info(`Proxy listening on port ${proxyPort}! and saving to ${PROXY_CERTIFICATES_DIR_PATH}`));
@@ -85,16 +87,20 @@ const createRequest = (ctx: Proxy.IContext): ProxyRequest => {
 };
 
 const toRequest = (ctx: Proxy.IContext): ProxyRequest => {
-  const protocol = 'http' + (ctx.isSSL ? 's' : '') + '://';
-
-  const { headers, method, url } = ctx.clientToProxyRequest;
-  const { host } = headers;
+  const { headers, method } = ctx.clientToProxyRequest;
 
   return {
     headers: toArrayHeaders(headers),
     method,
-    url: protocol + host + url,
+    url: toFullUrl(ctx),
   };
+};
+
+const toFullUrl = (ctx: Proxy.IContext): string => {
+  const protocol = 'http' + (ctx.isSSL ? 's' : '') + '://';
+  const { host } = ctx.clientToProxyRequest.headers;
+  const { url } = ctx.clientToProxyRequest;
+  return protocol + host + url;
 };
 
 const toArrayHeaders = (headers: http.IncomingHttpHeaders): Header[] => {

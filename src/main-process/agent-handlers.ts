@@ -86,12 +86,15 @@ const LOADMILL_AGENT = 'loadmill-agent';
 const LOADMILL_AGENT_PATH = path.join(PACKED_RELATIVE_PATH, LOADMILL_AGENT);
 
 const createAgentProcess = (): ChildProcessWithoutNullStreams => {
+  const proxySettings = getSettings()?.proxy;
+  const { enabled: proxyEnabled, bypassPatternsList } = proxySettings || {};
   const env = {
     CALLBACK_URL,
     HOME_DIR: USER_DATA_PATH,
     LOADMILL_AGENT_SERVER_URL,
     LOADMILL_AGENT_VERBOSE,
-    ...(getSettings()?.proxy?.enabled && { LOADMILL_PROXY_URL: buildProxyUrlWithCredentials(getSettings()?.proxy) }),
+    ...(bypassPatternsList && { LOADMILL_PROXY_BYPASS_LIST: bypassPatternsList }),
+    ...(proxyEnabled && { LOADMILL_PROXY_URL: buildProxyUrlWithCredentials(proxySettings) }),
     NODE_OPTIONS,
     NODE_TLS_REJECT_UNAUTHORIZED,
     PLAYWRIGHT_BROWSERS_PATH: '0',

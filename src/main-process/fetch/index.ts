@@ -4,7 +4,7 @@ import { getHttpsAgent } from './https-agent';
 
 const _fetch = async (path: string, reqInit: RequestInit = {}): Promise<Response> => {
   const response = await fetch(path, {
-    agent: getHttpsAgent(),
+    agent: getHttpsAgent(path),
     ...reqInit,
   });
   return response;
