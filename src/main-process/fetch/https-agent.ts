@@ -5,6 +5,7 @@ import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
 
 import log from '../../log';
 import { ProxySettings } from '../../types/settings';
+import { shouldProxy } from '../settings/proxy-bypass';
 import { sanitizeProxySettings } from '../settings/secret-sanitization';
 
 export type HttpsAgent = https.Agent | HttpsProxyAgent | null;
@@ -13,10 +14,18 @@ export type HttpAgent = http.Agent | HttpProxyAgent | null;
 type AgentType = 'http' | 'https';
 type Agent = HttpAgent | HttpsAgent;
 
-const agents: Record<AgentType, Agent> = {
+const proxyAgents: Record<AgentType, Agent> = {
   http: null,
   https: null,
 };
+
+const directAgents: Record<AgentType, Agent> = {
+  http: null,
+  https: null,
+};
+
+let currentProxySettings: ProxySettings | null = null;
+let isProxyEnabled = false;
 
 const agentOptions = {
   keepAlive: true,
@@ -26,43 +35,67 @@ const agentOptions = {
   rejectUnauthorized: false,
 };
 
-export const getHttpsAgent = (): HttpsAgent => {
-  if (!agents.https) {
-    _useDefaultAgent('https');
-  }
-  return agents.https as HttpsAgent;
+export const getHttpsAgent = (url?: string): HttpsAgent => {
+  return _getOrCreateAgent('https', url) as HttpsAgent;
 };
 
-export const getHttpAgent = (): HttpAgent => {
-  if (!agents.http) {
-    _useDefaultAgent('http');
+export const getHttpAgent = (url?: string): HttpAgent => {
+  return _getOrCreateAgent('http', url) as HttpAgent;
+};
+
+const _getOrCreateAgent = (type: AgentType, url?: string): Agent => {
+  if (isProxyEnabled && url) {
+    if (shouldProxy(url, currentProxySettings)) {
+      log.info('PROXYING request', { url });
+      return _getOrCreateProxyAgent(type) as HttpProxyAgent;
+    } else {
+      log.warn('BYPASSING proxy for request', { url });
+    }
   }
-  return agents.http as HttpAgent;
+
+  return _getOrCreateDirectAgent(type);
+};
+
+const _getOrCreateDirectAgent = (type: AgentType): Agent => {
+  if (!directAgents[type]) {
+    _createDirectAgent(type);
+  }
+  return directAgents[type];
+};
+
+const _getOrCreateProxyAgent = (type: AgentType): Agent => {
+  if (!proxyAgents[type]) {
+    _createProxyAgent(type, currentProxySettings);
+  }
+  return proxyAgents[type];
 };
 
 export const useProxyAgent = (proxySettings: ProxySettings): void => {
-  _useProxyAgent('https', proxySettings);
-  _useProxyAgent('http', proxySettings);
-};
-
-const _useProxyAgent = (type: AgentType, proxySettings: ProxySettings): void => {
-  _destroyAgent(type);
-  log.info(`Using proxy ${type.toUpperCase()} agent`, {
+  log.info('Enabling proxy agents', {
     proxySettings: sanitizeProxySettings(proxySettings),
   });
-  agents[type] = _createProxyAgent(type, proxySettings);
+
+  currentProxySettings = proxySettings;
+  isProxyEnabled = true;
+
+  _initializeProxyAgents(proxySettings);
+  _initializeDirectAgents();
 };
 
-const _useDefaultAgent = (type: AgentType): void => {
-  _destroyAgent(type);
-  log.info(`Using default ${type.toUpperCase()} agent`);
-  agents[type] = _createDefaultAgent(type);
+const _initializeProxyAgents = (proxySettings: ProxySettings): void => {
+  _createProxyAgent('https', proxySettings);
+  _createProxyAgent('http', proxySettings);
+};
+
+const _initializeDirectAgents = (): void => {
+  _createDirectAgent('https');
+  _createDirectAgent('http');
 };
 
 const _createProxyAgent = (
   type: AgentType,
   proxySettings: ProxySettings,
-): HttpProxyAgent | HttpsProxyAgent => {
+): void => {
   const proxyUrl = buildProxyUrlWithCredentials(proxySettings);
   const cleanUrl = _buildCleanProxyUrl(proxySettings);
   const hasEmbeddedCredentials = proxyUrl.includes('@');
@@ -75,27 +108,22 @@ const _createProxyAgent = (
   });
 
   const AgentClass = type === 'https' ? HttpsProxyAgent : HttpProxyAgent;
-  return new AgentClass({
+  proxyAgents[type] = new AgentClass({
     ...agentOptions,
     proxy: proxyUrl,
     scheduling: 'lifo',
   });
 };
 
-const _createDefaultAgent = (type: AgentType): http.Agent | https.Agent => {
-  const AgentClass = type === 'https' ? https.Agent : http.Agent;
-  return new AgentClass(agentOptions);
-};
-
-const _destroyAgent = (type: AgentType): void => {
-  const agent = agents[type];
-  if (agent) {
-    log.info(`Destroying ${type.toUpperCase()} agent`);
-    agent.destroy();
-    agents[type] = null;
-  } else {
-    log.debug(`No ${type.toUpperCase()} agent to destroy`);
+const _createDirectAgent = (type: AgentType): void => {
+  if (directAgents[type]) {
+    log.debug(`${type.toUpperCase()} direct agent already exists`);
+    return;
   }
+
+  log.info(`Creating direct ${type.toUpperCase()} agent`);
+  const AgentClass = type === 'https' ? https.Agent : http.Agent;
+  directAgents[type] = new AgentClass(agentOptions);
 };
 
 /**

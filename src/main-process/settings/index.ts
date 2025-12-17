@@ -10,7 +10,7 @@ import { defaultProxySettings } from '../../universal/default-settings';
 import { subscribeToMainProcessMessage } from '../main-events';
 import { relaunchDesktopApp } from '../relaunch';
 
-import { applyProxySettings, setProxyOnStartup } from './proxy-server-setting';
+import { setProxyOnStartup, shouldApplyProxySettings } from './proxy-server-setting';
 import { getSettings, setSettings } from './settings-store';
 import { setOnPremURLOnStartup } from './web-app-settings';
 
@@ -37,7 +37,7 @@ const onSettingChanged = async (
     if (changedSetting) {
       const { name, value } = changedSetting;
       if (name === 'proxy') {
-        await handleProxySettings(value as ProxySettings);
+        handleProxySettings(value as ProxySettings);
       } else {
         updateSettingsAndRelaunch(changedSetting);
       }
@@ -109,10 +109,10 @@ const getSettingsChangeMessage = (key: keyof Settings): string => {
   return 'Settings were changed';
 };
 
-const handleProxySettings = async (newProxySettings: ProxySettings) => {
+const handleProxySettings = (newProxySettings: ProxySettings) => {
   if (newProxySettings) {
     const currentSettings = getSettings();
-    const hasProxySettingsApplied = await applyProxySettings(
+    const shouldApplySettings = shouldApplyProxySettings(
       currentSettings?.proxy || defaultProxySettings,
       newProxySettings,
     );
@@ -121,7 +121,7 @@ const handleProxySettings = async (newProxySettings: ProxySettings) => {
       proxy: newProxySettings,
     });
 
-    if (hasProxySettingsApplied) {
+    if (shouldApplySettings) {
       dialog.showMessageBoxSync({
         buttons: ['Quit'],
         detail: 'For the changes to take effect the app needs to be restarted',

@@ -2,6 +2,7 @@ import { app } from 'electron';
 
 import log from '../../log';
 import { ProxySettings } from '../../types/settings';
+import { validateBypassPatterns } from '../../universal/validate-host-patterns';
 import {
   useProxyAgent,
 } from '../fetch/https-agent';
@@ -27,12 +28,13 @@ const _setProxyOnAppStart = (proxySettings: ProxySettings, source: string): void
   _setProxyForMainProcess(proxySettings);
 };
 
-export const applyProxySettings = async (
+export const shouldApplyProxySettings = (
   currentProxySettings: ProxySettings,
   newProxySettings: ProxySettings,
-): Promise<boolean> => {
+): boolean => {
   const enabledChanged = newProxySettings.enabled !== currentProxySettings.enabled;
   const settingsChanged =
+    newProxySettings.bypassPatternsList !== currentProxySettings.bypassPatternsList ||
     newProxySettings.host !== currentProxySettings.host ||
     newProxySettings.port !== currentProxySettings.port ||
     newProxySettings.username !== currentProxySettings.username ||
@@ -56,6 +58,13 @@ const _hasValidProxyConfig = (proxySettings: ProxySettings): boolean => {
   const valid = !!((proxySettings.host && proxySettings.port) || proxySettings.url);
   if (!valid) {
     log.warn('Proxy config is invalid', { proxySettings });
+  }
+  if (proxySettings.bypassPatternsList) {
+    const valid = validateBypassPatterns(proxySettings.bypassPatternsList);
+    if (!valid) {
+      log.warn('Proxy bypass patterns are invalid', { bypassPatternsList: proxySettings.bypassPatternsList });
+      return false;
+    }
   }
   return valid;
 };
@@ -82,6 +91,13 @@ const _setProxyForRendererProcess = (proxySettings: ProxySettings, source: strin
   });
   app.commandLine.appendSwitch('proxy-server', cleanProxyUrl);
   log.info('Proxy server applied for renderer process');
+  if (proxySettings.bypassPatternsList) {
+    log.info('Setting proxy bypass patterns for renderer process', {
+      bypassPatternsList: proxySettings.bypassPatternsList,
+    });
+    app.commandLine.appendSwitch('proxy-bypass-list', proxySettings.bypassPatternsList);
+    log.info('Proxy bypass patterns set for renderer process');
+  }
 };
 
 const _setProxyForMainProcess = (proxySettings: ProxySettings) => {
