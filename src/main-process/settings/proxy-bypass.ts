@@ -1,44 +1,35 @@
-import escapeRegExp from 'lodash/escapeRegExp';
+import micromatch from 'micromatch';
 
+import log from '../../log';
 import { ProxySettings } from '../../types/settings';
 
 export const shouldProxy = (url: string, proxySettings: ProxySettings): boolean => {
-  if (!proxySettings?.enabled) {
-    return false;
-  }
-
-  const bypassList = proxySettings.bypassPatternsList;
-
-  if (!bypassList || bypassList.trim() === '') {
-    return true; // No bypass patterns, proxy everything
-  }
-
-  if (bypassList.trim() === '*') {
-    return false; // Wildcard means bypass everything
-  }
-
-  let hostname: string;
   try {
-    hostname = new URL(url).hostname;
-  } catch (error) {
-    // Invalid URL, don't proxy
-    return false;
-  }
-
-  const patterns = bypassList.split(/[;,]/).map(p => p.trim()).filter(p => p);
-
-  for (const pattern of patterns) {
-    if (!pattern) {
-      continue;
-    }
-
-    const regexPattern = '^' + pattern.split('*').map(escapeRegExp).join('.*') + '$';
-    const regex = new RegExp(regexPattern);
-
-    if (regex.test(hostname)) {
+    if (!proxySettings?.enabled) {
       return false;
     }
-  }
 
-  return true;
+    const bypassList = proxySettings.bypassPatternsList;
+
+    if (!bypassList || bypassList.trim() === '') {
+      return true; // No bypass patterns, proxy everything
+    }
+
+    if (bypassList.trim() === '*') {
+      return false; // Wildcard means bypass everything
+    }
+
+    const hostname = new URL(url).hostname;
+
+    const patterns = bypassList.split(/[;,]/).map(p => p.trim()).filter(p => p);
+
+    if (micromatch.isMatch(hostname, patterns)) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    log.warn('Error evaluating should proxy', { error, url });
+    return false;
+  }
 };
