@@ -8,6 +8,7 @@ import { LoadmillViewRendererMessage } from '../../types/messaging';
 import { StartupProgress } from '../../types/startup-progress';
 import {
   CODEGEN,
+  CODEMIRROR_FOCUS_STATE,
   LOADMILL_DESKTOP,
   MAGIC_TOKEN,
   SET_IS_USER_SIGNED_IN,
@@ -19,6 +20,7 @@ import { subscribeToLoadmillViewMessages } from '../renderer-events';
 export const WINDOW_API: ApiForLoadmillBrowserView = {
   [CODEGEN]: (suiteId: string, flowId: string, stepId: string, url?: string) =>
     sendToMain(CODEGEN, { playwrightStepLocation: { flowId, stepId, suiteId }, url }),
+  [CODEMIRROR_FOCUS_STATE]: (isFocused: boolean) => sendToMain(CODEMIRROR_FOCUS_STATE, { isFocused }),
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => sendToMain(SET_IS_USER_SIGNED_IN, { isSignedIn }),
   [STARTUP_PROGRESS]: (startupProgress: StartupProgress) => sendToMain(STARTUP_PROGRESS, { startupProgress }),
 };

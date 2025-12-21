@@ -2,6 +2,7 @@ import {
   ANALYZE_REQUESTS,
   CLEAR_ALL_ENTRIES,
   CODEGEN,
+  CODEMIRROR_FOCUS_STATE,
   COPY_URL,
   CREATE_TEST,
   DELETE_ENTRIES,
@@ -33,8 +34,7 @@ import {
   STARTUP_PROGRESS,
   STOP_AGENT,
   SWITCH_VIEW,
-  TOGGLE_MAXIMIZE_WINDOW,
-} from '../universal/constants';
+  TOGGLE_MAXIMIZE_WINDOW } from '../universal/constants';
 
 import { IpAddressFamily } from './ip-address';
 import { ChangedSetting } from './settings';
@@ -70,6 +70,7 @@ export type ApiForMainWindow = {
 
 export type ApiForLoadmillBrowserView = {
   [CODEGEN]: (suiteId: string, flowId: string, stepId: string, url?: string) => void;
+  [CODEMIRROR_FOCUS_STATE]: (isFocused: boolean) => void;
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => void;
   [STARTUP_PROGRESS]: (startupProgress: StartupProgress) => void;
 };
