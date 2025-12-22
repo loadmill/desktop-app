@@ -9,6 +9,7 @@ import { setBrowserViewSize } from '../screen-size';
 export const switchView = (mainWindow: BrowserWindow, view: WebContentsView): void => {
   setBrowserViewSize(view, mainWindow.getBounds());
   mainWindow.contentView.addChildView(view);
+  view.webContents.focus();
 };
 
 export const subscribeToSwitchView = (
