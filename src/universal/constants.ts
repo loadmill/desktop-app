@@ -7,7 +7,6 @@ export const
   CLEAR_ALL_ENTRIES = 'clearAllEntries',
   CLOSE = 'close',
   CODEGEN = 'codegen',
-  CODEMIRROR_FOCUS_STATE = 'codeMirrorFocusState',
   COPY_URL = 'copyUrl',
   CREATE_TEST = 'createTest',
   CREATE_TEST_COMPLETE = 'createTestComplete',

@@ -3,7 +3,6 @@ import {
   ANALYZE_REQUESTS_COMPLETE,
   CLEAR_ALL_ENTRIES,
   CODEGEN,
-  CODEMIRROR_FOCUS_STATE,
   COPY_URL,
   CREATE_TEST,
   CREATE_TEST_COMPLETE,
@@ -190,7 +189,6 @@ export type AgentMessageTypes =
 export type MainMessageTypes =
   typeof ANALYZE_REQUESTS |
   typeof CLEAR_ALL_ENTRIES |
-  typeof CODEMIRROR_FOCUS_STATE |
   typeof CODEGEN |
   typeof COPY_URL |
   typeof CREATE_TEST |

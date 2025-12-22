@@ -4,9 +4,9 @@ import {
   sendFromMainWindowToRenderer,
 } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
-import { CODEMIRROR_FOCUS_STATE, SHOW_FIND_ON_PAGE } from '../universal/constants';
+import { SHOW_FIND_ON_PAGE } from '../universal/constants';
 
-import { subscribeToMainProcessMessage } from './main-events';
+import { getMainWindow } from './main-window';
 
 enum ACCLERATOR {
   ESCAPE = 'Escape',
@@ -31,8 +31,6 @@ app.whenReady().then(() => {
     globalShortcut.unregisterAll();
     log.info('Unregistered all keybindings on app quit');
   });
-
-  subscribeToMainProcessMessage(CODEMIRROR_FOCUS_STATE, onCodeMirrorFocusStateChanged);
 });
 
 const registerAllKeyBindings = () => {
@@ -42,6 +40,7 @@ const registerAllKeyBindings = () => {
 
 const registerEscapeKeyBind = () => {
   registerKeyBind(ACCLERATOR.ESCAPE, () => {
+    getMainWindow()?.webContents.sendInputEvent({ keyCode: 'Escape', type: 'keyDown' });
     sendFromMainWindowToRenderer({
       data: { shouldShowFind: false },
       type: SHOW_FIND_ON_PAGE,

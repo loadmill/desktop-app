@@ -2,7 +2,6 @@ import {
   ANALYZE_REQUESTS,
   CLEAR_ALL_ENTRIES,
   CODEGEN,
-  CODEMIRROR_FOCUS_STATE,
   COPY_URL,
   CREATE_TEST,
   DELETE_ENTRIES,
@@ -70,7 +69,6 @@ export type ApiForMainWindow = {
 
 export type ApiForLoadmillBrowserView = {
   [CODEGEN]: (suiteId: string, flowId: string, stepId: string, url?: string) => void;
-  [CODEMIRROR_FOCUS_STATE]: (isFocused: boolean) => void;
   [SET_IS_USER_SIGNED_IN]: (isSignedIn: boolean) => void;
   [STARTUP_PROGRESS]: (startupProgress: StartupProgress) => void;
 };
