@@ -1,70 +1,135 @@
-import { app, globalShortcut } from 'electron';
-
-import {
-  sendFromMainWindowToRenderer,
-} from '../inter-process-communication/to-renderer-process/main-to-renderer';
+import { sendFromMainWindowToRenderer } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
+import { ViewName } from '../types/views';
 import { SHOW_FIND_ON_PAGE } from '../universal/constants';
 
-enum ACCLERATOR {
-  ESCAPE = 'Escape',
-  FIND = 'CommandOrControl+F',
-}
+import { getMainWindow } from './main-window';
+import { getViewByName, getViews } from './views';
 
-app.whenReady().then(() => {
-  app.on('browser-window-focus', () => {
-    registerAllKeyBindings();
+type KeybindingSubscriptionTarget = {
+  name: string;
+  webContents: Electron.WebContents;
+};
+
+type FindInPageAction = 'open' | 'close';
+
+export const subscribeToKeybindings = (): void => {
+  log.info('Setting up keybindings...');
+  const subscriptionTargets = getKeybindingSubscriptionTargets();
+
+  log.info('Subscribing to before-input-event on targets', {
+    subscriptionTargets: subscriptionTargets.map((t) => ({ id: t.webContents.id, name: t.name })),
   });
 
-  app.on('browser-window-blur', () => {
-    globalShortcut.unregisterAll();
-  });
+  for (const target of subscriptionTargets) {
+    subscribeToFindInPageShortcuts(target);
+  }
+  log.info('Keybindings setup complete.');
+};
 
-  app.on('will-quit', () => {
-    for (const accelerator of Object.values(ACCLERATOR)) {
-      globalShortcut.unregister(accelerator);
+const getKeybindingSubscriptionTargets = (): KeybindingSubscriptionTarget[] => {
+  const mainWindow = getMainWindow();
+  const views = getViews();
+
+  return [
+    { name: 'mainWindow', webContents: mainWindow.webContents },
+    ...views.map((v) => ({ name: v.name, webContents: v.view.webContents })),
+  ];
+};
+
+const subscribeToFindInPageShortcuts = (target: KeybindingSubscriptionTarget) => {
+  log.info('Subscribing to before-input-event (find in page) for target', { id: target.webContents.id, name: target.name });
+  const { webContents } = target;
+  webContents.on('before-input-event', async (event, input) => {
+    try {
+      if (input.type !== 'keyDown') {
+        return;
+      }
+
+      const action = getFindAction(input);
+      if (!action) {
+        return;
+      }
+
+      if (await shouldIgnoreFindInPageShortcuts(webContents)) {
+        log.info('Ignoring find-in-page shortcut: CodeMirror context active');
+        return;
+      }
+
+      event.preventDefault();
+
+      if (action === 'open') {
+        handleOpenFindOnPage();
+        return;
+      }
+
+      handleCloseFindOnPage(webContents);
+    } catch (error) {
+      log.error('Error while handling before-input-event', error);
     }
-    globalShortcut.unregisterAll();
-  });
-
-});
-
-const registerAllKeyBindings = () => {
-  registerEscapeKeyBind();
-  registerFindKeyBind();
-};
-
-const registerEscapeKeyBind = () => {
-  registerKeyBind(ACCLERATOR.ESCAPE, () => {
-    sendFromMainWindowToRenderer({
-      data: { shouldShowFind: false },
-      type: SHOW_FIND_ON_PAGE,
-    });
   });
 };
 
-const registerFindKeyBind = () => {
-  registerKeyBind(ACCLERATOR.FIND, () => {
-    sendFromMainWindowToRenderer({
-      data: { shouldShowFind: true },
-      type: SHOW_FIND_ON_PAGE,
-    });
-  });
+const isLoadmillWebPage = (webContents: Electron.WebContents): boolean =>
+  webContents.id === getViewByName(ViewName.WEB_PAGE)?.webContents.id;
+
+const shouldIgnoreFindInPageShortcuts = async (webContents: Electron.WebContents): Promise<boolean> =>
+  isLoadmillWebPage(webContents) &&
+  await isCodeMirrorContextActive(webContents);
+
+const getFindAction = (input: Electron.Input): FindInPageAction | null => {
+  if (isCmdOrCtrlKeyAndFKey(input)) {
+    return 'open';
+  }
+  if (isEscapeKey(input)) {
+    return 'close';
+  }
+  return null;
 };
 
-const registerKeyBind = (
-  accelerator: Electron.Accelerator,
-  callback: () => void,
-) => {
-  const isSuccessful = globalShortcut.register(accelerator, callback);
-  logFailedRegistration(isSuccessful, accelerator);
-};
-
-const logFailedRegistration = (
-  isSuccessful: boolean,
-  accelerator: Electron.Accelerator,
-) => {
-  if (!isSuccessful) {
-    log.info(accelerator + ' registration failed');
+const isCodeMirrorContextActive = async (webContents: Electron.WebContents): Promise<boolean> => {
+  try {
+    return await webContents.executeJavaScript(`
+      (() => {
+        const active = document.activeElement;
+        if (!active || typeof active.closest !== 'function') return false;
+        // CodeMirror moves focus to its own UI (e.g., search/replace panel input),
+        // which may NOT set .cm-editor.cm-focused.
+        return Boolean(active.closest('.cm-editor, .cm-panels, .cm-panel, .cm-tooltip'));
+      })();
+    `);
+  } catch (error) {
+    log.error('Error while checking if CodeMirror context is active', error);
+    return false;
   }
 };
+
+const handleOpenFindOnPage = () => {
+  log.info('Opening find on page');
+  getMainWindow().webContents.focus();
+  sendFromMainWindowToRenderer({
+    data: { shouldShowFind: true },
+    type: SHOW_FIND_ON_PAGE,
+  });
+};
+
+const handleCloseFindOnPage = (webContents: Electron.WebContents) => {
+  log.info('Closing find on page');
+  webContents.focus();
+  sendFromMainWindowToRenderer({
+    data: { shouldShowFind: false },
+    type: SHOW_FIND_ON_PAGE,
+  });
+};
+
+const isCmdOrCtrlKeyAndFKey = (input: Electron.Input) =>
+  isCmdOrCtrlKey(input) && isFKey(input);
+
+const isCmdOrCtrlKey = (input: Electron.Input) =>
+  input.meta || input.control;
+
+const isFKey = (input: Electron.Input) =>
+  input.key.toLowerCase() === 'f';
+
+const isEscapeKey = (input: Electron.Input) =>
+  input.key.toLowerCase() === 'escape';

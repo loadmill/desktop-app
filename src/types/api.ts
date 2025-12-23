@@ -33,8 +33,7 @@ import {
   STARTUP_PROGRESS,
   STOP_AGENT,
   SWITCH_VIEW,
-  TOGGLE_MAXIMIZE_WINDOW,
-} from '../universal/constants';
+  TOGGLE_MAXIMIZE_WINDOW } from '../universal/constants';
 
 import { IpAddressFamily } from './ip-address';
 import { ChangedSetting } from './settings';

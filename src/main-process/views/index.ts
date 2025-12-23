@@ -28,6 +28,8 @@ export const initializeViews = (window: BrowserWindow): void => {
   subscribeToSwitchView(mainWindow, loadmillWebView, proxyView, agentView, settingsView);
 };
 
+export const getViews = (): View[] => views;
+
 const setViews = (
   loadmillWebView: WebContentsView,
   proxyView: WebContentsView,
