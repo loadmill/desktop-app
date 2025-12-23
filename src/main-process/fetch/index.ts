@@ -17,9 +17,13 @@ export {
 };
 
 const getAgentByProtocol = (url: string) => {
-  const urlObj = new URL(url);
-  if (urlObj.protocol === 'http:') {
-    return getHttpAgent(url);
+  try {
+    const urlObj = new URL(url);
+    if (urlObj.protocol === 'http:') {
+      return getHttpAgent(url);
+    }
+    return getHttpsAgent(url);
+  } catch (e) {
+    return getHttpsAgent(url);
   }
-  return getHttpsAgent(url);
 };
