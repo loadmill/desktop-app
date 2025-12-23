@@ -82,6 +82,17 @@ const createWindow = () => {
       preload: STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
+  startupWindow.on(CLOSE, (event: Electron.Event) => {
+    if (forceQuit) {
+      setStartupWindow(null);
+      return;
+    }
+
+    if (process.platform === PLATFORM.DARWIN) {
+      event.preventDefault();
+      startupWindow.hide();
+    }
+  });
   startupWindow.loadURL(STARTUP_WINDOW_WEBPACK_ENTRY);
   setStartupWindow(startupWindow);
   registerStartupProgressTarget(startupWindow, 'startupWindow');
