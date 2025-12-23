@@ -40,23 +40,33 @@ const getKeybindingSubscriptionTargets = (): KeybindingSubscriptionTarget[] => {
 const subscribeToFindInPageShortcuts = (target: KeybindingSubscriptionTarget) => {
   log.info('Subscribing to before-input-event (find in page) for target', { id: target.webContents.id, name: target.name });
   const { webContents } = target;
-  webContents.on('before-input-event', async (_event, input) => {
-    const action = getFindAction(input);
-    if (!action) {
-      return;
-    }
+  webContents.on('before-input-event', async (event, input) => {
+    try {
+      if (input.type !== 'keyDown') {
+        return;
+      }
 
-    if (await shouldIgnoreFindInPageShortcuts(webContents)) {
-      log.info('Ignoring find-in-page shortcut: CodeMirror context active');
-      return;
-    }
+      const action = getFindAction(input);
+      if (!action) {
+        return;
+      }
 
-    if (action === 'open') {
-      handleOpenFindOnPage();
-      return;
-    }
+      if (await shouldIgnoreFindInPageShortcuts(webContents)) {
+        log.info('Ignoring find-in-page shortcut: CodeMirror context active');
+        return;
+      }
 
-    handleCloseFindOnPage(webContents);
+      event.preventDefault();
+
+      if (action === 'open') {
+        handleOpenFindOnPage();
+        return;
+      }
+
+      handleCloseFindOnPage(webContents);
+    } catch (error) {
+      log.error('Error while handling before-input-event', error);
+    }
   });
 };
 
@@ -77,16 +87,22 @@ const getFindAction = (input: Electron.Input): FindInPageAction | null => {
   return null;
 };
 
-const isCodeMirrorContextActive = async (webContents: Electron.WebContents): Promise<boolean> =>
-  await webContents.executeJavaScript(`
-    (() => {
-      const active = document.activeElement;
-      if (!active || typeof active.closest !== 'function') return false;
-      // CodeMirror moves focus to its own UI (e.g., search/replace panel input),
-      // which may NOT set .cm-editor.cm-focused.
-      return Boolean(active.closest('.cm-editor, .cm-panels, .cm-panel, .cm-tooltip'));
-    })();
-`);
+const isCodeMirrorContextActive = async (webContents: Electron.WebContents): Promise<boolean> => {
+  try {
+    return await webContents.executeJavaScript(`
+      (() => {
+        const active = document.activeElement;
+        if (!active || typeof active.closest !== 'function') return false;
+        // CodeMirror moves focus to its own UI (e.g., search/replace panel input),
+        // which may NOT set .cm-editor.cm-focused.
+        return Boolean(active.closest('.cm-editor, .cm-panels, .cm-panel, .cm-tooltip'));
+      })();
+    `);
+  } catch (error) {
+    log.error('Error while checking if CodeMirror context is active', error);
+    return false;
+  }
+};
 
 const handleOpenFindOnPage = () => {
   log.info('Opening find on page');
