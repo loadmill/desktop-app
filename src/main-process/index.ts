@@ -37,7 +37,7 @@ import { collectProxyServerData } from './settings/proxy-server-data-collection'
 import { initProxyAuthHandler } from './settings/proxy-server-setting';
 import { symlinkPlaywright } from './standalone-playwright/symlink-playwright';
 import { registerStartupProgressTarget } from './startup-progress';
-import { setStartupWindow } from './startup-window';
+import { getStartupWindow, setStartupWindow } from './startup-window';
 import { initUpdater } from './update-electron-app';
 import {
   initializeViews,
@@ -137,6 +137,14 @@ app.on(ACTIVATE, () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     } else {
+      const startupWindow = getStartupWindow();
+      if (startupWindow && !startupWindow.isDestroyed()) {
+        if (!startupWindow.isVisible()) {
+          startupWindow.show();
+        }
+        startupWindow.focus();
+        return;
+      }
       const mainWindow = getMainWindow();
       if (mainWindow) {
         mainWindow.show();
