@@ -4,6 +4,7 @@ import path from 'path';
 import log from '../../log';
 import {
   STANDALONE_PLAYWRIGHT_DIR_PATH,
+  USER_DATA_NODE_MODULES_PATH,
   USER_DATA_PATH,
 } from '../constants';
 
@@ -13,9 +14,7 @@ import {
 export const symlinkPlaywright = (): void => {
   log.info('Starting to set up Playwright package in user data path...');
   try {
-    const symlinkNodeModulesPath = path.join(USER_DATA_PATH, 'node_modules');
-
-    if (_isSymlink(symlinkNodeModulesPath)) {
+    if (_isSymlink(USER_DATA_NODE_MODULES_PATH)) {
       log.info('node_modules is already a symlink, nothing to do');
     } else {
       log.info('node_modules is not a symlink, proceeding to set up symlink...');
@@ -31,12 +30,10 @@ export const symlinkPlaywright = (): void => {
 
 const _removePlaywrightPackageIfExists = (): void => {
   log.info('Removing existing Playwright package if exists...');
-  const userDataPath = USER_DATA_PATH;
-  const nodeModulesPath = path.join(userDataPath, 'node_modules');
-  const packageJsonPath = path.join(userDataPath, 'package.json');
-  const packageLockPath = path.join(userDataPath, 'package-lock.json');
+  const packageJsonPath = path.join(USER_DATA_PATH, 'package.json');
+  const packageLockPath = path.join(USER_DATA_PATH, 'package-lock.json');
 
-  const pathsToRemove = [nodeModulesPath, packageJsonPath, packageLockPath];
+  const pathsToRemove = [USER_DATA_NODE_MODULES_PATH, packageJsonPath, packageLockPath];
   log.info('Paths to remove if they exist:', pathsToRemove);
 
   for (const p of pathsToRemove) {
@@ -49,7 +46,7 @@ const _removePlaywrightPackageIfExists = (): void => {
 };
 
 const _createSymlink = (): void => {
-  const dest = path.join(USER_DATA_PATH, 'node_modules');
+  const dest = USER_DATA_NODE_MODULES_PATH;
   const src = path.join(STANDALONE_PLAYWRIGHT_DIR_PATH, 'node_modules');
 
   log.info('Creating symlink for Playwright package...', { dest, src });
