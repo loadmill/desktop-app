@@ -22,7 +22,7 @@ import {
 import { killAgentProcess, subscribeToAgentEventsFromRenderer } from './agent-handlers';
 import { subscribeToCodegenEvents } from './codegen';
 import './deep-link';
-import './keybindings';
+import { subscribeToKeybindings } from './keybindings';
 import {
   getMainWindow,
   setMainWindow,
@@ -106,6 +106,7 @@ const createWindow = () => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   subscribeToToggleMaximizeWindow(mainWindow);
   initializeViews(mainWindow);
+  subscribeToKeybindings();
 };
 
 app.on(BEFORE_QUIT, () => {

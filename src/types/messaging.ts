@@ -92,6 +92,7 @@ export abstract class MainMessage implements IPCMessage {
     filterRegex?: string;
     ipvFamily?: IpAddressFamily;
     isConnected?: boolean;
+    isFocused?: boolean;
     isRecording?: boolean;
     isSignedIn?: boolean;
     playwrightStepLocation?: PlaywrightStepLocation;
