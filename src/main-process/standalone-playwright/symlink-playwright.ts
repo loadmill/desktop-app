@@ -46,15 +46,25 @@ const _removeOldPlaywrightPackageIfExists = (): void => {
   const packageLockPath = path.join(USER_DATA_PATH, 'package-lock.json');
 
   const pathsToRemove = [USER_DATA_NODE_MODULES_PATH, packageJsonPath, packageLockPath];
-  log.info('Paths to remove if they exist:', pathsToRemove);
+
+  const removedPaths: string[] = [];
 
   for (const p of pathsToRemove) {
     if (fs.existsSync(p)) {
       log.info(`Removing old file: ${p}`);
       fs.rmSync(p, { force: true, recursive: true });
+      removedPaths.push(p);
     }
   }
-  log.info('Old Playwright package removal process completed.');
+
+  if (removedPaths.length === 0) {
+    log.info('No old Playwright package files were found to remove.', pathsToRemove);
+  } else {
+    log.info('Old Playwright package removal process completed.', {
+      removedCount: removedPaths.length,
+      removedPaths,
+    });
+  }
 };
 
 const _createSymlink = (): void => {
