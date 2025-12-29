@@ -14,11 +14,11 @@ import {
 export const symlinkPlaywright = (): void => {
   log.info('Starting to set up Playwright package in user data path...');
   try {
-    if (_isSymlink(USER_DATA_NODE_MODULES_PATH)) {
-      log.info('node_modules is already a symlink, nothing to do');
+    if (_isValidSymlink(USER_DATA_NODE_MODULES_PATH)) {
+      log.info('Playwright package symlink already exists and is valid:', USER_DATA_NODE_MODULES_PATH);
     } else {
-      log.info('node_modules is not a symlink, proceeding to set up symlink...');
-      _removePlaywrightPackageIfExists();
+      _removePlaywrightPackageSymlinkIfExists();
+      _removeOldPlaywrightPackageIfExists();
       _createSymlink();
     }
   } catch (error) {
@@ -28,7 +28,19 @@ export const symlinkPlaywright = (): void => {
   log.info('Finished setting up Playwright package in user data path.');
 };
 
-const _removePlaywrightPackageIfExists = (): void => {
+const _removePlaywrightPackageSymlinkIfExists = (): void => {
+  log.info('Checking for existing Playwright package symlink...');
+
+  if (_isDanglingSymlink(USER_DATA_NODE_MODULES_PATH)) {
+    log.info('Found dangling symlink for Playwright package:', USER_DATA_NODE_MODULES_PATH);
+    fs.rmSync(USER_DATA_NODE_MODULES_PATH);
+    log.info('Removed dangling symlink for Playwright package:', USER_DATA_NODE_MODULES_PATH);
+  } else {
+    log.info('No dangling symlink found for Playwright package.');
+  }
+};
+
+const _removeOldPlaywrightPackageIfExists = (): void => {
   log.info('Removing existing Playwright package if exists...');
   const packageJsonPath = path.join(USER_DATA_PATH, 'package.json');
   const packageLockPath = path.join(USER_DATA_PATH, 'package-lock.json');
@@ -66,4 +78,12 @@ const _isSymlink = (p: string): boolean => {
   } catch {
     return false;
   }
+};
+
+const _isDanglingSymlink = (p: string): boolean => {
+  return _isSymlink(p) && !fs.existsSync(p);
+};
+
+const _isValidSymlink = (p: string): boolean => {
+  return _isSymlink(p) && fs.existsSync(p);
 };
