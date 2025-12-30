@@ -17,3 +17,4 @@ export const CALLBACK_URL = process.env.CALLBACK_URL;
 export const PLAYWRIGHT_TEST_PACKAGE_CLI_PATH_FOR_CODEGEN = path.join(
   STANDALONE_PLAYWRIGHT_DIR_PATH,
   'node_modules', '@playwright', 'test', 'cli.js');
+export const USER_DATA_NODE_MODULES_PATH = path.join(USER_DATA_PATH, 'node_modules');
