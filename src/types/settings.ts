@@ -1,4 +1,5 @@
 export type Settings = {
+  agentUrl?: string;
   autoUpdate?: boolean;
   onPremURL?: string;
   proxy?: ProxySettings;

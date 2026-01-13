@@ -106,6 +106,9 @@ const getSettingsChangeMessage = (key: keyof Settings): string => {
   if (key === 'onPremURL') {
     return 'On-Prem URL setting was changed';
   }
+  if (key === 'agentUrl') {
+    return 'Agent URL setting was changed';
+  }
   return 'Settings were changed';
 };
 
