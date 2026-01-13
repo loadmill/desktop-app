@@ -107,3 +107,18 @@ body {
 .show-when-hover-container:hover .show-when-hover {
     opacity: 1;
 }
+
+.settings-page-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.settings-page-wrapper::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

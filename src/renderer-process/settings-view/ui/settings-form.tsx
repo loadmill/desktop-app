@@ -8,15 +8,18 @@ import {
   ProxySettings,
 } from '../../../types/settings';
 
+import { AgentUrlSettingForm } from './agent-url-setting-form';
 import { AutoUpdateSettingForm } from './auto-update-setting-form';
 import { OnPremSettingForm } from './on-prem-setting-form';
 import { ProxySettingForm } from './proxy-settings-form';
 
 export const SettingsForm = ({
+  agentUrl,
   autoUpdate,
   onPremURL,
   onSave,
   proxySettings,
+  setAgentUrl,
   setAutoUpdate,
   setOnPremURL,
 }: SettingsFormProps): JSX.Element => {
@@ -42,15 +45,23 @@ export const SettingsForm = ({
         onSave={ onSave }
         setOnPremURL={ setOnPremURL }
       />
+      <Divider />
+      <AgentUrlSettingForm
+        agentUrl={ agentUrl }
+        onSave={ onSave }
+        setAgentUrl={ setAgentUrl }
+      />
     </form>
   );
 };
 
 export type SettingsFormProps = {
+  agentUrl: string;
   autoUpdate: boolean;
   onPremURL: string;
   onSave: (changedSetting: ChangedSetting) => void;
   proxySettings: ProxySettings;
+  setAgentUrl: (agentUrl: string) => void;
   setAutoUpdate: (autoUpdate: boolean) => void;
   setOnPremURL: (onPremURL: string) => void;
 };

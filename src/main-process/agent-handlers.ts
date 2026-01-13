@@ -46,8 +46,8 @@ import { subscribeToMainProcessMessage } from './main-events';
 import { get, set } from './persistence-store';
 import { AgentActions, LAST_AGENT_ACTION, TOKEN } from './persistence-store/constants';
 import { clearProfiles } from './profiles';
+import { getLoadmillAgentServerUrl } from './settings/agent-server-url';
 import { getSettings } from './settings/settings-store';
-import { LOADMILL_AGENT_SERVER_URL } from './settings/web-app-settings';
 import { clearSuites } from './suites';
 import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
@@ -91,7 +91,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
   const env = {
     CALLBACK_URL,
     HOME_DIR: USER_DATA_PATH,
-    LOADMILL_AGENT_SERVER_URL,
+    LOADMILL_AGENT_SERVER_URL: getLoadmillAgentServerUrl(),
     LOADMILL_AGENT_VERBOSE,
     ...(bypassPatternsList && { LOADMILL_PROXY_BYPASS_LIST: bypassPatternsList }),
     ...(proxyEnabled && { LOADMILL_PROXY_URL: buildProxyUrlWithCredentials(proxySettings) }),

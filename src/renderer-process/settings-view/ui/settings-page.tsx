@@ -17,6 +17,7 @@ export const SettingsPage = (): JSX.Element => {
   const [autoUpdateSetting, setAutoUpdateSetting] = useState<boolean>(defaultAutoUpdateSetting);
   const [proxySettings, setProxySettings] = useState<ProxySettings>(defaultProxySettings);
   const [onPremUrl, setOnPremUrl] = useState<string>('');
+  const [agentUrl, setAgentUrl] = useState<string>('');
 
   const [loadingSettings, setLoadingSettings] = useState<boolean>(true);
 
@@ -55,6 +56,7 @@ export const SettingsPage = (): JSX.Element => {
       setAutoUpdateSetting(settings.autoUpdate);
       setProxySettings(settings.proxy || { enabled: false, url: '' });
       setOnPremUrl(settings.onPremURL || '');
+      setAgentUrl(settings.agentUrl || '');
     } else {
       setSnackBarMessage('Failed to get settings');
       setSnackBarSeverity('error');
@@ -87,12 +89,7 @@ export const SettingsPage = (): JSX.Element => {
 
   return (
     <div
-      className='page-wrapper'
-      style={ {
-        alignItems: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-      } }
+      className='page-wrapper settings-page-wrapper'
     >
       <h1>Settings</h1>
 
@@ -108,22 +105,24 @@ export const SettingsPage = (): JSX.Element => {
         </>
       ) : (
         <SettingsForm
+          agentUrl={ agentUrl }
           autoUpdate={ autoUpdateSetting }
           onPremURL={ onPremUrl }
           onSave={ saveChangedSetting }
           proxySettings={ proxySettings }
+          setAgentUrl={ setAgentUrl }
           setAutoUpdate={ setAutoUpdateSetting }
           setOnPremURL={ setOnPremUrl }
         />
       )}
       {
         openSnackBar &&
-          <CustomizedSnackbars
-            message={ snackBarMessage }
-            onClose={ onCloseSnackBar }
-            open={ openSnackBar }
-            severity={ snackBarSeverity }
-          />
+        <CustomizedSnackbars
+          message={ snackBarMessage }
+          onClose={ onCloseSnackBar }
+          open={ openSnackBar }
+          severity={ snackBarSeverity }
+        />
       }
     </div>
   );
