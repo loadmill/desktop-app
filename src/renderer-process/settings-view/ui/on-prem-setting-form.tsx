@@ -1,74 +1,23 @@
-import {
-  Box,
-  Button,
-  TextField,
-} from '@mui/material';
-import React, { useState } from 'react';
+
+import React from 'react';
 
 import { ChangedSetting } from '../../../types/settings';
 
-import { SettingTitle } from './setting-title';
+import { UrlSettingForm } from './url-setting-form';
 
 export const OnPremSettingForm = ({
   onSave,
   setOnPremURL,
   onPremURL,
-}: OnPremSettingFormProps): JSX.Element => {
-
-  const [initialOnPremURL] = useState<string>(onPremURL);
-  const [urlError, setUrlError] = useState<string>('');
-
-  const validateUrl = (url: string): void => {
-    if (url === '') {
-      setUrlError('');
-    } else {
-      try {
-        new URL(url);
-        setUrlError('');
-      } catch (error) {
-        setUrlError('Invalid URL');
-      }
-    }
-  };
-
-  const isUrlChanged = onPremURL !== initialOnPremURL;
-
-  const onUpdateSettingsChange = () => {
-    onSave({ name: 'onPremURL', value: onPremURL });
-  };
-
-  return (
-    <Box
-      mb={ 4 }
-      mt={ 4 }
-    >
-      <SettingTitle title='Loadmill On Premises URL' />
-      <TextField
-        error={ !!urlError }
-        fullWidth
-        helperText={ urlError }
-        label='On Premises URL'
-        margin='normal'
-        onChange={ (event) => {
-          setOnPremURL(event.target.value);
-          validateUrl(event.target.value);
-        } }
-        value={ onPremURL }
-      />
-      <Button
-        color='primary'
-        disabled={ !!urlError || !isUrlChanged }
-        onClick={ onUpdateSettingsChange }
-        size='small'
-        style={ { marginTop: 8 } }
-        variant='contained'
-      >
-        Save
-      </Button>
-    </Box>
-  );
-
-};
+}: OnPremSettingFormProps): JSX.Element =>
+  <UrlSettingForm
+    label='On Premises URL'
+    onSave={ onSave }
+    setUrl={ setOnPremURL }
+    settingName='onPremURL'
+    title='Loadmill On Premises URL'
+    url={ onPremURL }
+  />;
 
 export type OnPremSettingFormProps = {
   onPremURL: string;
