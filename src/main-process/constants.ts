@@ -7,6 +7,7 @@ config();
 
 export const USER_DATA_PATH = app.getPath('userData');
 export const LOADMILL_AGENT_VERBOSE = process.env.LOADMILL_AGENT_VERBOSE || 'true';
+export const LOADMILL_AGENT_LOG_LEVEL = process.env.LOADMILL_AGENT_LOG_LEVEL || 'DEBUG';
 export const UI_TESTS_ENABLED = process.env.UI_TESTS_ENABLED || 'true';
 const STANDALONES_PATH = process.env.NODE_ENV === 'production' ? process.resourcesPath : app.getAppPath();
 export const STANDALONE_PLAYWRIGHT_DIR_PATH = path.join(STANDALONES_PATH, 'standalone_playwright');
