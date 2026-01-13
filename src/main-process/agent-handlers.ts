@@ -34,6 +34,7 @@ import {
 } from './connected-status';
 import {
   CALLBACK_URL,
+  LOADMILL_AGENT_LOG_LEVEL,
   LOADMILL_AGENT_VERBOSE,
   NODE_OPTIONS,
   NODE_TLS_REJECT_UNAUTHORIZED,
@@ -93,6 +94,7 @@ const createAgentProcess = (): ChildProcessWithoutNullStreams => {
     HOME_DIR: USER_DATA_PATH,
     LOADMILL_AGENT_SERVER_URL: getLoadmillAgentServerUrl(),
     LOADMILL_AGENT_VERBOSE,
+    LOG_LEVEL: LOADMILL_AGENT_LOG_LEVEL,
     ...(bypassPatternsList && { LOADMILL_PROXY_BYPASS_LIST: bypassPatternsList }),
     ...(proxyEnabled && { LOADMILL_PROXY_URL: buildProxyUrlWithCredentials(proxySettings) }),
     NODE_OPTIONS,
