@@ -3,6 +3,7 @@ import {
   fork,
 } from 'child_process';
 import path from 'path';
+import { setTimeout as sleep } from 'timers/promises';
 
 import '@loadmill/agent/dist/cli';
 import { app, ipcMain } from 'electron';
@@ -264,25 +265,31 @@ const subscribeToStartAgentFromRenderer = () => {
 
 const handleStartAgentEvent = async () => {
   log.info(`Got ${START_AGENT} event`);
-  if (!isUserSignedIn()) {
-    log.info('User is not signed in, could not connect the agent');
-    return;
-  }
+
   if (isAgentConnected()) {
     log.info('Agent is already connected');
     sendFromMainWindowToRenderer({
-      data: {
-        isAgentConnected: isAgentConnected(),
-      },
+      data: { isAgentConnected: true },
       type: IS_AGENT_CONNECTED,
     });
     return;
   }
-  const token = await _getOrCreateToken();
-  if (!isValidToken(token)) {
-    log.info('Token still does not exists / not valid, could not connect the agent');
+
+  await attemptToStartAgent();
+};
+
+const attemptToStartAgent = async (): Promise<void> => {
+  if (!isUserSignedIn()) {
+    log.info('User is not signed in, cannot start agent.');
     return;
   }
+
+  const token = await _getOrCreateToken();
+  if (!isValidToken(token)) {
+    log.info('Missing or invalid token, cannot start agent.');
+    return;
+  }
+
   startAgent(token.token);
 };
 
@@ -342,37 +349,83 @@ export const killAgentProcess = (): void => {
 
 export const restartAgentProcess = async (): Promise<void> => {
   log.info('Restarting agent process');
-  markAgentDisconnected();
   try {
-    log.info('Stopping and terminating agent process...');
-    await stopAndTerminateAgentProcess();
+    stopAgent();
+    await terminateAgentProcess();
   } catch (error) {
-    log.error('Error while stopping and terminating agent process', error);
+    log.warn('Terminate Agent encountered an error, but proceeding with restart.', error);
   }
 
-  if (!isUserSignedIn()) {
-    log.info('Agent URL changed, but user is not signed in. Agent process terminated; skipping auto-start.');
+  log.info('Marking agent as disconnected');
+  markAgentDisconnected();
+
+  if (get<string>(LAST_AGENT_ACTION) === AgentActions.STOPPED) {
+    log.info('Agent was manually stopped. Skipping auto-start.');
     return;
   }
 
-  const lastAgentAction = get<string>(LAST_AGENT_ACTION);
-  if (lastAgentAction === AgentActions.STOPPED) {
-    log.info('Agent URL changed, and agent was manually stopped. Agent process terminated; skipping auto-start.');
+  log.info('Attempting to start a new agent process');
+  await attemptToStartAgent();
+};
+
+/**
+ * Attempt graceful shutdown, escalate to force kill.
+ * Always resolve after max wait.
+ */
+const terminateAgentProcess = async (): Promise<void> => {
+  log.info('Terminating agent process');
+
+  if (!agent) {
+    log.info('No agent process to terminate, skipping.');
     return;
   }
 
-  const token = await _getOrCreateToken();
-  if (!isValidToken(token)) {
-    log.info('Could not restart agent after Agent URL change (missing/invalid token)');
-    return;
-  }
+  const child = agent;
+  agent = null;
+  child.removeAllListeners();
 
-  initAgent();
-  sendToAgentProcess({
-    data: { token: token.token },
-    type: START_AGENT,
-  });
-  set(LAST_AGENT_ACTION, AgentActions.STARTED);
+  const hasProcessExited = () => child.exitCode !== null || child.signalCode !== null;
+
+  const waitForExit = async (maxWaitMs: number): Promise<boolean> => {
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < maxWaitMs) {
+      if (hasProcessExited()) {
+        return true;
+      }
+      await sleep(1000);
+    }
+    return hasProcessExited();
+  };
+
+  const tryKill = (signal: NodeJS.Signals) => {
+    try {
+      log.info('Sending kill signal to agent process', { signal });
+      child.kill(signal);
+    } catch (error) {
+      log.info('Error while sending signal (ignored)', { error, signal });
+    }
+  };
+
+  try {
+    log.info('Attempting graceful shutdown of agent process');
+    tryKill('SIGINT');
+    if (await waitForExit(10000)) {
+      log.info('Agent process exitted gracefully');
+      return;
+    }
+
+    log.info('Attempting forceful shutdown of agent process');
+    tryKill('SIGKILL');
+    if (await waitForExit(10000)) {
+      log.info('Agent process exitted forcefully');
+      return;
+    }
+
+    log.warn('Max wait time exceeded for agent process termination, proceeding anyway');
+  } catch (error) {
+    log.error('Unexpected error while terminating agent process', error);
+  }
 };
 
 const markAgentDisconnected = () => {
@@ -382,66 +435,5 @@ const markAgentDisconnected = () => {
       isAgentConnected: false,
     },
     type: IS_AGENT_CONNECTED,
-  });
-};
-
-const stopAndTerminateAgentProcess = async (): Promise<void> => {
-  stopAgent();
-  await terminateAgentProcess();
-};
-
-/**
- * Attempt graceful shutdown, escalate to force kill.
- * Always resolve after max wait.
- */
-const terminateAgentProcess = async (): Promise<void> => {
-  log.info('Terminating agent process...');
-  if (!agent) {
-    log.info('No agent process to terminate, skipping.');
-    return;
-  }
-  const child = agent;
-  agent = null;
-  child.removeAllListeners();
-
-  await new Promise<void>((resolve) => {
-    let hasExited = false;
-    let isDone = false;
-    const interruptTimeout = setTimeout(() => {
-      if (!hasExited) {
-        log.info('Sending SIGINT to agent process for graceful shutdown...');
-        child.kill('SIGINT');
-      }
-    }, 500);
-    const killTimeout = setTimeout(() => {
-      if (!hasExited) {
-        log.info('Sending SIGKILL to agent process for forceful shutdown...');
-        child.kill('SIGKILL');
-      }
-    }, 1500);
-    const maxWaitTimeout = setTimeout(() => {
-      log.warn('Max wait time exceeded for agent process termination.');
-      if (!hasExited || child.exitCode === null) {
-        log.warn('Agent process termination timed out, proceeding anyway');
-      }
-      complete();
-    }, 3000);
-
-    const complete = () => {
-      if (isDone) {
-        return;
-      }
-      isDone = true;
-      clearTimeout(interruptTimeout);
-      clearTimeout(killTimeout);
-      clearTimeout(maxWaitTimeout);
-      resolve();
-    };
-
-    child.once('exit', (code, signal) => {
-      hasExited = true;
-      log.info('Agent process exit observed during termination', { code, signal });
-      complete();
-    });
   });
 };
