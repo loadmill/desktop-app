@@ -1,5 +1,12 @@
 export const
   ACTIVATE = 'activate',
+  AGENT_UI_STATUS_CONNECTED = 'connected',
+  AGENT_UI_STATUS_CONNECTING = 'connecting',
+  AGENT_UI_STATUS_DISCONNECTED = 'disconnected',
+  AGENT_UI_STATUS_DISCONNECTING = 'disconnecting',
+  AGENT_UI_STATUS_ERROR = 'error',
+  AGENT_UI_STATUS_OUTDATED = 'outdated',
+  AGENT_UI_STATUS_RESTARTING = 'restarting',
   ANALYZE_REQUESTS = 'analyzeRequests',
   ANALYZE_REQUESTS_COMPLETE = 'analyzeRequestsComplete',
   BEFORE_QUIT = 'before-quit',
