@@ -169,6 +169,7 @@ export abstract class AgentRendererMessage implements IPCMessage {
 export abstract class SettingsRendererMessage implements IPCMessage {
   data?: {
     error?: string;
+    notification?: string;
     settings?: Settings;
   };
   type: SettingsRendererMessageTypes;

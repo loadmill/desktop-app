@@ -3,6 +3,7 @@ import {
   fork,
 } from 'child_process';
 import path from 'path';
+import { setTimeout as sleep } from 'timers/promises';
 
 import '@loadmill/agent/dist/cli';
 import { app, ipcMain } from 'electron';
@@ -264,25 +265,31 @@ const subscribeToStartAgentFromRenderer = () => {
 
 const handleStartAgentEvent = async () => {
   log.info(`Got ${START_AGENT} event`);
-  if (!isUserSignedIn()) {
-    log.info('User is not signed in, could not connect the agent');
-    return;
-  }
+
   if (isAgentConnected()) {
     log.info('Agent is already connected');
     sendFromMainWindowToRenderer({
-      data: {
-        isAgentConnected: isAgentConnected(),
-      },
+      data: { isAgentConnected: true },
       type: IS_AGENT_CONNECTED,
     });
     return;
   }
-  const token = await _getOrCreateToken();
-  if (!isValidToken(token)) {
-    log.info('Token still does not exists / not valid, could not connect the agent');
+
+  await attemptToStartAgent();
+};
+
+const attemptToStartAgent = async (): Promise<void> => {
+  if (!isUserSignedIn()) {
+    log.info('User is not signed in, cannot start agent.');
     return;
   }
+
+  const token = await _getOrCreateToken();
+  if (!isValidToken(token)) {
+    log.info('Missing or invalid token, cannot start agent.');
+    return;
+  }
+
   startAgent(token.token);
 };
 
@@ -338,4 +345,95 @@ export const killAgentProcess = (): void => {
     log.info('Killing agent process');
     agent.kill('SIGINT');
   }
+};
+
+export const restartAgentProcess = async (): Promise<void> => {
+  log.info('Restarting agent process');
+  try {
+    stopAgent();
+    await terminateAgentProcess();
+  } catch (error) {
+    log.warn('Terminate Agent encountered an error, but proceeding with restart.', error);
+  }
+
+  log.info('Marking agent as disconnected');
+  markAgentDisconnected();
+
+  if (get<string>(LAST_AGENT_ACTION) === AgentActions.STOPPED) {
+    log.info('Agent was manually stopped. Skipping auto-start.');
+    return;
+  }
+
+  log.info('Attempting to start a new agent process');
+  await attemptToStartAgent();
+};
+
+/**
+ * Attempt graceful shutdown, escalate to force kill.
+ * Always resolve after max wait.
+ */
+const terminateAgentProcess = async (): Promise<void> => {
+  log.info('Terminating agent process');
+
+  if (!agent) {
+    log.info('No agent process to terminate, skipping.');
+    return;
+  }
+
+  const child = agent;
+  agent = null;
+  child.removeAllListeners();
+
+  const hasProcessExited = () => child.exitCode !== null || child.signalCode !== null;
+
+  const waitForExit = async (maxWaitMs: number): Promise<boolean> => {
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < maxWaitMs) {
+      if (hasProcessExited()) {
+        return true;
+      }
+      await sleep(1000);
+    }
+    return hasProcessExited();
+  };
+
+  const tryKill = (signal: NodeJS.Signals) => {
+    try {
+      log.info('Sending kill signal to agent process', { signal });
+      child.kill(signal);
+    } catch (error) {
+      log.info('Error while sending signal (ignored)', { error, signal });
+    }
+  };
+
+  try {
+    log.info('Attempting graceful shutdown of agent process');
+    tryKill('SIGINT');
+    if (await waitForExit(10000)) {
+      log.info('Agent process exitted gracefully');
+      return;
+    }
+
+    log.info('Attempting forceful shutdown of agent process');
+    tryKill('SIGKILL');
+    if (await waitForExit(10000)) {
+      log.info('Agent process exitted forcefully');
+      return;
+    }
+
+    log.warn('Max wait time exceeded for agent process termination, proceeding anyway');
+  } catch (error) {
+    log.error('Unexpected error while terminating agent process', error);
+  }
+};
+
+const markAgentDisconnected = () => {
+  refreshConnectedStatus({ isConnected: false });
+  sendFromMainWindowToRenderer({
+    data: {
+      isAgentConnected: false,
+    },
+    type: IS_AGENT_CONNECTED,
+  });
 };
