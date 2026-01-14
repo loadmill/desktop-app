@@ -7,6 +7,7 @@ import log from '../../log';
 import { ChangedSetting, ProxySettings, Settings } from '../../types/settings';
 import { FETCH_SETTINGS, SETTING_CHANGED } from '../../universal/constants';
 import { defaultProxySettings } from '../../universal/default-settings';
+import { restartAgentProcess } from '../agent-handlers';
 import { subscribeToMainProcessMessage } from '../main-events';
 import { relaunchDesktopApp } from '../relaunch';
 
@@ -38,6 +39,8 @@ const onSettingChanged = async (
       const { name, value } = changedSetting;
       if (name === 'proxy') {
         handleProxySettings(value as ProxySettings);
+      } else if (name === 'agentUrl') {
+        await handleAgentUrlSetting(value as string);
       } else {
         updateSettingsAndRelaunch(changedSetting);
       }
@@ -59,6 +62,27 @@ const onSettingChanged = async (
       type: FETCH_SETTINGS,
     });
   }
+};
+
+const handleAgentUrlSetting = async (agentUrl: string) => {
+  const currentSettings = getSettings();
+  const hasChanged = agentUrl !== currentSettings?.agentUrl;
+  if (!hasChanged) {
+    return;
+  }
+
+  setSettings({
+    ...currentSettings,
+    agentUrl,
+  });
+
+  await restartAgentProcess();
+  sendFromSettingsViewToRenderer({
+    data: {
+      notification: 'Agent URL updated and agent restarted successfully',
+    },
+    type: SETTING_CHANGED,
+  });
 };
 
 export const subscribeToFetchSettings = (): void => {
