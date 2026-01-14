@@ -5,9 +5,15 @@ import React, {
 } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';
+import type { AgentUiStatus } from '../../../types/agent-ui';
 import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
 import {
+  AGENT_UI_STATUS_DISCONNECTING,
+  AGENT_UI_STATUS_OUTDATED,
+  AGENT_UI_STATUS_RESTARTING,
+  AGENT_UI_STATUS_CONNECTING,
+  AGENT_UI_STATUS_DISCONNECTED,
   IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
   MESSAGE,
@@ -17,6 +23,7 @@ import {
 } from '../../../universal/constants';
 
 import {
+  AgentLoadingIconButton,
   CopyIconButton,
   GoBackIconButton,
   GoForwardIconButton,
@@ -33,6 +40,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
   const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
   const [isAgentOutdated, setIsAgentOutdated] = useState<boolean>(false);
+  const [agentUiStatus, setAgentUiStatus] = useState<AgentUiStatus>(AGENT_UI_STATUS_DISCONNECTED);
   const [view, setView] = useState<ViewName>(ViewName.WEB_PAGE);
 
   useEffect(() => {
@@ -74,11 +82,15 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
 
   const onIsAgentConnectedMsg = (data: MainWindowRendererMessage['data']) => {
     setIsAgentConnected(!!data?.isAgentConnected);
+    if (data?.agentUiStatus) {
+      setAgentUiStatus(data.agentUiStatus);
+    }
   };
 
   const onIsAgentOutdatedMsg = (data: MainWindowRendererMessage['data']) => {
     if (data?.isAgentOutdated) {
       setIsAgentOutdated(true);
+      setAgentUiStatus(AGENT_UI_STATUS_OUTDATED);
     }
   };
 
@@ -116,6 +128,16 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     window.desktopApi.copyUrl();
   };
 
+  const shouldShowAgentLoader = agentUiStatus === AGENT_UI_STATUS_CONNECTING
+    || agentUiStatus === AGENT_UI_STATUS_DISCONNECTING
+    || agentUiStatus === AGENT_UI_STATUS_RESTARTING;
+
+  const agentLoaderTitle = agentUiStatus === AGENT_UI_STATUS_DISCONNECTING
+    ? 'Disconnecting agent'
+    : agentUiStatus === AGENT_UI_STATUS_RESTARTING
+      ? 'Restarting agent'
+      : 'Connecting agent';
+
   return (
     <div
       className='title-bar'
@@ -138,13 +160,17 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         />
       }
       {
-        isAgentConnected ? (
+        shouldShowAgentLoader ? (
+          <AgentLoadingIconButton
+            title={ agentLoaderTitle }
+          />
+        ) : isAgentConnected ? (
           <StopAgentIconButton
             onStopAgentClicked={ window.desktopApi.stopAgent }
           />
         ) : (
           <StartAgentIconButton
-            disabled={ isAgentOutdated }
+            disabled={ isAgentOutdated || agentUiStatus === AGENT_UI_STATUS_OUTDATED }
             onStartAgentClicked={ window.desktopApi.startAgent }
           />
         )

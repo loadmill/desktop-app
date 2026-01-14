@@ -57,6 +57,7 @@ import {
   UPDATED_SUITES,
 } from '../universal/constants';
 
+import { AgentUiStatus } from './agent-ui';
 import { IpAddressFamily } from './ip-address';
 import { Navigation } from './navigation';
 import { PlaywrightStepLocation } from './playwright';
@@ -119,6 +120,7 @@ export type RendererMessage =
 
 export abstract class MainWindowRendererMessage implements IPCMessage {
   data?: {
+    agentUiStatus?: AgentUiStatus;
     isAgentConnected?: boolean;
     isAgentOutdated?: boolean;
     loadmillViewId?: number;

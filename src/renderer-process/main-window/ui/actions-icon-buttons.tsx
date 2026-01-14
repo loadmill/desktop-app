@@ -4,6 +4,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import StopIcon from '@mui/icons-material/Stop';
+import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import React, { SyntheticEvent } from 'react';
@@ -187,4 +188,32 @@ export const StopAgentIconButton: React.FC<StopAgentIconButtonProps> = ({
 
 export type StopAgentIconButtonProps = {
   onStopAgentClicked: (e: SyntheticEvent) => void;
+};
+
+export const AgentLoadingIconButton: React.FC<AgentLoadingIconButtonProps> = ({
+  title,
+}) => {
+  return (
+    <div className='stop-start-agent'>
+      <div className='undraggable'>
+        <Tooltip
+          placement='left'
+          title={ title }
+        >
+          <span>
+            <IconButton
+              disabled
+              style={ { cursor: 'default' } }
+            >
+              <CircularProgress size={ 18 } />
+            </IconButton>
+          </span>
+        </Tooltip>
+      </div>
+    </div>
+  );
+};
+
+export type AgentLoadingIconButtonProps = {
+  title: string;
 };

@@ -13,9 +13,17 @@ import {
   sendFromMainWindowToRenderer,
 } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
+import type { AgentUiStatus } from '../types/agent-ui';
 import { AgentMessage, MainMessage } from '../types/messaging';
 import { Token } from '../types/token';
 import {
+  AGENT_UI_STATUS_CONNECTED,
+  AGENT_UI_STATUS_CONNECTING,
+  AGENT_UI_STATUS_DISCONNECTED,
+  AGENT_UI_STATUS_DISCONNECTING,
+  AGENT_UI_STATUS_ERROR,
+  AGENT_UI_STATUS_OUTDATED,
+  AGENT_UI_STATUS_RESTARTING,
   DATA,
   FETCH_PROFILES,
   FETCH_SUITES,
@@ -55,6 +63,59 @@ import { createAndSaveToken, isCorrectUser, isValidToken } from './token';
 import { isUserSignedIn, setIsUserSignedIn } from './user-signed-in-status';
 
 let agent: ChildProcessWithoutNullStreams | null;
+
+const AGENT_UI_STATUS_TIMEOUT_MS = 25_000;
+let agentUiStatusTimeout: NodeJS.Timeout | null = null;
+let lastSentAgentUiStatus: AgentUiStatus = AGENT_UI_STATUS_DISCONNECTED;
+
+const isLoadingAgentUiStatus = (status: AgentUiStatus) => (
+  status === AGENT_UI_STATUS_CONNECTING
+  || status === AGENT_UI_STATUS_DISCONNECTING
+  || status === AGENT_UI_STATUS_RESTARTING
+);
+
+const clearAgentUiStatusTimeout = () => {
+  if (agentUiStatusTimeout) {
+    clearTimeout(agentUiStatusTimeout);
+    agentUiStatusTimeout = null;
+  }
+};
+
+const armAgentUiStatusTimeout = (status: AgentUiStatus) => {
+  clearAgentUiStatusTimeout();
+  if (!isLoadingAgentUiStatus(status)) {
+    return;
+  }
+  agentUiStatusTimeout = setTimeout(() => {
+    log.warn('Timed out waiting for agent state transition', {
+      isAgentConnected: isAgentConnected(),
+      lastSentAgentUiStatus,
+      timeoutMs: AGENT_UI_STATUS_TIMEOUT_MS,
+    });
+    sendAgentUiStatusToMainWindow(AGENT_UI_STATUS_ERROR, isAgentConnected());
+  }, AGENT_UI_STATUS_TIMEOUT_MS);
+};
+
+const sendAgentUiStatusToMainWindow = (agentUiStatus: AgentUiStatus, isConnected?: boolean) => {
+  lastSentAgentUiStatus = agentUiStatus;
+
+  if (isLoadingAgentUiStatus(agentUiStatus)) {
+    armAgentUiStatusTimeout(agentUiStatus);
+  } else {
+    clearAgentUiStatusTimeout();
+  }
+
+  const isAgentConnectedPayload = typeof isConnected === 'boolean'
+    ? { isAgentConnected: isConnected }
+    : {};
+  sendFromMainWindowToRenderer({
+    data: {
+      agentUiStatus,
+      ...isAgentConnectedPayload,
+    },
+    type: IS_AGENT_CONNECTED,
+  });
+};
 
 export const startAgent = (token: string): void => {
   if (!isAgentConnected()) {
@@ -125,12 +186,11 @@ const addOnAgentExitEvent = () => {
     if (isAgentDisconnected(code)) {
       set(LAST_AGENT_ACTION, AgentActions.STOPPED);
     }
-    sendFromMainWindowToRenderer({
-      data: {
-        isAgentConnected: isAgentConnected(),
-      },
-      type: IS_AGENT_CONNECTED,
-    });
+    const isConnected = isAgentConnected();
+    sendAgentUiStatusToMainWindow(
+      isConnected ? AGENT_UI_STATUS_CONNECTED : AGENT_UI_STATUS_DISCONNECTED,
+      isConnected,
+    );
   });
 };
 
@@ -138,12 +198,12 @@ const addOnAgentIsConnectedEvent = (): void => {
   agent.on('message', ({ data, type }: MainMessage) => {
     if (type === IS_AGENT_CONNECTED) {
       log.info('Agent message received', { data, type } );
-      sendFromMainWindowToRenderer({
-        data: {
-          isAgentConnected: data.isConnected,
-        },
-        type: IS_AGENT_CONNECTED,
-      });
+      if (typeof data?.isConnected === 'boolean') {
+        sendAgentUiStatusToMainWindow(
+          data.isConnected ? AGENT_UI_STATUS_CONNECTED : AGENT_UI_STATUS_DISCONNECTED,
+          data.isConnected,
+        );
+      }
     }
   });
 };
@@ -166,9 +226,20 @@ const handleAgentStd = async (
 ) => {
   const text = data.toString();
   log.info('Agent:', text);
+
+  const wasConnected = isAgentConnected();
   handleAgentOutdated(text);
   await handleInvalidToken(text);
   refreshConnectedStatus({ text });
+
+  const isConnected = isAgentConnected();
+  if (isConnected !== wasConnected) {
+    sendAgentUiStatusToMainWindow(
+      isConnected ? AGENT_UI_STATUS_CONNECTED : AGENT_UI_STATUS_DISCONNECTED,
+      isConnected,
+    );
+  }
+
   sendFromAgentViewToRenderer({ data: { text }, type });
   agentLogger.info(text);
 };
@@ -177,6 +248,7 @@ const handleAgentOutdated = (text: string) => {
   if (text.includes('[ERROR] The agent is outdated')) {
     log.info('Got outdated agent message, stopping agent');
     stopAgent();
+    sendAgentUiStatusToMainWindow(AGENT_UI_STATUS_OUTDATED, false);
     if (getSettings()?.autoUpdate === false) {
       log.info('Auto update is disabled, storing LAST_AGENT_ACTION as STOPPED');
       set(LAST_AGENT_ACTION, AgentActions.STOPPED);
@@ -269,7 +341,10 @@ const handleStartAgentEvent = async () => {
   if (isAgentConnected()) {
     log.info('Agent is already connected');
     sendFromMainWindowToRenderer({
-      data: { isAgentConnected: true },
+      data: {
+        agentUiStatus: AGENT_UI_STATUS_CONNECTED,
+        isAgentConnected: isAgentConnected(),
+      },
       type: IS_AGENT_CONNECTED,
     });
     return;
@@ -281,12 +356,16 @@ const handleStartAgentEvent = async () => {
 const attemptToStartAgent = async (): Promise<void> => {
   if (!isUserSignedIn()) {
     log.info('User is not signed in, cannot start agent.');
+    sendAgentUiStatusToMainWindow(AGENT_UI_STATUS_DISCONNECTED, false);
     return;
   }
+
+  sendAgentUiStatusToMainWindow(AGENT_UI_STATUS_CONNECTING, false);
 
   const token = await _getOrCreateToken();
   if (!isValidToken(token)) {
     log.info('Missing or invalid token, cannot start agent.');
+    sendAgentUiStatusToMainWindow(AGENT_UI_STATUS_DISCONNECTED, false);
     return;
   }
 
@@ -299,16 +378,23 @@ const subscribeToStopAgentFromRenderer = () => {
 
 const handleStopAgentEvent = () => {
   log.info(`Got ${STOP_AGENT} event`);
-  if (!isAgentConnected()) {
+  const isPendingConnectOrRestart = lastSentAgentUiStatus === AGENT_UI_STATUS_CONNECTING
+    || lastSentAgentUiStatus === AGENT_UI_STATUS_RESTARTING;
+
+  if (!isAgentConnected() && !isPendingConnectOrRestart) {
     log.info('Agent is already not connected');
     sendFromMainWindowToRenderer({
       data: {
+        agentUiStatus: AGENT_UI_STATUS_DISCONNECTED,
         isAgentConnected: isAgentConnected(),
       },
       type: IS_AGENT_CONNECTED,
     });
     return;
   }
+
+  sendAgentUiStatusToMainWindow(AGENT_UI_STATUS_DISCONNECTING, true);
+
   stopAgent();
   set(LAST_AGENT_ACTION, AgentActions.STOPPED);
 };
@@ -349,6 +435,7 @@ export const killAgentProcess = (): void => {
 
 export const restartAgentProcess = async (): Promise<void> => {
   log.info('Restarting agent process');
+  markAgentDisconnected(AGENT_UI_STATUS_RESTARTING);
   try {
     stopAgent();
     await terminateAgentProcess();
@@ -428,10 +515,11 @@ const terminateAgentProcess = async (): Promise<void> => {
   }
 };
 
-const markAgentDisconnected = () => {
+const markAgentDisconnected = (agentUiStatus: AgentUiStatus = AGENT_UI_STATUS_DISCONNECTED) => {
   refreshConnectedStatus({ isConnected: false });
   sendFromMainWindowToRenderer({
     data: {
+      agentUiStatus,
       isAgentConnected: false,
     },
     type: IS_AGENT_CONNECTED,
