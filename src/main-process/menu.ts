@@ -4,6 +4,7 @@ import { downloadMainLog } from '../log/download-logs';
 import { READY } from '../universal/constants';
 
 import { showAuthTokenInput } from './authentication';
+import { symlinkPlaywright } from './standalone-playwright/symlink-playwright';
 import { checkForUpdates } from './updates';
 import { switchToAgentView, switchToSettingsView } from './views';
 
@@ -136,6 +137,16 @@ const template = [
       {
         click: () => downloadMainLog(),
         label: 'Download App Logs',
+      },
+      {
+        type: 'separator',
+      },
+      {
+        click: () => symlinkPlaywright({ triggeredByUser: true }),
+        label: 'Reinstall Playwright',
+      },
+      {
+        type: 'separator',
       },
       {
         click: async () => {
