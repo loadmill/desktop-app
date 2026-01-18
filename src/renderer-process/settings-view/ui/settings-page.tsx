@@ -70,6 +70,10 @@ export const SettingsPage = (): JSX.Element => {
       setSnackBarMessage(data.error);
       setSnackBarSeverity('error');
       setOpenSnackBar(true);
+    } else if (data?.notification) {
+      setSnackBarMessage(data.notification);
+      setSnackBarSeverity('success');
+      setOpenSnackBar(true);
     } else {
       setSnackBarMessage('Settings saved successfully');
       setSnackBarSeverity('success');

@@ -18,7 +18,7 @@ export const UrlSettingForm = ({
   settingName,
 }: UrlSettingFormProps): JSX.Element => {
 
-  const [initialUrl] = useState<string>(url);
+  const [initialUrl, setInitialUrl] = useState<string>(url);
   const [urlError, setUrlError] = useState<string>('');
 
   const validateUrl = (urlValue: string): void => {
@@ -37,6 +37,7 @@ export const UrlSettingForm = ({
   const isUrlChanged = url !== initialUrl;
 
   const onUpdateSettingsChange = () => {
+    setInitialUrl(url);
     onSave({ name: settingName, value: url });
   };
 
