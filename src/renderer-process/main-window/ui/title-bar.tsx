@@ -9,11 +9,11 @@ import type { AgentUiStatus } from '../../../types/agent-ui';
 import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
 import {
+  AGENT_UI_STATUS_CONNECTING,
+  AGENT_UI_STATUS_DISCONNECTED,
   AGENT_UI_STATUS_DISCONNECTING,
   AGENT_UI_STATUS_OUTDATED,
   AGENT_UI_STATUS_RESTARTING,
-  AGENT_UI_STATUS_CONNECTING,
-  AGENT_UI_STATUS_DISCONNECTED,
   IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
   MESSAGE,
@@ -23,14 +23,12 @@ import {
 } from '../../../universal/constants';
 
 import {
-  AgentLoadingIconButton,
   CopyIconButton,
   GoBackIconButton,
   GoForwardIconButton,
   RefreshIconButton,
-  StartAgentIconButton,
-  StopAgentIconButton,
 } from './actions-icon-buttons';
+import { AgentButton } from './agent-button';
 import { FindOnPage } from './find-on-page';
 import { ViewsSwitch, ViewsSwitchProps } from './views-switch';
 
@@ -128,15 +126,23 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     window.desktopApi.copyUrl();
   };
 
-  const shouldShowAgentLoader = agentUiStatus === AGENT_UI_STATUS_CONNECTING
-    || agentUiStatus === AGENT_UI_STATUS_DISCONNECTING
-    || agentUiStatus === AGENT_UI_STATUS_RESTARTING;
+  const getAgentLoaderTooltipTitle = () => {
+    if (agentUiStatus === AGENT_UI_STATUS_DISCONNECTING) {
+      return 'Disconnecting agent';
+    }
+    if (agentUiStatus === AGENT_UI_STATUS_RESTARTING) {
+      return 'Restarting agent';
+    }
+    return 'Connecting agent';
+  };
 
-  const agentLoaderTitle = agentUiStatus === AGENT_UI_STATUS_DISCONNECTING
-    ? 'Disconnecting agent'
-    : agentUiStatus === AGENT_UI_STATUS_RESTARTING
-      ? 'Restarting agent'
-      : 'Connecting agent';
+  const shouldShowAgentLoader = [
+    AGENT_UI_STATUS_CONNECTING,
+    AGENT_UI_STATUS_DISCONNECTING,
+    AGENT_UI_STATUS_RESTARTING,
+  ].includes(agentUiStatus);
+
+  const isStartAgentDisabled = isAgentOutdated || agentUiStatus === AGENT_UI_STATUS_OUTDATED;
 
   return (
     <div
@@ -159,22 +165,12 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
           setShouldShowFind={ setShouldShowFind }
         />
       }
-      {
-        shouldShowAgentLoader ? (
-          <AgentLoadingIconButton
-            title={ agentLoaderTitle }
-          />
-        ) : isAgentConnected ? (
-          <StopAgentIconButton
-            onStopAgentClicked={ window.desktopApi.stopAgent }
-          />
-        ) : (
-          <StartAgentIconButton
-            disabled={ isAgentOutdated || agentUiStatus === AGENT_UI_STATUS_OUTDATED }
-            onStartAgentClicked={ window.desktopApi.startAgent }
-          />
-        )
-      }
+      <AgentButton
+        isAgentConnected={ isAgentConnected }
+        isStartAgentDisabled={ isStartAgentDisabled }
+        shouldShowAgentLoader={ shouldShowAgentLoader }
+        tooltipTitle={ getAgentLoaderTooltipTitle() }
+      />
     </div>
   );
 };
@@ -211,7 +207,7 @@ export const TitleBarActions = ({
       <CopyIconButton
         disabled={ isNavigationDisabled }
         onCopyClicked={ onCopyUrlClick }
-        title='Copy URL'
+        tooltipTitle='Copy URL'
       />
       <ViewsSwitch
         setView={ setView }

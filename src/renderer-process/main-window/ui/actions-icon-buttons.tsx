@@ -4,7 +4,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import StopIcon from '@mui/icons-material/Stop';
-import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import React, { SyntheticEvent } from 'react';
@@ -28,17 +27,17 @@ const getIconFromName = (iconType: Icons): JSX.Element => {
   }
 };
 
-const ActionIconButton = ({
+export const ActionIconButton = ({
   disabled,
   iconType,
   onActionClicked,
   placement,
-  title,
+  tooltipTitle,
 }: ActionsIconButtonsProps): JSX.Element => (
   <div className={ !disabled ? 'undraggable' : '' }>
     <Tooltip
       placement={ placement || 'right' }
-      title={ title }
+      title={ tooltipTitle }
     >
       <span>
         <IconButton
@@ -58,7 +57,7 @@ export type ActionsIconButtonsProps = {
   iconType: Icons;
   onActionClicked?: (...args: unknown[]) => void;
   placement?: 'bottom' | 'left' | 'right' | 'top';
-  title?: string;
+  tooltipTitle?: string;
 };
 
 export const GoBackIconButton = ({
@@ -71,7 +70,7 @@ export const GoBackIconButton = ({
         disabled={ disabled }
         iconType='back'
         onActionClicked={ onGoBackClicked }
-        title='Go back'
+        tooltipTitle='Go back'
       />
     </>
   );
@@ -92,7 +91,7 @@ export const GoForwardIconButton = ({
         disabled={ disabled }
         iconType='forward'
         onActionClicked={ onGoForwardClicked }
-        title='Go Forward'
+        tooltipTitle='Go Forward'
       />
     </>
   );
@@ -113,7 +112,7 @@ export const RefreshIconButton = ({
         disabled={ disabled }
         iconType='refresh'
         onActionClicked={ onRefreshClicked }
-        title='Refresh'
+        tooltipTitle='Refresh'
       />
     </>
   );
@@ -127,14 +126,14 @@ export type RefreshIconButtonProps = {
 export const CopyIconButton = ({
   disabled,
   onCopyClicked,
-  title,
+  tooltipTitle,
 }: CopyIconButtonProps): JSX.Element => {
   return (
     <ActionIconButton
       disabled={ disabled }
       iconType='copy'
       onActionClicked={ onCopyClicked }
-      title={ title || 'Copy' }
+      tooltipTitle={ tooltipTitle || 'Copy' }
     />
   );
 };
@@ -142,78 +141,5 @@ export const CopyIconButton = ({
 export type CopyIconButtonProps = {
   disabled?: boolean;
   onCopyClicked: (e: SyntheticEvent) => void;
-  title?: string;
-};
-
-export const StartAgentIconButton: React.FC<StartAgentIconButtonProps> = ({
-  disabled,
-  onStartAgentClicked,
-}) => {
-  return (
-    <div className='stop-start-agent'>
-      <ActionIconButton
-        disabled={ disabled }
-        iconType='start'
-        onActionClicked={ onStartAgentClicked }
-        placement='left'
-        title={
-          disabled
-            ? 'Agent is outdated'
-            : 'Start Agent'
-        }
-      />
-    </div>
-  );
-};
-
-export type StartAgentIconButtonProps = {
-  disabled?: boolean;
-  onStartAgentClicked: (e: SyntheticEvent) => void;
-};
-
-export const StopAgentIconButton: React.FC<StopAgentIconButtonProps> = ({
-  onStopAgentClicked,
-}) => {
-  return (
-    <div className='stop-start-agent'>
-      <ActionIconButton
-        iconType='stop'
-        onActionClicked={ onStopAgentClicked }
-        placement='left'
-        title='Stop Agent'
-      />
-    </div>
-  );
-};
-
-export type StopAgentIconButtonProps = {
-  onStopAgentClicked: (e: SyntheticEvent) => void;
-};
-
-export const AgentLoadingIconButton: React.FC<AgentLoadingIconButtonProps> = ({
-  title,
-}) => {
-  return (
-    <div className='stop-start-agent'>
-      <div className='undraggable'>
-        <Tooltip
-          placement='left'
-          title={ title }
-        >
-          <span>
-            <IconButton
-              disabled
-              style={ { cursor: 'default' } }
-            >
-              <CircularProgress size={ 18 } />
-            </IconButton>
-          </span>
-        </Tooltip>
-      </div>
-    </div>
-  );
-};
-
-export type AgentLoadingIconButtonProps = {
-  title: string;
+  tooltipTitle?: string;
 };
