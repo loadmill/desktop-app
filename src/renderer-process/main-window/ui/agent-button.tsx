@@ -1,15 +1,17 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import React, { SyntheticEvent } from 'react';
+import React from 'react';
 
 import { ActionIconButton } from './actions-icon-buttons';
 
 export const AgentButton = ({
+  isAgentButtonDisabled,
   isAgentConnected,
-  isStartAgentDisabled,
   shouldShowAgentLoader,
   tooltipTitle,
+  onStartAgentClicked,
+  onStopAgentClicked,
 }: AgentButtonProps): JSX.Element => {
   return (
     <>
@@ -20,12 +22,13 @@ export const AgentButton = ({
           />
         ) : isAgentConnected ? (
           <StopAgentIconButton
-            onStopAgentClicked={ window.desktopApi.stopAgent }
+            disabled={ isAgentButtonDisabled }
+            onStopAgentClicked={ onStopAgentClicked }
           />
         ) : (
           <StartAgentIconButton
-            disabled={ isStartAgentDisabled }
-            onStartAgentClicked={ window.desktopApi.startAgent }
+            disabled={ isAgentButtonDisabled }
+            onStartAgentClicked={ onStartAgentClicked }
           />
         )
       }
@@ -34,8 +37,10 @@ export const AgentButton = ({
 };
 
 export type AgentButtonProps = {
+  isAgentButtonDisabled: boolean;
   isAgentConnected: boolean;
-  isStartAgentDisabled: boolean;
+  onStartAgentClicked: () => void;
+  onStopAgentClicked: () => void;
   shouldShowAgentLoader: boolean;
   tooltipTitle: string;
 };
@@ -63,15 +68,17 @@ export const StartAgentIconButton: React.FC<StartAgentIconButtonProps> = ({
 
 export type StartAgentIconButtonProps = {
   disabled?: boolean;
-  onStartAgentClicked: (e: SyntheticEvent) => void;
+  onStartAgentClicked: () => void;
 };
 
 export const StopAgentIconButton: React.FC<StopAgentIconButtonProps> = ({
+  disabled,
   onStopAgentClicked,
 }) => {
   return (
     <div className='stop-start-agent'>
       <ActionIconButton
+        disabled={ disabled }
         iconType='stop'
         onActionClicked={ onStopAgentClicked }
         placement='left'
@@ -82,7 +89,8 @@ export const StopAgentIconButton: React.FC<StopAgentIconButtonProps> = ({
 };
 
 export type StopAgentIconButtonProps = {
-  onStopAgentClicked: (e: SyntheticEvent) => void;
+  disabled?: boolean;
+  onStopAgentClicked: () => void;
 };
 
 export const AgentLoadingIconButton: React.FC<AgentLoadingIconButtonProps> = ({

@@ -31,9 +31,9 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
-  const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
-  const [isAgentOutdated, setIsAgentOutdated] = useState<boolean>(false);
   const [agentStatus, setAgentStatus] = useState<AgentStatus>(AgentStatus.DISCONNECTED);
+  const [isAgentButtonLoading, setIsAgentButtonLoading] = useState<boolean>(false);
+  const [isAgentOutdated, setIsAgentOutdated] = useState<boolean>(false);
   const [view, setView] = useState<ViewName>(ViewName.WEB_PAGE);
 
   useEffect(() => {
@@ -73,10 +73,21 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     setCanGoForward(!!data?.nav?.canGoForward);
   };
 
+  const isAgentTransitioning = (status: AgentStatus) => {
+    return [
+      AgentStatus.CONNECTING,
+      AgentStatus.DISCONNECTING,
+      AgentStatus.RESTARTING,
+    ].includes(status);
+  };
+
   const onIsAgentConnectedMsg = (data: MainWindowRendererMessage['data']) => {
-    setIsAgentConnected(!!data?.isAgentConnected);
     if (data?.agentStatus) {
       setAgentStatus(data.agentStatus);
+
+      if (!isAgentTransitioning(data.agentStatus)) {
+        setIsAgentButtonLoading(false);
+      }
     }
   };
 
@@ -84,6 +95,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     if (data?.isAgentOutdated) {
       setIsAgentOutdated(true);
       setAgentStatus(AgentStatus.OUTDATED);
+      setIsAgentButtonLoading(false);
     }
   };
 
@@ -121,6 +133,16 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     window.desktopApi.copyUrl();
   };
 
+  const onStartAgentClick = () => {
+    setIsAgentButtonLoading(true);
+    window.desktopApi.startAgent();
+  };
+
+  const onStopAgentClick = () => {
+    setIsAgentButtonLoading(true);
+    window.desktopApi.stopAgent();
+  };
+
   const getAgentLoaderTooltipTitle = () => {
     if (agentStatus === AgentStatus.DISCONNECTING) {
       return 'Disconnecting agent';
@@ -131,13 +153,8 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     return 'Connecting agent';
   };
 
-  const shouldShowAgentLoader = [
-    AgentStatus.CONNECTING,
-    AgentStatus.DISCONNECTING,
-    AgentStatus.RESTARTING,
-  ].includes(agentStatus);
-
-  const isStartAgentDisabled = isAgentOutdated || agentStatus === AgentStatus.OUTDATED;
+  const shouldShowAgentLoader = isAgentButtonLoading || isAgentTransitioning(agentStatus);
+  const isAgentButtonDisabled = isAgentOutdated || agentStatus === AgentStatus.ERROR;
 
   return (
     <div
@@ -161,8 +178,10 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         />
       }
       <AgentButton
-        isAgentConnected={ isAgentConnected }
-        isStartAgentDisabled={ isStartAgentDisabled }
+        isAgentButtonDisabled={ isAgentButtonDisabled }
+        isAgentConnected={ agentStatus === AgentStatus.CONNECTED }
+        onStartAgentClicked={ onStartAgentClick }
+        onStopAgentClicked={ onStopAgentClick }
         shouldShowAgentLoader={ shouldShowAgentLoader }
         tooltipTitle={ getAgentLoaderTooltipTitle() }
       />
