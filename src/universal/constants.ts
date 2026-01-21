@@ -1,12 +1,5 @@
 export const
   ACTIVATE = 'activate',
-  AGENT_STATUS_CONNECTED = 'connected',
-  AGENT_STATUS_CONNECTING = 'connecting',
-  AGENT_STATUS_DISCONNECTED = 'disconnected',
-  AGENT_STATUS_DISCONNECTING = 'disconnecting',
-  AGENT_STATUS_ERROR = 'error',
-  AGENT_STATUS_OUTDATED = 'outdated',
-  AGENT_STATUS_RESTARTING = 'restarting',
   ANALYZE_REQUESTS = 'analyzeRequests',
   ANALYZE_REQUESTS_COMPLETE = 'analyzeRequestsComplete',
   BEFORE_QUIT = 'before-quit',

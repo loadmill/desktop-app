@@ -1,18 +1,9 @@
-import {
-  AGENT_STATUS_CONNECTED,
-  AGENT_STATUS_CONNECTING,
-  AGENT_STATUS_DISCONNECTED,
-  AGENT_STATUS_DISCONNECTING,
-  AGENT_STATUS_ERROR,
-  AGENT_STATUS_OUTDATED,
-  AGENT_STATUS_RESTARTING,
-} from '../universal/constants';
-
-export type AgentStatus =
-  | typeof AGENT_STATUS_DISCONNECTED
-  | typeof AGENT_STATUS_CONNECTING
-  | typeof AGENT_STATUS_CONNECTED
-  | typeof AGENT_STATUS_DISCONNECTING
-  | typeof AGENT_STATUS_RESTARTING
-  | typeof AGENT_STATUS_OUTDATED
-  | typeof AGENT_STATUS_ERROR;
+export enum AgentStatus {
+  CONNECTED = 'connected',
+  CONNECTING = 'connecting',
+  DISCONNECTED = 'disconnected',
+  DISCONNECTING = 'disconnecting',
+  ERROR = 'error',
+  OUTDATED = 'outdated',
+  RESTARTING = 'restarting',
+}

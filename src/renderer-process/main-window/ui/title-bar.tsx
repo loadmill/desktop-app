@@ -5,15 +5,10 @@ import React, {
 } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';
-import type { AgentStatus } from '../../../types/agent-status';
+import { AgentStatus } from '../../../types/agent-status';
 import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
 import {
-  AGENT_STATUS_CONNECTING,
-  AGENT_STATUS_DISCONNECTED,
-  AGENT_STATUS_DISCONNECTING,
-  AGENT_STATUS_OUTDATED,
-  AGENT_STATUS_RESTARTING,
   IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
   MESSAGE,
@@ -38,7 +33,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
   const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
   const [isAgentOutdated, setIsAgentOutdated] = useState<boolean>(false);
-  const [agentStatus, setAgentStatus] = useState<AgentStatus>(AGENT_STATUS_DISCONNECTED);
+  const [agentStatus, setAgentStatus] = useState<AgentStatus>(AgentStatus.DISCONNECTED);
   const [view, setView] = useState<ViewName>(ViewName.WEB_PAGE);
 
   useEffect(() => {
@@ -88,7 +83,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const onIsAgentOutdatedMsg = (data: MainWindowRendererMessage['data']) => {
     if (data?.isAgentOutdated) {
       setIsAgentOutdated(true);
-      setAgentStatus(AGENT_STATUS_OUTDATED);
+      setAgentStatus(AgentStatus.OUTDATED);
     }
   };
 
@@ -127,22 +122,22 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   };
 
   const getAgentLoaderTooltipTitle = () => {
-    if (agentStatus === AGENT_STATUS_DISCONNECTING) {
+    if (agentStatus === AgentStatus.DISCONNECTING) {
       return 'Disconnecting agent';
     }
-    if (agentStatus === AGENT_STATUS_RESTARTING) {
+    if (agentStatus === AgentStatus.RESTARTING) {
       return 'Restarting agent';
     }
     return 'Connecting agent';
   };
 
   const shouldShowAgentLoader = [
-    AGENT_STATUS_CONNECTING,
-    AGENT_STATUS_DISCONNECTING,
-    AGENT_STATUS_RESTARTING,
+    AgentStatus.CONNECTING,
+    AgentStatus.DISCONNECTING,
+    AgentStatus.RESTARTING,
   ].includes(agentStatus);
 
-  const isStartAgentDisabled = isAgentOutdated || agentStatus === AGENT_STATUS_OUTDATED;
+  const isStartAgentDisabled = isAgentOutdated || agentStatus === AgentStatus.OUTDATED;
 
   return (
     <div

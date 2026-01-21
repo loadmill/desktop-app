@@ -2,17 +2,8 @@ import {
   sendFromMainWindowToRenderer,
 } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
-import type { AgentStatus } from '../types/agent-status';
-import {
-  AGENT_STATUS_CONNECTED,
-  AGENT_STATUS_CONNECTING,
-  AGENT_STATUS_DISCONNECTED,
-  AGENT_STATUS_DISCONNECTING,
-  AGENT_STATUS_ERROR,
-  AGENT_STATUS_OUTDATED,
-  AGENT_STATUS_RESTARTING,
-  IS_AGENT_CONNECTED,
-} from '../universal/constants';
+import { AgentStatus } from '../types/agent-status';
+import { IS_AGENT_CONNECTED } from '../universal/constants';
 
 import {
   isAgentConnected,
@@ -22,13 +13,13 @@ import {
 const AGENT_STATUS_TIMEOUT_MS = 25_000;
 
 let agentStatusTimeout: NodeJS.Timeout | null = null;
-let lastSentAgentStatus: AgentStatus = AGENT_STATUS_DISCONNECTED;
+let lastSentAgentStatus: AgentStatus = AgentStatus.DISCONNECTED;
 
 const isLoadingAgentStatus = (status: AgentStatus) =>
   [
-    AGENT_STATUS_CONNECTING,
-    AGENT_STATUS_DISCONNECTING,
-    AGENT_STATUS_RESTARTING,
+    AgentStatus.CONNECTING,
+    AgentStatus.DISCONNECTING,
+    AgentStatus.RESTARTING,
   ].includes(status);
 
 const clearAgentStatusTimeout = () => {
@@ -50,7 +41,7 @@ const armAgentStatusTimeout = (status: AgentStatus) => {
       lastSentAgentStatus,
       timeoutMs: AGENT_STATUS_TIMEOUT_MS,
     });
-    sendAgentStatusToMainWindow(AGENT_STATUS_ERROR, isAgentConnected());
+    sendAgentStatusToMainWindow(AgentStatus.ERROR, isAgentConnected());
   }, AGENT_STATUS_TIMEOUT_MS);
 };
 
@@ -79,37 +70,37 @@ export const sendAgentStatusToMainWindow = (
 };
 
 export const sendAgentConnected = (): void => {
-  sendAgentStatusToMainWindow(AGENT_STATUS_CONNECTED, true);
+  sendAgentStatusToMainWindow(AgentStatus.CONNECTED, true);
 };
 
 export const sendAgentDisconnected = (isConnected = false): void => {
-  sendAgentStatusToMainWindow(AGENT_STATUS_DISCONNECTED, isConnected);
+  sendAgentStatusToMainWindow(AgentStatus.DISCONNECTED, isConnected);
 };
 
 export const sendAgentConnecting = (): void => {
-  sendAgentStatusToMainWindow(AGENT_STATUS_CONNECTING, false);
+  sendAgentStatusToMainWindow(AgentStatus.CONNECTING, false);
 };
 
 export const sendAgentDisconnecting = (isConnected = true): void => {
-  sendAgentStatusToMainWindow(AGENT_STATUS_DISCONNECTING, isConnected);
+  sendAgentStatusToMainWindow(AgentStatus.DISCONNECTING, isConnected);
 };
 
 export const sendAgentOutdated = (): void => {
-  sendAgentStatusToMainWindow(AGENT_STATUS_OUTDATED, false);
+  sendAgentStatusToMainWindow(AgentStatus.OUTDATED, false);
 };
 
 export const isPendingConnectOrRestart = (): boolean => (
-  lastSentAgentStatus === AGENT_STATUS_CONNECTING
-  || lastSentAgentStatus === AGENT_STATUS_RESTARTING
+  lastSentAgentStatus === AgentStatus.CONNECTING
+  || lastSentAgentStatus === AgentStatus.RESTARTING
 );
 
 export const markAgentDisconnected = (
-  agentStatus: AgentStatus = AGENT_STATUS_DISCONNECTED,
+  agentStatus: AgentStatus = AgentStatus.DISCONNECTED,
 ): void => {
   refreshConnectedStatus({ isConnected: false });
   sendAgentStatusToMainWindow(agentStatus, false);
 };
 
 export const markAgentRestarting = (): void => {
-  markAgentDisconnected(AGENT_STATUS_RESTARTING);
+  markAgentDisconnected(AgentStatus.RESTARTING);
 };
