@@ -5,15 +5,15 @@ import React, {
 } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';
-import type { AgentUiStatus } from '../../../types/agent-ui';
+import type { AgentStatus } from '../../../types/agent-status';
 import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
 import {
-  AGENT_UI_STATUS_CONNECTING,
-  AGENT_UI_STATUS_DISCONNECTED,
-  AGENT_UI_STATUS_DISCONNECTING,
-  AGENT_UI_STATUS_OUTDATED,
-  AGENT_UI_STATUS_RESTARTING,
+  AGENT_STATUS_CONNECTING,
+  AGENT_STATUS_DISCONNECTED,
+  AGENT_STATUS_DISCONNECTING,
+  AGENT_STATUS_OUTDATED,
+  AGENT_STATUS_RESTARTING,
   IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
   MESSAGE,
@@ -38,7 +38,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
   const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
   const [isAgentOutdated, setIsAgentOutdated] = useState<boolean>(false);
-  const [agentUiStatus, setAgentUiStatus] = useState<AgentUiStatus>(AGENT_UI_STATUS_DISCONNECTED);
+  const [agentStatus, setAgentStatus] = useState<AgentStatus>(AGENT_STATUS_DISCONNECTED);
   const [view, setView] = useState<ViewName>(ViewName.WEB_PAGE);
 
   useEffect(() => {
@@ -80,15 +80,15 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
 
   const onIsAgentConnectedMsg = (data: MainWindowRendererMessage['data']) => {
     setIsAgentConnected(!!data?.isAgentConnected);
-    if (data?.agentUiStatus) {
-      setAgentUiStatus(data.agentUiStatus);
+    if (data?.agentStatus) {
+      setAgentStatus(data.agentStatus);
     }
   };
 
   const onIsAgentOutdatedMsg = (data: MainWindowRendererMessage['data']) => {
     if (data?.isAgentOutdated) {
       setIsAgentOutdated(true);
-      setAgentUiStatus(AGENT_UI_STATUS_OUTDATED);
+      setAgentStatus(AGENT_STATUS_OUTDATED);
     }
   };
 
@@ -127,22 +127,22 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   };
 
   const getAgentLoaderTooltipTitle = () => {
-    if (agentUiStatus === AGENT_UI_STATUS_DISCONNECTING) {
+    if (agentStatus === AGENT_STATUS_DISCONNECTING) {
       return 'Disconnecting agent';
     }
-    if (agentUiStatus === AGENT_UI_STATUS_RESTARTING) {
+    if (agentStatus === AGENT_STATUS_RESTARTING) {
       return 'Restarting agent';
     }
     return 'Connecting agent';
   };
 
   const shouldShowAgentLoader = [
-    AGENT_UI_STATUS_CONNECTING,
-    AGENT_UI_STATUS_DISCONNECTING,
-    AGENT_UI_STATUS_RESTARTING,
-  ].includes(agentUiStatus);
+    AGENT_STATUS_CONNECTING,
+    AGENT_STATUS_DISCONNECTING,
+    AGENT_STATUS_RESTARTING,
+  ].includes(agentStatus);
 
-  const isStartAgentDisabled = isAgentOutdated || agentUiStatus === AGENT_UI_STATUS_OUTDATED;
+  const isStartAgentDisabled = isAgentOutdated || agentStatus === AGENT_STATUS_OUTDATED;
 
   return (
     <div

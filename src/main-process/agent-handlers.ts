@@ -32,12 +32,12 @@ import {
   isPendingConnectOrRestart,
   markAgentDisconnected,
   markAgentRestarting,
-  sendAgentUiConnected,
-  sendAgentUiConnecting,
-  sendAgentUiDisconnected,
-  sendAgentUiDisconnecting,
-  sendAgentUiOutdated,
-} from './agent-ui-status';
+  sendAgentConnected,
+  sendAgentConnecting,
+  sendAgentDisconnected,
+  sendAgentDisconnecting,
+  sendAgentOutdated,
+} from './agent-status';
 import { agentLogger } from './agent/agent-logger';
 import {
   isAgentConnected,
@@ -137,9 +137,9 @@ const addOnAgentExitEvent = () => {
     }
     const isConnected = isAgentConnected();
     if (isConnected) {
-      sendAgentUiConnected();
+      sendAgentConnected();
     } else {
-      sendAgentUiDisconnected(false);
+      sendAgentDisconnected(false);
     }
   });
 };
@@ -150,9 +150,9 @@ const addOnAgentIsConnectedEvent = (): void => {
       log.info('Agent message received', { data, type } );
       if (typeof data?.isConnected === 'boolean') {
         if (data.isConnected) {
-          sendAgentUiConnected();
+          sendAgentConnected();
         } else {
-          sendAgentUiDisconnected(false);
+          sendAgentDisconnected(false);
         }
       }
     }
@@ -186,9 +186,9 @@ const handleAgentStd = async (
   const isConnected = isAgentConnected();
   if (isConnected !== wasConnected) {
     if (isConnected) {
-      sendAgentUiConnected();
+      sendAgentConnected();
     } else {
-      sendAgentUiDisconnected(false);
+      sendAgentDisconnected(false);
     }
   }
 
@@ -200,7 +200,7 @@ const handleAgentOutdated = (text: string) => {
   if (text.includes('[ERROR] The agent is outdated')) {
     log.info('Got outdated agent message, stopping agent');
     stopAgent();
-    sendAgentUiOutdated();
+    sendAgentOutdated();
     if (getSettings()?.autoUpdate === false) {
       log.info('Auto update is disabled, storing LAST_AGENT_ACTION as STOPPED');
       set(LAST_AGENT_ACTION, AgentActions.STOPPED);
@@ -292,7 +292,7 @@ const handleStartAgentEvent = async () => {
 
   if (isAgentConnected()) {
     log.info('Agent is already connected');
-    sendAgentUiConnected();
+    sendAgentConnected();
     return;
   }
 
@@ -302,16 +302,16 @@ const handleStartAgentEvent = async () => {
 const attemptToStartAgent = async (): Promise<void> => {
   if (!isUserSignedIn()) {
     log.info('User is not signed in, cannot start agent.');
-    sendAgentUiDisconnected(false);
+    sendAgentDisconnected(false);
     return;
   }
 
-  sendAgentUiConnecting();
+  sendAgentConnecting();
 
   const token = await _getOrCreateToken();
   if (!isValidToken(token)) {
     log.info('Missing or invalid token, cannot start agent.');
-    sendAgentUiDisconnected(false);
+    sendAgentDisconnected(false);
     return;
   }
 
@@ -326,11 +326,11 @@ const handleStopAgentEvent = () => {
   log.info(`Got ${STOP_AGENT} event`);
   if (!isAgentConnected() && !isPendingConnectOrRestart()) {
     log.info('Agent is already not connected');
-    sendAgentUiDisconnected(isAgentConnected());
+    sendAgentDisconnected(isAgentConnected());
     return;
   }
 
-  sendAgentUiDisconnecting(true);
+  sendAgentDisconnecting(true);
 
   stopAgent();
   set(LAST_AGENT_ACTION, AgentActions.STOPPED);
