@@ -118,7 +118,6 @@ export type RendererMessage =
 export abstract class MainWindowRendererMessage implements IPCMessage {
   data?: {
     agentStatus?: AgentStatus;
-    isAgentConnected?: boolean;
     isAgentOutdated?: boolean;
     loadmillViewId?: number;
     magicToken?: string;
