@@ -19,7 +19,6 @@ import {
   DATA,
   FETCH_PROFILES,
   FETCH_SUITES,
-  IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
   SET_IS_USER_SIGNED_IN,
   START_AGENT,
@@ -84,7 +83,6 @@ export const startAgent = (token: string): void => {
 const initAgent = () => {
   agent = createAgentProcess();
   addOnAgentExitEvent();
-  addOnAgentIsConnectedEvent();
   if (agent.stdout) {
     pipeAgentStdout();
   }
@@ -140,21 +138,6 @@ const addOnAgentExitEvent = () => {
       sendAgentConnected();
     } else {
       sendAgentDisconnected(false);
-    }
-  });
-};
-
-const addOnAgentIsConnectedEvent = (): void => {
-  agent.on('message', ({ data, type }: MainMessage) => {
-    if (type === IS_AGENT_CONNECTED) {
-      log.info('Agent message received', { data, type } );
-      if (typeof data?.isConnected === 'boolean') {
-        if (data.isConnected) {
-          sendAgentConnected();
-        } else {
-          sendAgentDisconnected(false);
-        }
-      }
     }
   });
 };

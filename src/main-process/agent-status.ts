@@ -3,7 +3,7 @@ import {
 } from '../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../log';
 import { AgentStatus } from '../types/agent-status';
-import { IS_AGENT_CONNECTED } from '../universal/constants';
+import { AGENT_STATUS_CHANGED } from '../universal/constants';
 
 import {
   isAgentConnected,
@@ -65,7 +65,7 @@ export const sendAgentStatusToMainWindow = (
       agentStatus: agentStatus,
       ...isAgentConnectedPayload,
     },
-    type: IS_AGENT_CONNECTED,
+    type: AGENT_STATUS_CHANGED,
   });
 };
 

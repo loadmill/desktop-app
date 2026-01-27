@@ -1,5 +1,6 @@
 export const
   ACTIVATE = 'activate',
+  AGENT_STATUS_CHANGED = 'agentStatusChanged',
   ANALYZE_REQUESTS = 'analyzeRequests',
   ANALYZE_REQUESTS_COMPLETE = 'analyzeRequestsComplete',
   BEFORE_QUIT = 'before-quit',
@@ -35,7 +36,6 @@ export const
   IMPORT_HAR_IS_IN_PROGRESS = 'importHarIsInProgress',
   INIT_FILTER_REGEX = 'initFilterRegex',
   IP_ADDRESS = 'ipAddress',
-  IS_AGENT_CONNECTED = 'isAgentConnected',
   IS_AGENT_OUTDATED = 'isAgentOutdated',
   IS_RECORDING = 'isRecording',
   LOADMILL_DESKTOP = 'loadmillDesktop',

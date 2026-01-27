@@ -9,7 +9,7 @@ import { AgentStatus } from '../../../types/agent-status';
 import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
 import {
-  IS_AGENT_CONNECTED,
+  AGENT_STATUS_CHANGED,
   IS_AGENT_OUTDATED,
   MESSAGE,
   NAVIGATION,
@@ -53,8 +53,8 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         case SHOW_FIND_ON_PAGE:
           onShowFindMsg(data);
           break;
-        case IS_AGENT_CONNECTED:
-          onIsAgentConnectedMsg(data);
+        case AGENT_STATUS_CHANGED:
+          onAgentStatusChangedMsg(data);
           break;
         case IS_AGENT_OUTDATED:
           onIsAgentOutdatedMsg(data);
@@ -81,7 +81,7 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     ].includes(status);
   };
 
-  const onIsAgentConnectedMsg = (data: MainWindowRendererMessage['data']) => {
+  const onAgentStatusChangedMsg = (data: MainWindowRendererMessage['data']) => {
     if (data?.agentStatus) {
       setAgentStatus(data.agentStatus);
 
