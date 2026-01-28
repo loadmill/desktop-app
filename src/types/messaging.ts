@@ -1,4 +1,5 @@
 import {
+  AGENT_STATUS_CHANGED,
   ANALYZE_REQUESTS,
   ANALYZE_REQUESTS_COMPLETE,
   CLEAR_ALL_ENTRIES,
@@ -26,7 +27,6 @@ import {
   IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
-  IS_AGENT_CONNECTED,
   IS_AGENT_OUTDATED,
   IS_RECORDING,
   LOADMILL_VIEW_ID,
@@ -57,6 +57,7 @@ import {
   UPDATED_SUITES,
 } from '../universal/constants';
 
+import { AgentStatus } from './agent-status';
 import { IpAddressFamily } from './ip-address';
 import { Navigation } from './navigation';
 import { PlaywrightStepLocation } from './playwright';
@@ -70,10 +71,7 @@ import { ViewName } from './views';
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: {
-    [key: string]: string[] | string | boolean | number | null |
-    Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | Settings | ChangedSetting | PlaywrightStepLocation
-  };
+  data?: Record<string, unknown>;
   type: string;
 }
 
@@ -119,7 +117,7 @@ export type RendererMessage =
 
 export abstract class MainWindowRendererMessage implements IPCMessage {
   data?: {
-    isAgentConnected?: boolean;
+    agentStatus?: AgentStatus;
     isAgentOutdated?: boolean;
     loadmillViewId?: number;
     magicToken?: string;
@@ -183,7 +181,6 @@ export abstract class StartupRendererMessage implements IPCMessage {
 }
 
 export type AgentMessageTypes =
-  typeof IS_AGENT_CONNECTED |
   typeof START_AGENT |
   typeof STOP_AGENT;
 
@@ -209,7 +206,6 @@ export type MainMessageTypes =
   typeof GO_FORWARD |
   typeof IMPORT_HAR |
   typeof INIT_FILTER_REGEX |
-  typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
   typeof MARK_RELEVANT |
   typeof REFRESH_ENTRIES |
@@ -226,7 +222,7 @@ export type MainMessageTypes =
   typeof TOGGLE_MAXIMIZE_WINDOW;
 
 export type RendererMessageTypes =
-  typeof IS_AGENT_CONNECTED |
+  typeof AGENT_STATUS_CHANGED |
   typeof IS_AGENT_OUTDATED |
   typeof LOADMILL_VIEW_ID |
   typeof MAIN_WINDOW_ID |

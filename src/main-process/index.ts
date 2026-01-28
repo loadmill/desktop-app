@@ -19,7 +19,7 @@ import {
   WINDOW_ALL_CLOSED,
 } from '../universal/constants';
 
-import { killAgentProcess, subscribeToAgentEventsFromRenderer } from './agent-handlers';
+import { initializeAgentSystem, killAgentProcess } from './agent';
 import { subscribeToCodegenEvents } from './codegen';
 import './deep-link';
 import { subscribeToKeybindings } from './keybindings';
@@ -67,7 +67,7 @@ const onReady = async () => {
   await collectProxyServerData();
   symlinkPlaywright();
   await initProxyServer();
-  subscribeToAgentEventsFromRenderer();
+  initializeAgentSystem();
   subscribeToCodegenEvents();
   createWindows();
 };

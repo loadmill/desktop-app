@@ -2,7 +2,7 @@ import { app } from 'electron';
 
 import log from '../log';
 
-import { killAgentProcess } from './agent-handlers';
+import { killAgentProcess } from './agent';
 
 export const relaunchDesktopApp = (): void => {
   log.info('Relaunching desktop app...');

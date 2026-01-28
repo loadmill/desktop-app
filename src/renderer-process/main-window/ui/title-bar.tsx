@@ -5,10 +5,11 @@ import React, {
 } from 'react';
 
 import { isFromPreload } from '../../../inter-process-communication';
+import { AgentStatus } from '../../../types/agent-status';
 import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
 import {
-  IS_AGENT_CONNECTED,
+  AGENT_STATUS_CHANGED,
   IS_AGENT_OUTDATED,
   MESSAGE,
   NAVIGATION,
@@ -21,9 +22,8 @@ import {
   GoBackIconButton,
   GoForwardIconButton,
   RefreshIconButton,
-  StartAgentIconButton,
-  StopAgentIconButton,
 } from './actions-icon-buttons';
+import { AgentButton } from './agent-button';
 import { FindOnPage } from './find-on-page';
 import { ViewsSwitch, ViewsSwitchProps } from './views-switch';
 
@@ -31,7 +31,8 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
   const [shouldShowFind, setShouldShowFind] = useState<boolean>(false);
-  const [isAgentConnected, setIsAgentConnected] = useState<boolean>(false);
+  const [agentStatus, setAgentStatus] = useState<AgentStatus>(AgentStatus.DISCONNECTED);
+  const [isAgentButtonLoading, setIsAgentButtonLoading] = useState<boolean>(false);
   const [isAgentOutdated, setIsAgentOutdated] = useState<boolean>(false);
   const [view, setView] = useState<ViewName>(ViewName.WEB_PAGE);
 
@@ -52,8 +53,8 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
         case SHOW_FIND_ON_PAGE:
           onShowFindMsg(data);
           break;
-        case IS_AGENT_CONNECTED:
-          onIsAgentConnectedMsg(data);
+        case AGENT_STATUS_CHANGED:
+          onAgentStatusChangedMsg(data);
           break;
         case IS_AGENT_OUTDATED:
           onIsAgentOutdatedMsg(data);
@@ -72,13 +73,29 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     setCanGoForward(!!data?.nav?.canGoForward);
   };
 
-  const onIsAgentConnectedMsg = (data: MainWindowRendererMessage['data']) => {
-    setIsAgentConnected(!!data?.isAgentConnected);
+  const isAgentTransitioning = (status: AgentStatus) => {
+    return [
+      AgentStatus.CONNECTING,
+      AgentStatus.DISCONNECTING,
+      AgentStatus.RESTARTING,
+    ].includes(status);
+  };
+
+  const onAgentStatusChangedMsg = (data: MainWindowRendererMessage['data']) => {
+    if (data?.agentStatus) {
+      setAgentStatus(data.agentStatus);
+
+      if (!isAgentTransitioning(data.agentStatus)) {
+        setIsAgentButtonLoading(false);
+      }
+    }
   };
 
   const onIsAgentOutdatedMsg = (data: MainWindowRendererMessage['data']) => {
     if (data?.isAgentOutdated) {
       setIsAgentOutdated(true);
+      setAgentStatus(AgentStatus.OUTDATED);
+      setIsAgentButtonLoading(false);
     }
   };
 
@@ -116,6 +133,29 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     window.desktopApi.copyUrl();
   };
 
+  const onStartAgentClick = () => {
+    setIsAgentButtonLoading(true);
+    window.desktopApi.startAgent();
+  };
+
+  const onStopAgentClick = () => {
+    setIsAgentButtonLoading(true);
+    window.desktopApi.stopAgent();
+  };
+
+  const getAgentLoaderTooltipTitle = () => {
+    if (agentStatus === AgentStatus.DISCONNECTING) {
+      return 'Disconnecting agent';
+    }
+    if (agentStatus === AgentStatus.RESTARTING) {
+      return 'Restarting agent';
+    }
+    return 'Connecting agent';
+  };
+
+  const shouldShowAgentLoader = isAgentButtonLoading || isAgentTransitioning(agentStatus);
+  const isAgentButtonDisabled = isAgentOutdated || agentStatus === AgentStatus.ERROR;
+
   return (
     <div
       className='title-bar'
@@ -137,18 +177,14 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
           setShouldShowFind={ setShouldShowFind }
         />
       }
-      {
-        isAgentConnected ? (
-          <StopAgentIconButton
-            onStopAgentClicked={ window.desktopApi.stopAgent }
-          />
-        ) : (
-          <StartAgentIconButton
-            disabled={ isAgentOutdated }
-            onStartAgentClicked={ window.desktopApi.startAgent }
-          />
-        )
-      }
+      <AgentButton
+        isAgentButtonDisabled={ isAgentButtonDisabled }
+        isAgentConnected={ agentStatus === AgentStatus.CONNECTED }
+        onStartAgentClicked={ onStartAgentClick }
+        onStopAgentClicked={ onStopAgentClick }
+        shouldShowAgentLoader={ shouldShowAgentLoader }
+        tooltipTitle={ getAgentLoaderTooltipTitle() }
+      />
     </div>
   );
 };
@@ -185,7 +221,7 @@ export const TitleBarActions = ({
       <CopyIconButton
         disabled={ isNavigationDisabled }
         onCopyClicked={ onCopyUrlClick }
-        title='Copy URL'
+        tooltipTitle='Copy URL'
       />
       <ViewsSwitch
         setView={ setView }
