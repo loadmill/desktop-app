@@ -4,6 +4,7 @@ export enum AgentStatus {
   DISCONNECTED = 'disconnected',
   DISCONNECTING = 'disconnecting',
   ERROR = 'error',
+  INVALID_TOKEN = 'invalid_token',
   OUTDATED = 'outdated',
   RESTARTING = 'restarting',
 }

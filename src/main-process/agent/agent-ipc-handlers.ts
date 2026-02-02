@@ -16,8 +16,9 @@ import { subscribeToMainProcessMessage } from '../main-events';
 import { get, set } from '../persistence-store';
 import { AgentActions, LAST_AGENT_ACTION } from '../persistence-store/constants';
 import { clearProfiles } from '../profiles';
+import { getSettings } from '../settings/settings-store';
 import { clearSuites } from '../suites';
-import { isValidToken } from '../token';
+import { createAndSaveToken, isValidToken } from '../token';
 import { isUserSignedIn, setIsUserSignedIn } from '../user-signed-in-status';
 
 import {
@@ -84,6 +85,47 @@ export const subscribeToAgentEventsFromRenderer = (): void => {
   subscribeToUserIsSignedInFromRenderer();
   subscribeToStartAgentFromRenderer();
   subscribeToStopAgentFromRenderer();
+};
+
+export const subscribeToAgentStatusChanges = (): void => {
+  agentStatusManager.onStatusChange((newStatus, oldStatus) => {
+    log.info('Agent status changed', { from: oldStatus, to: newStatus });
+
+    if (newStatus === AgentStatus.INVALID_TOKEN) {
+      handleInvalidToken();
+    }
+
+    if (newStatus === AgentStatus.OUTDATED) {
+      handleOutdatedAgent();
+    }
+  });
+};
+
+const handleInvalidToken = async (): Promise<void> => {
+  log.info('Invalid token detected, fetching new token from Loadmill server');
+
+  const token = await createAndSaveToken();
+  if (!isValidToken(token)) {
+    log.error('Failed to fetch new token, cannot reconnect agent');
+    agentStatusManager.setStatus(AgentStatus.ERROR);
+    return;
+  }
+
+  log.info('New token fetched, reconnecting agent');
+  sendToAgentProcess({
+    data: { token: token.token },
+    type: AGENT_CONNECT,
+  });
+};
+
+const handleOutdatedAgent = (): void => {
+  log.info('Outdated agent detected, disconnecting agent');
+  disconnectAgent();
+
+  if (getSettings()?.autoUpdate === false) {
+    log.info('Auto update is disabled, marking agent as stopped');
+    set(LAST_AGENT_ACTION, AgentActions.STOP);
+  }
 };
 
 const subscribeToUserIsSignedInFromRenderer = () => {

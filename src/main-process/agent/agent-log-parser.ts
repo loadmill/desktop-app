@@ -9,6 +9,13 @@ export interface StatusUpdate {
 export const parseAgentLog = (text: string): StatusUpdate => {
   const lines = textToNonEmptyLines(text);
 
+  if (lines.some(l => l.includes('Invalid token'))) {
+    return {
+      reason: 'Invalid token detected',
+      status: AgentStatus.INVALID_TOKEN,
+    };
+  }
+
   if (lines.some(l => l.includes('Successfully connected to Loadmill'))) {
     return {
       reason: 'Connected to Loadmill',
@@ -38,11 +45,3 @@ export const parseAgentLog = (text: string): StatusUpdate => {
 
   return { status: null };
 };
-
-export function hasInvalidTokenError(text: string): boolean {
-  return text.includes('Invalid token');
-}
-
-export function hasOutdatedAgentError(text: string): boolean {
-  return text.includes('[ERROR] The agent is outdated');
-}
