@@ -7,7 +7,7 @@ import React, {
 import { isFromPreload } from '../../../inter-process-communication';
 import { MainWindowRendererMessage } from '../../../types/messaging';
 import { ViewName } from '../../../types/views';
-import { AgentStatus } from '../../../universal/agent-status';
+import { AgentStatus, isTransitioning } from '../../../universal/agent-status';
 import {
   AGENT_STATUS_CHANGED,
   MESSAGE,
@@ -68,19 +68,11 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     setCanGoForward(!!data?.nav?.canGoForward);
   };
 
-  const isAgentTransitioning = (status: AgentStatus) => {
-    return [
-      AgentStatus.CONNECTING,
-      AgentStatus.DISCONNECTING,
-      AgentStatus.RESTARTING,
-    ].includes(status);
-  };
-
   const onAgentStatusChangedMsg = (data: MainWindowRendererMessage['data']) => {
     if (data?.agentStatus) {
       setAgentStatus(data.agentStatus);
 
-      const shouldShowLoader = isAgentTransitioning(data.agentStatus) && data.agentStatus !== AgentStatus.OUTDATED;
+      const shouldShowLoader = isTransitioning(data.agentStatus) && data.agentStatus !== AgentStatus.OUTDATED;
       setIsAgentButtonLoading(shouldShowLoader);
     }
   };

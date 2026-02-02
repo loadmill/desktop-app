@@ -1,5 +1,5 @@
 import log from '../../log';
-import { AgentStatus } from '../../universal/agent-status';
+import { AgentStatus, isTransitioning } from '../../universal/agent-status';
 
 type StatusChangeCallback = (newStatus: AgentStatus, oldStatus: AgentStatus) => void;
 
@@ -17,10 +17,6 @@ class AgentStatusManager {
 
   isConnected(): boolean {
     return this.currentStatus === AgentStatus.CONNECTED;
-  }
-
-  isTransitioning(): boolean {
-    return this.isTransitionalStatus(this.currentStatus);
   }
 
   setStatus(newStatus: AgentStatus): void {
@@ -62,18 +58,10 @@ class AgentStatusManager {
     }
   }
 
-  private isTransitionalStatus(status: AgentStatus): boolean {
-    return [
-      AgentStatus.CONNECTING,
-      AgentStatus.DISCONNECTING,
-      AgentStatus.RESTARTING,
-    ].includes(status);
-  }
-
   private manageTimeout(status: AgentStatus): void {
     this.clearStatusTimeout();
 
-    if (!this.isTransitionalStatus(status)) {
+    if (!isTransitioning(status)) {
       return;
     }
 
