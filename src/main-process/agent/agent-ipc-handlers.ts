@@ -18,7 +18,7 @@ import { AgentActions, LAST_AGENT_ACTION } from '../persistence-store/constants'
 import { clearProfiles } from '../profiles';
 import { getSettings } from '../settings/settings-store';
 import { clearSuites } from '../suites';
-import { createAndSaveToken, isValidToken } from '../token';
+import { createAndSaveToken, getOrCreateToken, isValidToken } from '../token';
 import { isUserSignedIn, setIsUserSignedIn } from '../user-signed-in-status';
 
 import {
@@ -28,7 +28,6 @@ import {
   terminateAgentProcess,
 } from './agent-process-manager';
 import { agentStatusManager } from './agent-status-manager';
-import { getOrCreateToken } from './agent-token-manager';
 
 export const disconnectAgent = (): void => {
   sendToAgentProcess({ type: AGENT_DISCONNECT });
