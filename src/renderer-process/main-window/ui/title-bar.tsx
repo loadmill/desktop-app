@@ -80,9 +80,8 @@ export const TitleBar: React.FC<TitleBarProps> = (): JSX.Element => {
     if (data?.agentStatus) {
       setAgentStatus(data.agentStatus);
 
-      if (!isAgentTransitioning(data.agentStatus) || data.agentStatus === AgentStatus.OUTDATED) {
-        setIsAgentButtonLoading(false);
-      }
+      const shouldShowLoader = isAgentTransitioning(data.agentStatus) && data.agentStatus !== AgentStatus.OUTDATED;
+      setIsAgentButtonLoading(shouldShowLoader);
     }
   };
 

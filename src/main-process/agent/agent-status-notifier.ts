@@ -19,8 +19,15 @@ const notifyMainWindow = (agentStatus: AgentStatus): void => {
 
   sendFromMainWindowToRenderer({
     data: {
-      agentStatus,
+      agentStatus: _translateBackendStatusToUiStatus(agentStatus),
     },
     type: AGENT_STATUS_CHANGED,
   });
+};
+
+const _translateBackendStatusToUiStatus = (backendStatus: AgentStatus): AgentStatus => {
+  if (backendStatus === AgentStatus.INVALID_TOKEN) {
+    return AgentStatus.CONNECTING;
+  }
+  return backendStatus;
 };
