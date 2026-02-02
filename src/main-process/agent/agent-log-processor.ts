@@ -4,22 +4,15 @@ import {
   sendFromAgentViewToRenderer,
 } from '../../inter-process-communication/to-renderer-process/main-to-renderer';
 import log from '../../log';
-import { AgentStatus } from '../../types/agent-status';
-import { AgentMessage } from '../../types/messaging';
-import { DATA, START_AGENT, STDERR, STDOUT } from '../../universal/constants';
-import { agentLogger } from '../agent/agent-logger';
-import { set } from '../persistence-store';
-import { AgentActions, LAST_AGENT_ACTION } from '../persistence-store/constants';
-import { getSettings } from '../settings/settings-store';
-import { createAndSaveToken } from '../token';
+import { DATA, STDERR, STDOUT } from '../../universal/constants';
 
 import {
   hasInvalidTokenError,
   hasOutdatedAgentError,
   parseAgentLog,
 } from './agent-log-parser';
+import { agentLogger } from './agent-logger';
 import { agentStatusManager } from './agent-status-manager';
-import { notifyAgentOutdated } from './agent-status-notifier';
 
 /**
  * AgentLogProcessor - Processes stdout/stderr from agent process
@@ -27,24 +20,32 @@ import { notifyAgentOutdated } from './agent-status-notifier';
  * Responsibilities:
  * - Piping agent logs to handlers
  * - Parsing logs for status changes
- * - Handling special errors (invalid token, outdated agent)
+ * - Detecting special errors
  * - Forwarding logs to UI and file logger
+ * - Delegating error handling to AgentIPCHandlers
+ *
+ * This module is an EVENT HANDLER - it reacts to logs but delegates
+ * business logic decisions to the appropriate orchestrator.
  */
 
-// Module-level dependency injection point
-let sendToAgentProcessFn: ((msg: AgentMessage) => void) | null = null;
-let stopAgentFn: (() => void) | null = null;
+// Callbacks to business logic layer (AgentIPCHandlers)
+type InvalidTokenHandler = () => Promise<void>;
+type OutdatedAgentHandler = () => void;
+
+let handleInvalidTokenCallback: InvalidTokenHandler | null = null;
+let handleOutdatedAgentCallback: OutdatedAgentHandler | null = null;
 
 /**
- * Initialize the log processor with dependencies
+ * Initialize the log processor with callbacks to business logic handlers
  * Must be called before using the log processor
  */
 export function initializeLogProcessor(
-  sendToAgentProcess: (msg: AgentMessage) => void,
-  stopAgent: () => void,
+  handleInvalidToken: InvalidTokenHandler,
+  handleOutdatedAgent: OutdatedAgentHandler,
 ): void {
-  sendToAgentProcessFn = sendToAgentProcess;
-  stopAgentFn = stopAgent;
+  handleInvalidTokenCallback = handleInvalidToken;
+  handleOutdatedAgentCallback = handleOutdatedAgent;
+  log.info('Agent log processor initialized');
 }
 
 /**
@@ -76,58 +77,31 @@ const handleAgentStd = async (
   const text = data.toString();
   log.info('Agent:', text);
 
-  // Handle special error cases first
-  await handleInvalidToken(text);
-  handleAgentOutdated(text);
+  // 1. Check for special errors and delegate to business logic
+  if (hasInvalidTokenError(text)) {
+    if (handleInvalidTokenCallback) {
+      await handleInvalidTokenCallback();
+    } else {
+      log.error('Invalid token detected but no handler registered');
+    }
+  }
 
-  // Parse log for status changes
-  const { reason, status } = parseAgentLog(text);
+  if (hasOutdatedAgentError(text)) {
+    if (handleOutdatedAgentCallback) {
+      handleOutdatedAgentCallback();
+    } else {
+      log.error('Outdated agent detected but no handler registered');
+    }
+  }
+
+  // 2. Parse log for status changes
+  const { status, reason } = parseAgentLog(text);
   if (status) {
     log.info('Status change detected from log', { reason, status });
     agentStatusManager.setStatus(status);
   }
 
-  // Send log to UI and file logger
+  // 3. Forward log to UI and file logger
   sendFromAgentViewToRenderer({ data: { text }, type });
   agentLogger.info(text);
-};
-
-const handleAgentOutdated = (text: string) => {
-  if (!stopAgentFn) {
-    log.error('stopAgentFn not initialized in log processor');
-    return;
-  }
-
-  if (hasOutdatedAgentError(text)) {
-    log.info('Got outdated agent message, stopping agent');
-    stopAgentFn();
-    agentStatusManager.setStatus(AgentStatus.OUTDATED);
-    notifyAgentOutdated();
-
-    if (getSettings()?.autoUpdate === false) {
-      log.info('Auto update is disabled, storing LAST_AGENT_ACTION as STOPPED');
-      set(LAST_AGENT_ACTION, AgentActions.STOPPED);
-    }
-  }
-};
-
-const handleInvalidToken = async (text: string) => {
-  if (!sendToAgentProcessFn) {
-    log.error('sendToAgentProcessFn not initialized in log processor');
-    return;
-  }
-
-  if (hasInvalidTokenError(text)) {
-    log.info('Got Invalid token from agent, fetching new token from loadmill server');
-    const token = await createAndSaveToken();
-    if (!token) {
-      log.error('Token still does not exists / not valid, could not connect the agent');
-      return;
-    }
-
-    sendToAgentProcessFn({
-      data: { token: token.token },
-      type: START_AGENT,
-    });
-  }
 };

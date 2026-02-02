@@ -29,6 +29,7 @@ export const AgentButton = ({
           <StartAgentIconButton
             disabled={ isAgentButtonDisabled }
             onStartAgentClicked={ onStartAgentClicked }
+            tooltipTitle={ tooltipTitle }
           />
         )
       }
@@ -48,6 +49,7 @@ export type AgentButtonProps = {
 export const StartAgentIconButton: React.FC<StartAgentIconButtonProps> = ({
   disabled,
   onStartAgentClicked,
+  tooltipTitle,
 }) => {
   return (
     <div className='stop-start-agent'>
@@ -58,7 +60,7 @@ export const StartAgentIconButton: React.FC<StartAgentIconButtonProps> = ({
         placement='left'
         tooltipTitle={
           disabled
-            ? 'Agent is outdated'
+            ? tooltipTitle
             : 'Start Agent'
         }
       />
@@ -69,6 +71,7 @@ export const StartAgentIconButton: React.FC<StartAgentIconButtonProps> = ({
 export type StartAgentIconButtonProps = {
   disabled?: boolean;
   onStartAgentClicked: () => void;
+  tooltipTitle: string;
 };
 
 export const StopAgentIconButton: React.FC<StopAgentIconButtonProps> = ({

@@ -1,4 +1,7 @@
+import { AgentStatus } from '../universal/agent-status';
 import {
+  AGENT_CONNECT,
+  AGENT_DISCONNECT,
   AGENT_STATUS_CHANGED,
   ANALYZE_REQUESTS,
   ANALYZE_REQUESTS_COMPLETE,
@@ -27,7 +30,6 @@ import {
   IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
-  IS_AGENT_OUTDATED,
   IS_RECORDING,
   LOADMILL_VIEW_ID,
   MAGIC_TOKEN,
@@ -57,7 +59,6 @@ import {
   UPDATED_SUITES,
 } from '../universal/constants';
 
-import { AgentStatus } from './agent-status';
 import { IpAddressFamily } from './ip-address';
 import { Navigation } from './navigation';
 import { PlaywrightStepLocation } from './playwright';
@@ -118,7 +119,6 @@ export type RendererMessage =
 export abstract class MainWindowRendererMessage implements IPCMessage {
   data?: {
     agentStatus?: AgentStatus;
-    isAgentOutdated?: boolean;
     loadmillViewId?: number;
     magicToken?: string;
     mainWindowId?: number;
@@ -181,8 +181,8 @@ export abstract class StartupRendererMessage implements IPCMessage {
 }
 
 export type AgentMessageTypes =
-  typeof START_AGENT |
-  typeof STOP_AGENT;
+  typeof AGENT_CONNECT |
+  typeof AGENT_DISCONNECT;
 
 export type MainMessageTypes =
   typeof ANALYZE_REQUESTS |
@@ -223,7 +223,6 @@ export type MainMessageTypes =
 
 export type RendererMessageTypes =
   typeof AGENT_STATUS_CHANGED |
-  typeof IS_AGENT_OUTDATED |
   typeof LOADMILL_VIEW_ID |
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |

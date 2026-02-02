@@ -13,7 +13,6 @@ import {
   FIND_NEXT,
   GO_BACK,
   GO_FORWARD,
-  IS_AGENT_OUTDATED,
   NAVIGATION,
   REFRESH_PAGE,
   SHOW_FIND_ON_PAGE,
@@ -46,10 +45,6 @@ subscribeToMainWindowMessages(SHOW_FIND_ON_PAGE, (_event: Electron.IpcRendererEv
 
 subscribeToMainWindowMessages(AGENT_STATUS_CHANGED, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
   window.postMessage({ data, type: AGENT_STATUS_CHANGED });
-});
-
-subscribeToMainWindowMessages(IS_AGENT_OUTDATED, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
-  window.postMessage({ data, type: IS_AGENT_OUTDATED });
 });
 
 subscribeToMainWindowMessages(SWITCH_VIEW, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {

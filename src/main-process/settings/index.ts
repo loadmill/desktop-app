@@ -7,7 +7,7 @@ import log from '../../log';
 import { ChangedSetting, ProxySettings, Settings } from '../../types/settings';
 import { FETCH_SETTINGS, SETTING_CHANGED } from '../../universal/constants';
 import { defaultProxySettings } from '../../universal/default-settings';
-import { restartAgentProcess } from '../agent/agent-ipc-handlers';
+import { restartAgent } from '../agent/agent-ipc-handlers';
 import { subscribeToMainProcessMessage } from '../main-events';
 import { relaunchDesktopApp } from '../relaunch';
 
@@ -76,7 +76,7 @@ const handleAgentUrlSetting = async (agentUrl: string) => {
     agentUrl,
   });
 
-  await restartAgentProcess();
+  await restartAgent();
   sendFromSettingsViewToRenderer({
     data: {
       notification: 'Agent URL updated and agent restarted successfully',

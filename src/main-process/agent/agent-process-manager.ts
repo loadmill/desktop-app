@@ -10,7 +10,6 @@ import { app } from 'electron';
 
 import log from '../../log';
 import { AgentMessage } from '../../types/messaging';
-import { START_AGENT, STOP_AGENT } from '../../universal/constants';
 import {
   CALLBACK_URL,
   LOADMILL_AGENT_LOG_LEVEL,
@@ -29,17 +28,6 @@ import { pipeAgentStderr, pipeAgentStdout } from './agent-log-processor';
 import {
   addOnAgentExitEvent,
 } from './agent-process-events';
-import { agentStatusManager } from './agent-status-manager';
-
-/**
- * AgentProcessManager - Manages the agent child process lifecycle
- *
- * Responsibilities:
- * - Creating and initializing the agent process
- * - Starting/stopping the agent
- * - Restarting the agent
- * - Process termination
- */
 
 let agent: ChildProcessWithoutNullStreams | null;
 
@@ -47,35 +35,10 @@ const PACKED_RELATIVE_PATH = path.join(app.getAppPath(), '.webpack', 'main');
 const LOADMILL_AGENT = 'loadmill-agent';
 const LOADMILL_AGENT_PATH = path.join(PACKED_RELATIVE_PATH, LOADMILL_AGENT);
 
-/**
- * Start the agent with the given token
- */
-export const startAgentProcess = (token: string): void => {
-  if (!agentStatusManager.isConnected()) {
-    if (!agent || !agent.connected) {
-      initAgent();
-    }
-    if (agent && token) {
-      sendToAgentProcess({
-        data: { token },
-        type: START_AGENT,
-      });
-    }
-  }
+export const isAgentProcessAlive = (): boolean => {
+  return agent && agent.connected;
 };
 
-/**
- * Stop the agent
- */
-export const stopAgentProcess = (): void => {
-  if (agent) {
-    sendToAgentProcess({ type: STOP_AGENT });
-  }
-};
-
-/**
- * Kill the agent process immediately
- */
 export const killAgentProcess = (): void => {
   if (agent) {
     log.info('Killing agent process');
@@ -83,27 +46,19 @@ export const killAgentProcess = (): void => {
   }
 };
 
-/**
- * Send a message to the agent process
- */
 export const sendToAgentProcess = (msg: AgentMessage): void => {
-  if (agent && agent.connected) {
-    agent.send(msg);
+  if (!isAgentProcessAlive()) {
+    log.error('Cannot send message to agent process: process is not online', msg);
+    return;
   }
+  agent.send(msg);
 };
 
-/**
- * Get the current agent process (for event handlers)
- */
 export const getAgentProcess = (): ChildProcessWithoutNullStreams | null => {
   return agent;
 };
 
-// ============================================================================
-// Private Functions
-// ============================================================================
-
-const initAgent = () => {
+export const initAgentProcess = (): void => {
   agent = createAgentProcess();
   addOnAgentExitEvent(agent);
   if (agent.stdout) {
