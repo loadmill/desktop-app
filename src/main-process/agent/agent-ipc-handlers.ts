@@ -53,10 +53,14 @@ const connectAgent = async (): Promise<void> => {
     initAgentProcess();
   }
 
-  sendToAgentProcess({
+  const messageSent = sendToAgentProcess({
     data: { token: token.token },
     type: AGENT_CONNECT,
   });
+
+  if (!messageSent) {
+    agentStatusManager.setStatus(AgentStatus.ERROR);
+  }
 };
 
 export const restartAgent = async (): Promise<void> => {
@@ -111,10 +115,14 @@ const handleInvalidToken = async (): Promise<void> => {
   }
 
   log.info('New token fetched, reconnecting agent');
-  sendToAgentProcess({
+  const messageSent = sendToAgentProcess({
     data: { token: token.token },
     type: AGENT_CONNECT,
   });
+
+  if (!messageSent) {
+    agentStatusManager.setStatus(AgentStatus.ERROR);
+  }
 };
 
 const handleOutdatedAgent = (): void => {

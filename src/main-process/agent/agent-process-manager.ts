@@ -46,12 +46,13 @@ export const killAgentProcess = (): void => {
   }
 };
 
-export const sendToAgentProcess = (msg: AgentMessage): void => {
+export const sendToAgentProcess = (msg: AgentMessage): boolean => {
   if (!isAgentProcessAlive()) {
     log.error('Cannot send message to agent process: process is not online', msg);
-    return;
+    return false;
   }
   agent.send(msg);
+  return true;
 };
 
 export const getAgentProcess = (): ChildProcessWithoutNullStreams | null => {
