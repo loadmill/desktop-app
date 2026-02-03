@@ -3,6 +3,11 @@ import { AgentStatus, isTransitioning } from '../../universal/agent-status';
 
 type StatusChangeCallback = (newStatus: AgentStatus, oldStatus: AgentStatus) => void;
 
+/**
+ * Timeout for transitioning states (CONNECTING, DISCONNECTING, etc.)
+ * 25s is generous enough for slow networks while ensuring stuck states
+ * are eventually detected and surfaced as errors.
+ */
 const AGENT_STATUS_TIMEOUT_MS = 25_000;
 
 class AgentStatusManager {
