@@ -48,6 +48,9 @@ class AgentStatusManager {
   /**
    * Register a callback to be notified on status changes
    * Returns an unsubscribe function
+   *
+   * Note: This is intended for app-lifetime subscriptions.
+   * For short-lived subscribers, ensure the unsubscribe function is called.
    */
   onStatusChange(callback: StatusChangeCallback): () => void {
     this.callbacks.push(callback);
