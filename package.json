@@ -23,7 +23,8 @@
     "prepare-standalones": "yarn prepare-standalone-playwright",
     "prepare-standalone-playwright": "tsx scripts/prepare-standalone-playwright.ts",
     "start": "yarn prepare-standalones && electron-forge start",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
   },
   "keywords": [],
   "license": "MIT",
