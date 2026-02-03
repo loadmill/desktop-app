@@ -28,7 +28,7 @@ module.exports = {
       },
     },
     {
-      files: ['accordion-summary.tsx', 'table-row-cell.tsx'],
+      files: ['accordion-summary.tsx', 'table-row-cell.tsx', 'test/__mocks__/log.ts'],
       rules: {
         'sort-keys': 'off',
       },

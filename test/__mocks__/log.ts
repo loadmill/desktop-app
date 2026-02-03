@@ -1,7 +1,10 @@
+const noop = (): void => {};
+
 const log = {
-  debug: console.log,
-  error: console.log,
-  info: console.log,
+  debug: noop,
+  error: noop,
+  info: noop,
+  warn: noop,
   transports: {
     console: {
       level: 'debug',
@@ -10,7 +13,6 @@ const log = {
       level: 'debug',
     },
   },
-
 };
 
 export default log;
