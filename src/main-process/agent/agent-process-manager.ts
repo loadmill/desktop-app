@@ -55,10 +55,6 @@ export const sendToAgentProcess = (msg: AgentMessage): boolean => {
   return true;
 };
 
-export const getAgentProcess = (): ChildProcessWithoutNullStreams | null => {
-  return agent;
-};
-
 export const initAgentProcess = (): void => {
   agent = createAgentProcess();
   addOnAgentExitEvent(agent);
