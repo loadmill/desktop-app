@@ -138,14 +138,14 @@ export const terminateAgentProcess = async (): Promise<void> => {
     log.info('Attempting graceful shutdown of agent process');
     tryKill('SIGINT');
     if (await waitForExit(10000)) {
-      log.info('Agent process exitted gracefully');
+      log.info('Agent process exited gracefully');
       return;
     }
 
     log.info('Attempting forceful shutdown of agent process');
     tryKill('SIGKILL');
     if (await waitForExit(10000)) {
-      log.info('Agent process exitted forcefully');
+      log.info('Agent process exited forcefully');
       return;
     }
 
