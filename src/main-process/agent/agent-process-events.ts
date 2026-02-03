@@ -7,8 +7,11 @@ import { AgentActions, LAST_AGENT_ACTION } from '../persistence-store/constants'
 
 import { agentStatusManager } from './agent-status-manager';
 
-const isAgentKilledInternally = (exitCode: number | null) => exitCode === null; // Via Relaunch
-const isAgentKilledExternally = (exitCode: number | null) => exitCode === 0; // From Private Agents Tab in Loadmill UI
+// Process killed by signal (happens when we relaunch internally)
+const isAgentKilledInternally = (exitCode: number | null) => exitCode === null;
+
+// Clean exit with code 0 (happens when stopped from Loadmill UI)
+const isAgentKilledExternally = (exitCode: number | null) => exitCode === 0;
 
 /**
  * Add listener for agent process exit
