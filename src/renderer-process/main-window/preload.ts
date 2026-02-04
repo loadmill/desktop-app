@@ -7,13 +7,12 @@ import { ApiForMainWindow } from '../../types/api';
 import { MainWindowRendererMessage } from '../../types/messaging';
 import { ViewName } from '../../types/views';
 import {
+  AGENT_STATUS_CHANGED,
   COPY_URL,
   DESKTOP_API,
   FIND_NEXT,
   GO_BACK,
   GO_FORWARD,
-  IS_AGENT_CONNECTED,
-  IS_AGENT_OUTDATED,
   NAVIGATION,
   REFRESH_PAGE,
   SHOW_FIND_ON_PAGE,
@@ -44,12 +43,8 @@ subscribeToMainWindowMessages(SHOW_FIND_ON_PAGE, (_event: Electron.IpcRendererEv
   window.postMessage({ data, type: SHOW_FIND_ON_PAGE });
 });
 
-subscribeToMainWindowMessages(IS_AGENT_CONNECTED, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
-  window.postMessage({ data, type: IS_AGENT_CONNECTED });
-});
-
-subscribeToMainWindowMessages(IS_AGENT_OUTDATED, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
-  window.postMessage({ data, type: IS_AGENT_OUTDATED });
+subscribeToMainWindowMessages(AGENT_STATUS_CHANGED, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {
+  window.postMessage({ data, type: AGENT_STATUS_CHANGED });
 });
 
 subscribeToMainWindowMessages(SWITCH_VIEW, (_event: Electron.IpcRendererEvent, data: MainWindowRendererMessage['data']) => {

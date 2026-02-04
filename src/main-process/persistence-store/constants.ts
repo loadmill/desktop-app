@@ -4,8 +4,8 @@ export const FILTER_REGEX = 'filterRegex',
   TOKEN = 'token';
 
 export enum AgentActions {
-  STARTED = 'started',
-  STOPPED = 'stopped',
+  START = 'started',
+  STOP = 'stopped',
 }
 
 export const SETTINGS = 'settings';

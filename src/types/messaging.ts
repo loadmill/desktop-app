@@ -1,4 +1,8 @@
+import { AgentStatus } from '../universal/agent-status';
 import {
+  AGENT_CONNECT,
+  AGENT_DISCONNECT,
+  AGENT_STATUS_CHANGED,
   ANALYZE_REQUESTS,
   ANALYZE_REQUESTS_COMPLETE,
   CLEAR_ALL_ENTRIES,
@@ -26,8 +30,6 @@ import {
   IMPORT_HAR_IS_IN_PROGRESS,
   INIT_FILTER_REGEX,
   IP_ADDRESS,
-  IS_AGENT_CONNECTED,
-  IS_AGENT_OUTDATED,
   IS_RECORDING,
   LOADMILL_VIEW_ID,
   MAGIC_TOKEN,
@@ -70,10 +72,7 @@ import { ViewName } from './views';
  * IPC = Inter Process Communication (https://www.electronjs.org/docs/latest/tutorial/ipc)
  */
 interface IPCMessage {
-  data?: {
-    [key: string]: string[] | string | boolean | number | null |
-    Navigation | ProxyEntry | ProxyEntry[] | SuiteOption[] | SuiteOption | Settings | ChangedSetting | PlaywrightStepLocation
-  };
+  data?: Record<string, unknown>;
   type: string;
 }
 
@@ -119,8 +118,7 @@ export type RendererMessage =
 
 export abstract class MainWindowRendererMessage implements IPCMessage {
   data?: {
-    isAgentConnected?: boolean;
-    isAgentOutdated?: boolean;
+    agentStatus?: AgentStatus;
     loadmillViewId?: number;
     magicToken?: string;
     mainWindowId?: number;
@@ -183,9 +181,8 @@ export abstract class StartupRendererMessage implements IPCMessage {
 }
 
 export type AgentMessageTypes =
-  typeof IS_AGENT_CONNECTED |
-  typeof START_AGENT |
-  typeof STOP_AGENT;
+  typeof AGENT_CONNECT |
+  typeof AGENT_DISCONNECT;
 
 export type MainMessageTypes =
   typeof ANALYZE_REQUESTS |
@@ -209,7 +206,6 @@ export type MainMessageTypes =
   typeof GO_FORWARD |
   typeof IMPORT_HAR |
   typeof INIT_FILTER_REGEX |
-  typeof IS_AGENT_CONNECTED |
   typeof IS_RECORDING |
   typeof MARK_RELEVANT |
   typeof REFRESH_ENTRIES |
@@ -226,8 +222,7 @@ export type MainMessageTypes =
   typeof TOGGLE_MAXIMIZE_WINDOW;
 
 export type RendererMessageTypes =
-  typeof IS_AGENT_CONNECTED |
-  typeof IS_AGENT_OUTDATED |
+  typeof AGENT_STATUS_CHANGED |
   typeof LOADMILL_VIEW_ID |
   typeof MAIN_WINDOW_ID |
   typeof NAVIGATION |
