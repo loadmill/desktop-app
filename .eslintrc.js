@@ -64,6 +64,12 @@ module.exports = {
         'no-console': 'off',
       },
     },
+    {
+      files: ['src/renderer-process/agent-view/ui/console.tsx'],
+      rules: {
+        'no-control-regex': 'off',
+      },
+    },
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
