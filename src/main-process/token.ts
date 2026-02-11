@@ -2,7 +2,7 @@ import log from '../log';
 import { Token } from '../types/token';
 
 import { callLoadmillApi } from './call-loadmill-api';
-import { set } from './persistence-store';
+import { get, set } from './persistence-store';
 import { TOKEN } from './persistence-store/constants';
 import { getUser } from './user';
 
@@ -42,10 +42,21 @@ const _createAndSaveToken = async (): Promise<Token> => {
   log.info('Setting new token', {
     id: token.id,
     owner: token.owner,
-    token: hideToken(token.token),
+    token: _hideToken(token.token),
   });
   set(TOKEN, token);
   return token;
 };
 
-const hideToken = (token: string) => '*'.repeat(token.length - 4) + token.substring(token.length - 4);
+const _hideToken = (token: string) => '*'.repeat(token.length - 4) + token.substring(token.length - 4);
+
+export const getOrCreateToken = async (): Promise<Token | undefined> => {
+  const token = get<Token>(TOKEN);
+  if (isValidToken(token) && await isCorrectUser(token.owner)) {
+    return token;
+  }
+
+  log.info('Token does not exists / old format / of a different user');
+  log.info('Fetching new token from loadmill server');
+  return await createAndSaveToken();
+};

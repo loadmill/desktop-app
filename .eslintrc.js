@@ -28,7 +28,7 @@ module.exports = {
       },
     },
     {
-      files: ['accordion-summary.tsx', 'table-row-cell.tsx'],
+      files: ['accordion-summary.tsx', 'table-row-cell.tsx', 'test/__mocks__/log.ts'],
       rules: {
         'sort-keys': 'off',
       },
@@ -62,6 +62,12 @@ module.exports = {
       files: 'forge.config.js',
       rules: {
         'no-console': 'off',
+      },
+    },
+    {
+      files: ['src/renderer-process/agent-view/ui/console.tsx'],
+      rules: {
+        'no-control-regex': 'off',
       },
     },
   ],

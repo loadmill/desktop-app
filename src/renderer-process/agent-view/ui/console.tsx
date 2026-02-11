@@ -91,6 +91,7 @@ export function ScrollableList({
 }
 
 const LogEvent = ({ event }: { event: string; }): JSX.Element => {
+  const cleanedEvent = stripAnsi(event);
   const eventColor = event.includes('[INFO]') ?
     '#aae682' :
     event.includes('[ERROR]') ?
@@ -106,13 +107,17 @@ const LogEvent = ({ event }: { event: string; }): JSX.Element => {
               fontFamily: 'monospace',
             } }
           >
-            {event}
+            {cleanedEvent}
           </span>
         }
       />
     </ListItem>
   );
 };
+
+const ANSI_REGEX = /\x1b\[[0-9;]*m/g;
+
+const stripAnsi = (text: string): string => text.replace(ANSI_REGEX, '');
 
 export type ConsoleProps = {
   log: string[];

@@ -1,7 +1,7 @@
 {
   "name": "desktop-app",
   "productName": "Loadmill",
-  "version": "3.8.20",
+  "version": "3.9.0",
   "description": "The Loadmill desktop app",
   "author": {
     "name": "Loadmill Ltd.",
@@ -23,7 +23,8 @@
     "prepare-standalones": "yarn prepare-standalone-playwright",
     "prepare-standalone-playwright": "tsx scripts/prepare-standalone-playwright.ts",
     "start": "yarn prepare-standalones && electron-forge start",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
   },
   "keywords": [],
   "license": "MIT",
@@ -82,7 +83,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@loadmill/agent": "^0.1.192",
+    "@loadmill/agent": "^0.1.194",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.13",
     "async": "^3.2.4",
