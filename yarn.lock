@@ -2789,13 +2789,13 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@loadmill/agent@^0.1.194":
-  version "0.1.194"
-  resolved "https://registry.yarnpkg.com/@loadmill/agent/-/agent-0.1.194.tgz#0445fc95ae87ed53deda24cc3ec1d26d3e1e0758"
-  integrity sha512-w/HTsP0N01bMOqrv0iYWTlkzMTYcherOA/INU/5plZ6ua4oTyufzghPas6cKs/gF1GGLJ5erNJVlh1GZa2OFLg==
+"@loadmill/agent@^0.1.195":
+  version "0.1.195"
+  resolved "https://registry.yarnpkg.com/@loadmill/agent/-/agent-0.1.195.tgz#0ff3cbea2081e1daf1f6e8699e62b60a5f4e4aee"
+  integrity sha512-MIIKNhICLzZkskGUc9DKN+accb1oMy/4hMJWvsfzRzz/tFLpA/CT4K0yLNVHNkJB2dVZDaW+2lH48C2x83DAQA==
   dependencies:
-    "@loadmill/executer" "0.1.192"
-    "@loadmill/universal" "0.3.186"
+    "@loadmill/executer" "0.1.193"
+    "@loadmill/universal" "0.3.187"
     commander "^6.1.0"
     hpagent "^1.2.0"
     js-yaml "^3.14.0"
@@ -2807,16 +2807,16 @@
     uuid "^3.0.1"
     workerpool "^9.1.2"
 
-"@loadmill/core@0.3.191":
-  version "0.3.191"
-  resolved "https://registry.yarnpkg.com/@loadmill/core/-/core-0.3.191.tgz#d3ae87cd82a6f8c27ea2c1d1580111c2c75acad6"
-  integrity sha512-2rU4DhqgCZUipjputegPmNCgEQiBHkEeZyN7HXD+phO+TY3f3DWeJlGDiMbhUcm7HZ7b/PtUCOoMjjQZcu663A==
+"@loadmill/core@0.3.192":
+  version "0.3.192"
+  resolved "https://registry.yarnpkg.com/@loadmill/core/-/core-0.3.192.tgz#44a11299a2dbc831780d2141b685c6b32a127f60"
+  integrity sha512-prjXazv8jT0WP5j7UVV+LAbj1+zXMuG9mnXAzZCH6i5+UzYuRR7cvcurr2VEAm+IcvWfEh4j+rLrpEPbPRNauw==
   dependencies:
     "@aws-crypto/sha256-js" "2.0.0"
     "@aws-sdk/client-cognito-identity" "~3.58.0"
     "@aws-sdk/client-firehose" "~3.58.0"
     "@aws-sdk/types" "~3.55.0"
-    "@loadmill/universal" "0.3.186"
+    "@loadmill/universal" "0.3.187"
     "@playwright/test" "1.50.0"
     "@xmldom/xmldom" "^0.8.10"
     cheerio "^0.22.0"
@@ -2842,17 +2842,17 @@
     xml2js "^0.6.2"
     xpath "^0.0.32"
 
-"@loadmill/executer@0.1.192":
-  version "0.1.192"
-  resolved "https://registry.yarnpkg.com/@loadmill/executer/-/executer-0.1.192.tgz#2e24d4f91cfd9a55be3048b0e55b83cb941ee1c8"
-  integrity sha512-UDV2Ojjd3MstJSPzh61lNZT5QnlIupGhVOciDPBWjdiD7yohqoaypRtsgugKb33i2ep+9qAxaxgtfB5Lw9qOsQ==
+"@loadmill/executer@0.1.193":
+  version "0.1.193"
+  resolved "https://registry.yarnpkg.com/@loadmill/executer/-/executer-0.1.193.tgz#2fad9909af73063e2112722e788f5dcafd8b04ff"
+  integrity sha512-UyfYcNnBJsvb+qv0rjDP6iuwqtWDyNNX8P31H7otMzjKCg6jKS2C1L7n0TMBslxivbcD0hExpEJFuSi87QQFUQ==
   dependencies:
     "@aws-sdk/client-cognito-identity" "~3.58.0"
     "@aws-sdk/client-firehose" "~3.58.0"
     "@grpc/grpc-js" "^1.9.8"
     "@grpc/proto-loader" "^0.7.10"
-    "@loadmill/core" "0.3.191"
-    "@loadmill/universal" "0.3.186"
+    "@loadmill/core" "0.3.192"
+    "@loadmill/universal" "0.3.187"
     "@playwright/test" "1.50.0"
     "@types/estree" "^0.0.50"
     acorn "^8.4.1"
@@ -2871,10 +2871,10 @@
     vm2 "^3.9.6"
     ws "^7.2.4"
 
-"@loadmill/universal@0.3.186":
-  version "0.3.186"
-  resolved "https://registry.yarnpkg.com/@loadmill/universal/-/universal-0.3.186.tgz#ebee9a3c8cc4117cea30456e35f025eea21edb4f"
-  integrity sha512-b/2vtMG9Bdaxyip8gbXB7++bcQ7+o0GL9cCWfQF3CZA0EHPfLpDGXMHGEvmWSFcL2d8oZkZWxbCiWdcpMMlNLA==
+"@loadmill/universal@0.3.187":
+  version "0.3.187"
+  resolved "https://registry.yarnpkg.com/@loadmill/universal/-/universal-0.3.187.tgz#cfe170dc91152bb2712b43b676f265e9a5010930"
+  integrity sha512-ja9/KiT+uHjEiPmRcbGyyC9c8WmtouwoZnNurqYB/VjqCAa0EIO9C+7X2Rw/a0qwRMyEUA34rkua7iRwBjb6mw==
   dependencies:
     acorn "^8.4.1"
     acorn-walk "^8.3.4"
