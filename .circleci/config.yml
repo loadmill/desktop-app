@@ -114,8 +114,8 @@ jobs:
             # print out the certificate
             openssl pkcs12 -info -in cert.pfx -passin pass:${KEYCHAIN_PASSWORD} -passout pass:${KEYCHAIN_PASSWORD} -nokeys
       - run:
-          name: Install Node 18.20.5
-          command: nvm install 18.20.5 && nvm use 18.20.5
+          name: Install Node 20.19.5
+          command: nvm install 20.19.5 && nvm use 20.19.5
       - run:
           name: Install Yarn
           command: npm install -g yarn
@@ -138,8 +138,17 @@ jobs:
           name: Package Application
           command: CERTIFICATE_PASSWORD=$KEYCHAIN_PASSWORD yarn package
       - run:
+          name: Print project directory contents
+          command: ls -la
+      - run:
+          name: Print /out directory contents
+          command: ls -la out
+      - run:
           name: Create distribution files
-          command: yarn only-make
+          command: DEBUG=* yarn only-make
+      - run:
+          name: Print /out/make directory contents
+          command: ls -la out/make
       - store_artifacts:
           name: Store Artifacts
           path: out/make/
@@ -302,7 +311,269 @@ jobs:
                   )
                   echo "UPLOAD_ASSET_RESPONSE"
                   echo "$UPLOAD_ASSET_RESPONSE" | jq .
+  windows-test-certificate-and-signing:
+    executor:
+      name: win/default
+      shell: bash.exe
 
+    steps:
+      - checkout
+
+      - run:
+          name: Create Self-Signed Certificate
+          command: |
+            echo "Creating self-signed certificate..."
+
+            echo "Generating private key..."
+            openssl genrsa -out test-key.pem 2048
+
+            echo "✓ Private key created"
+
+            echo "Creating self-signed certificate using the private key..."
+            MSYS_NO_PATHCONV=1 openssl req -new -key test-key.pem -x509 -days 365 -out test-cert.pem -subj "/C=US/O=Loadmill LTD/CN=Loadmill Test Certificate"
+
+            echo "Verifying certificate creation..."
+            openssl x509 -in test-cert.pem -text -noout
+
+            echo "✓ Certificate and key created"
+
+            # Create PFX from cert and key
+            openssl pkcs12 -export -out cert.pfx \
+              -inkey test-key.pem \
+              -in test-cert.pem \
+              -passout pass:TestPassword123
+
+            echo "✓ PFX file created"
+
+            # Cleanup temp files
+            rm test-key.pem test-cert.pem
+
+            echo "✓ Certificate exported to cert.pfx"
+
+            echo "Verifying the PFX file was created"
+            if [ -f cert.pfx ]; then
+              echo "✓ cert.pfx file created successfully"
+              ls -lh cert.pfx
+            else
+              echo "✗ ERROR: cert.pfx was not created!"
+              exit 1
+            fi
+            echo "File creation complete."
+      - run:
+          name: Verify Certificate
+          command: |
+            echo "Verifying certificate with openssl..."
+            openssl pkcs12 -info -in cert.pfx \
+              -passin pass:TestPassword123 \
+              -passout pass:TestPassword123 \
+              -nokeys
+
+            echo "Dumping certificate info..."
+
+            echo ""
+            echo "=== Certificate Details ==="
+            openssl pkcs12 -info -in cert.pfx \
+              -passin pass:TestPassword123 \
+              -passout pass:TestPassword123 \
+              -nokeys | grep -E "subject=|issuer="
+
+            echo "Finished verifying certificate."
+      - run:
+          name: Create Dummy EXE to Sign
+          command: |
+            echo "Creating a dummy executable..."
+
+            # Create a simple C# program
+            cat > test.cs \<< 'EOF'
+            using System;
+            class Program {
+                static void Main() {
+                    Console.WriteLine("Hello from signed executable!");
+                }
+            }
+            EOF
+
+            # Compile it (csc.exe is in .NET Framework)
+            CSC_PATH="/c/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+
+            if [ -f "$CSC_PATH" ]; then
+              echo "Compiling test.cs..."
+              "$CSC_PATH" /out:test.exe test.cs
+
+              if [ -f test.exe ]; then
+                echo "✓ test.exe created successfully"
+                ls -lh test.exe
+              else
+                echo "✗ ERROR: Failed to create test.exe"
+                exit 1
+              fi
+            else
+              echo "✗ ERROR: C# compiler not found at $CSC_PATH"
+              echo "Creating a dummy PE file instead..."
+              echo -ne "MZ\x90\x00" > test.exe
+              echo "✓ Dummy test.exe created"
+            fi
+
+      - run:
+          name: Sign the EXE with signtool
+          command: |
+            echo "Attempting to sign test.exe..."
+
+            # Find signtool.exe (usually in Windows SDK)
+            SIGNTOOL_PATHS=(
+              "/c/Program Files (x86)/Windows Kits/10/bin/x64/signtool.exe"
+              "/c/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe"
+              "/c/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/signtool.exe"
+            )
+
+            SIGNTOOL=""
+            for path in "${SIGNTOOL_PATHS[@]}"; do
+              if [ -f "$path" ]; then
+                SIGNTOOL="$path"
+                echo "✓ Found signtool at: $path"
+                break
+              fi
+            done
+
+            if [ -z "$SIGNTOOL" ]; then
+              echo "✗ ERROR: signtool.exe not found!"
+              echo "Searching for signtool..."
+              FOUND=$(find "/c/Program Files (x86)/Windows Kits/" -name "signtool.exe" 2>/dev/null | head -1)
+              if [ -n "$FOUND" ]; then
+                SIGNTOOL="$FOUND"
+                echo "✓ Found signtool at: $SIGNTOOL"
+              else
+                echo "signtool.exe not found anywhere!"
+                exit 1
+              fi
+            fi
+
+            # Sign the file
+            echo ""
+            echo "Signing test.exe with certificate..."
+
+            CERT_PATH=$(pwd)/cert.pfx
+            CERT_PATH_WIN=$(cygpath -w "$CERT_PATH")
+            SIGNTOOL_WIN=$(cygpath -w "$SIGNTOOL")
+
+            echo "CERT_PATH (Unix): $CERT_PATH"
+            echo "CERT_PATH (Windows): $CERT_PATH_WIN"
+            echo "SIGNTOOL (Windows): $SIGNTOOL_WIN"
+
+            # Use cmd.exe to run signtool to avoid Bash argument parsing issues
+            cmd.exe /c "\"$SIGNTOOL_WIN\" sign /f \"$CERT_PATH_WIN\" /p TestPassword123 /fd SHA256 /v /debug test.exe"
+
+            EXIT_CODE=$?
+            echo ""
+            echo "Signtool exit code: $EXIT_CODE"
+
+            if [ $EXIT_CODE -eq 0 ]; then
+              echo "✓✓✓ SUCCESS! File signed successfully! ✓✓✓"
+            else
+              echo "✗✗✗ FAILED! Signing failed with exit code $EXIT_CODE ✗✗✗"
+              exit 1
+            fi
+
+      - run:
+          name: Verify Signature
+          command: |
+            echo "Verifying signature on test.exe..."
+
+            # Find signtool
+            SIGNTOOL_PATHS=(
+              "/c/Program Files (x86)/Windows Kits/10/bin/x64/signtool.exe"
+              "/c/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/signtool.exe"
+              "/c/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/signtool.exe"
+            )
+
+            SIGNTOOL=""
+            for path in "${SIGNTOOL_PATHS[@]}"; do
+              if [ -f "$path" ]; then
+                SIGNTOOL="$path"
+                break
+              fi
+            done
+
+            if [ -n "$SIGNTOOL" ]; then
+              "$SIGNTOOL" verify /pa /v test.exe || true
+              echo ""
+              echo "Note: Verification will fail because it's self-signed (not trusted)"
+              echo "But the signature itself should be present!"
+            fi
+
+            # Check if signature exists using PowerShell
+            echo ""
+            echo "Checking signature with Get-AuthenticodeSignature..."
+            powershell.exe -Command "
+              \$sig = Get-AuthenticodeSignature test.exe
+              Write-Host \"Status: \$(\$sig.Status)\"
+              Write-Host \"StatusMessage: \$(\$sig.StatusMessage)\"
+              Write-Host \"SignerCertificate: \$(\$sig.SignerCertificate.Subject)\"
+
+              if (\$sig.SignerCertificate) {
+                Write-Host \"\`n✓✓✓ SIGNATURE EXISTS! ✓✓✓\"
+              } else {
+                Write-Host \"\`n✗✗✗ NO SIGNATURE FOUND ✗✗✗\"
+              }
+            "
+
+      - run:
+          name: Summary
+          command: |
+            echo ""
+            echo "========================================="
+            echo "           TEST SUMMARY"
+            echo "========================================="
+            echo "✓ Certificate created: cert.pfx"
+            echo "✓ Password: TestPassword123"
+            echo "✓ Test file signed: test.exe"
+            echo ""
+            echo "Next steps:"
+            echo "1. Use the same bash/OpenSSL commands in your main build"
+            echo "2. Replace 'TestPassword123' with your actual password"
+            echo "3. Apply to electron-forge config"
+            echo "========================================="
+      - run:
+          name: Install Node 20.19.5
+          command: |
+            nvm install 20.19.5
+            nvm use 20.19.5
+      - run:
+          name: Install Yarn
+          command: npm install -g yarn
+      - restore_cache:
+          keys:
+            - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-windows-build-{{ .Branch }}-
+            - yarn-packages-windows-build-
+      - run:
+          name: Install dependencies
+          command: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run Tests
+          command: yarn test
+      - run:
+          name: Package Application
+          command: yarn package
+      - run:
+          name: Print project directory contents
+          command: ls -la
+      - run:
+          name: Print /out directory contents
+          command: ls -la out
+      - run:
+          name: Create distribution files
+          command: DEBUG=* yarn only-make
+      - run:
+          name: Print /out/make directory contents
+          command: ls -la out/make
+      - store_artifacts:
+          name: Store Artifacts
+          path: out/make/
 workflows:
   version: 2
   build:
@@ -312,6 +583,7 @@ workflows:
             branches:
               ignore:
                 - /agent-version-.*/
+                - windows-certificate
           pre-steps:
             - run:
                 name: Use Node 20
@@ -331,5 +603,6 @@ workflows:
             branches:
               ignore:
                 - /agent-version-.*/
-          requires:
-            - build_macos
+                - windows-certificate
+
+      - windows-test-certificate-and-signing

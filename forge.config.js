@@ -8,11 +8,15 @@ module.exports = {
   makers: [
     {
       config: {
-        certificateFile: './cert.pfx',
-        certificatePassword: process.env.CERTIFICATE_PASSWORD,
+        // certificateFile: './cert.pfx',
+        // certificatePassword: process.env.CERTIFICATE_PASSWORD,
         iconUrl: 'https://loadmill.com/favicon.ico',
         setupExe: `${productName}-${name}-${version}-Setup.exe`,
         setupIcon: './images/loadmill-icon-256-256.ico',
+        // windowsSign: {
+        //   // tell signtool where to find the certificate and password
+        signWithParams: '/as /f ./cert.pfx /p TestPassword123 /fd SHA256 /v /debug',
+        // },
       },
       name: '@electron-forge/maker-squirrel',
     },
@@ -38,49 +42,49 @@ module.exports = {
     },
   ],
   packagerConfig: {
-    afterCopyExtraResources: [
-      (buildPath, electronVersion, platform, arch, callback) => {
-        const path = require('path');
-        const fs = require('fs');
-        const glob = require('glob');
-        console.log('Running afterCopyExtraResources hook...');
-        console.log({ arch, buildPath, electronVersion, platform });
+    // afterCopyExtraResources: [
+    //   (buildPath, electronVersion, platform, arch, callback) => {
+    //     const path = require('path');
+    //     const fs = require('fs');
+    //     const glob = require('glob');
+    //     console.log('Running afterCopyExtraResources hook...');
+    //     console.log({ arch, buildPath, electronVersion, platform });
 
-        const chromiumDir = path.join(
-          buildPath,
-          'Loadmill.app',
-          'Contents',
-          'Resources',
-          'standalone_playwright',
-          'node_modules',
-          'playwright-core',
-          '.local-browsers',
-        );
+    //     const chromiumDir = path.join(
+    //       buildPath,
+    //       'Loadmill.app',
+    //       'Contents',
+    //       'Resources',
+    //       'standalone_playwright',
+    //       'node_modules',
+    //       'playwright-core',
+    //       '.local-browsers',
+    //     );
 
-        console.log({ chromiumDir });
+    //     console.log({ chromiumDir });
 
-        try {
-          const matches = glob.sync(
-            path.join(chromiumDir, '**/gpu_shader_cache.bin'),
-            { nodir: true },
-          );
+    //     try {
+    //       const matches = glob.sync(
+    //         path.join(chromiumDir, '**/gpu_shader_cache.bin'),
+    //         { nodir: true },
+    //       );
 
-          matches.forEach(file => {
-            console.log(`Changing permissions for: ${file}`);
-            fs.chmodSync(file, 0o644);
-          });
+    //       matches.forEach(file => {
+    //         console.log(`Changing permissions for: ${file}`);
+    //         fs.chmodSync(file, 0o644);
+    //       });
 
-          console.log('Permissions changed successfully.');
-        } catch (err) {
-          console.warn('Permission fix failed (may be fine if files don’t exist):', err.message);
-        }
+    //       console.log('Permissions changed successfully.');
+    //     } catch (err) {
+    //       console.warn('Permission fix failed (may be fine if files don’t exist):', err.message);
+    //     }
 
-        callback();
-      },
-    ],
-    extraResource: [
-      'standalone_playwright',
-    ],
+    //     callback();
+    //   },
+    // ],
+    // extraResource: [
+    //   'standalone_playwright',
+    // ],
     icon: isWindowsOS ? './images/loadmill-icon-256-256' : './images/MyIcon',
     osxNotarize: {
       appleId: process.env.APPLE_ID,
