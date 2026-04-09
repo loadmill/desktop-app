@@ -7,6 +7,10 @@ const TARGET_DIR = 'standalone_playwright';
 const PLAYWRIGHT_VERSION = '1.50.0';
 
 const main = async (): Promise<void> => {
+  if (TARGET_DIR) { // Set to true to skip preparation
+    logInfo('⚠️ Skipping standalone Playwright preparation (disabled by flag)');
+    return;
+  }
   try {
     logInfo('🎭 Preparing standalone Playwright...');
 
