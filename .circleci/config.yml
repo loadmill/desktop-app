@@ -56,22 +56,26 @@ jobs:
           steps:
             - run:
                 name: package application
+                # Notarization waits silently for Apple (~2.5 min per arch, both arches in parallel)
+                no_output_timeout: 30m
                 command: yarn package-mac
             - run:
                 name: create distribution files
+                no_output_timeout: 30m
                 command: yarn only-make-mac
+            - run:
+                name: verify mac binaries arch
+                command: scripts/verify-mac-arch.sh out
             - store_artifacts:
+                # Both DMGs (out/make/Loadmill-<v>-<arch>.dmg) and both zips (out/make/zip/darwin/<arch>/)
                 path: out/make/
             - run:
                 name: Fetch Artifacts URLs
                 command: |
                   RAW_ARTIFACTS_URLS=$(curl --fail-with-body -L \
                     --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM/artifacts")
-                  ARTIFACTS_URLS=$(echo $RAW_ARTIFACTS_URLS |
-                    python3 -c 'import sys, json; \
-                    artifacts = json.load(sys.stdin)["items"]; \
-                    print("\\n\\n".join([ "### 1. [🍏 .dmg]" + "(" + artifacts[0]["url"] + ")", "### 2. [🤐 .zip]" + "(" + artifacts[1]["url"] + ")"])); \
-                    ')
+                  ARTIFACTS_URLS=$(echo "$RAW_ARTIFACTS_URLS" | python3 scripts/mac-artifacts-links.py)
+                  echo "$ARTIFACTS_URLS"
                   echo "export ARTIFACTS_URLS='${ARTIFACTS_URLS}'" >> $BASH_ENV
             - run:
                 name: Post Artifacts URLs to GitHub PR
@@ -89,9 +93,19 @@ jobs:
           condition:
             equal: [ main, << pipeline.git.branch >> ]
           steps:
+            # Make (package + notarize) without uploading, verify the arches, then upload the
+            # saved dry-run results. --from-dry-run does not re-package or re-make.
+            - run:
+                name: package and make release (publish dry run)
+                no_output_timeout: 30m
+                command: yarn forge-publish-dry-run
+            - run:
+                name: verify mac binaries arch
+                command: scripts/verify-mac-arch.sh out
             - run:
                 name: publish release
-                command: yarn forge-publish
+                no_output_timeout: 30m
+                command: yarn forge-publish-from-dry-run
   build_windows:
     executor:
       name: win/server-2022
