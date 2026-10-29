@@ -36,16 +36,16 @@ jobs:
           command: 'security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASSWORD build.keychain'
       - restore_cache:
           keys:
-            - yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-macos-build-{{ .Branch }}-
-            - yarn-packages-macos-build-
+            - yarn-packages-macos-build-node24.22.1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-macos-build-node24.22.1-{{ .Branch }}-
+            - yarn-packages-macos-build-node24.22.1-
       - run:
           name: install dependencies
           command: yarn install
       - save_cache:
           paths:
             - node_modules/
-          key: yarn-packages-macos-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-packages-macos-build-node24.22.1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: run tests
           command: yarn lint-and-test
@@ -121,16 +121,16 @@ jobs:
           command: npm install -g yarn
       - restore_cache:
           keys:
-            - yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-windows-build-{{ .Branch }}-
-            - yarn-packages-windows-build-
+            - yarn-packages-windows-build-node24.22.1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-windows-build-node24.22.1-{{ .Branch }}-
+            - yarn-packages-windows-build-node24.22.1-
       - run:
           name: Install dependencies
           command: yarn install
       - save_cache:
           paths:
             - node_modules/
-          key: yarn-packages-windows-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-packages-windows-build-node24.22.1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run Tests
           command: yarn test
