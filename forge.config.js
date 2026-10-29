@@ -22,7 +22,9 @@ module.exports = {
       platforms: ['darwin', 'win32'],
     },
     {
-      config: {
+      // A per-arch name makes maker-dmg write straight to the final file instead of a shared
+      // temp `${appName}.dmg`, which collides when x64 and arm64 are made concurrently.
+      config: (arch) => ({
         additionalDMGOptions: {
           window: {
             size: {
@@ -34,7 +36,9 @@ module.exports = {
         background: './images/dmg-background.png',
         format: 'ULFO',
         icon: './images/disk-icon.icns',
-      },
+        name: `${productName}-${version}-${arch}`,
+        title: productName,
+      }),
       name: '@electron-forge/maker-dmg',
     },
   ],
