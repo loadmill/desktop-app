@@ -21,10 +21,10 @@ export const subscribeToNavigationEvents = (webView: WebContentsView): void => {
     webView.webContents.reload();
   });
   subscribeToMainProcessMessage(GO_BACK, () => {
-    webView.webContents.goBack();
+    webView.webContents.navigationHistory.goBack();
   });
   subscribeToMainProcessMessage(GO_FORWARD, () => {
-    webView.webContents.goForward();
+    webView.webContents.navigationHistory.goForward();
   });
   subscribeToMainProcessMessage(COPY_URL, async () => {
     try {
@@ -35,8 +35,8 @@ export const subscribeToNavigationEvents = (webView: WebContentsView): void => {
   });
   webView.webContents.on(DID_NAVIGATE_IN_PAGE, () => {
     const nav: Navigation = {
-      canGoBack: webView.webContents.canGoBack(),
-      canGoForward: webView.webContents.canGoForward(),
+      canGoBack: webView.webContents.navigationHistory.canGoBack(),
+      canGoForward: webView.webContents.navigationHistory.canGoForward(),
     };
     sendFromMainWindowToRenderer({
       data: { nav },
