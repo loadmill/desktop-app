@@ -114,8 +114,8 @@ jobs:
             # print out the certificate
             openssl pkcs12 -info -in cert.pfx -passin pass:${KEYCHAIN_PASSWORD} -passout pass:${KEYCHAIN_PASSWORD} -nokeys
       - run:
-          name: Install Node 18.20.5
-          command: nvm install 18.20.5 && nvm use 18.20.5
+          name: Install Node 24.22.1
+          command: nvm install 24.22.1 && nvm use 24.22.1
       - run:
           name: Install Yarn
           command: npm install -g yarn
@@ -314,18 +314,18 @@ workflows:
                 - /agent-version-.*/
           pre-steps:
             - run:
-                name: Use Node 20
+                name: Use Node 24.22.1
                 command: |
                   export NVM_DIR="$HOME/.nvm"
                   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                  nvm install 20
-                  nvm use 20
+                  nvm install 24.22.1
+                  nvm use 24.22.1
                   npm install -g yarn
             - run:
-                name: Persist Node 20 in environment for subsequent steps (silenced output)
+                name: Persist Node 24.22.1 in environment for subsequent steps (silenced output)
                 command: |
                   echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
-                  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 20 > /dev/null 2>&1' >> $BASH_ENV
+                  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm use 24.22.1 > /dev/null 2>&1' >> $BASH_ENV
       - build_windows:
           filters:
             branches:
