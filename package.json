@@ -22,6 +22,7 @@
     "lint-and-test": "concurrently --raw 'yarn lint' 'yarn test'",
     "prepare-standalones": "yarn prepare-standalone-playwright",
     "prepare-standalone-playwright": "tsx scripts/prepare-standalone-playwright.ts",
+    "prepare-standalones-mac": "yarn prepare-standalone-playwright --arch=x64 && yarn prepare-standalone-playwright --arch=arm64",
     "start": "yarn prepare-standalones && electron-forge start",
     "test": "jest",
     "prepare": "husky install"

@@ -3,12 +3,49 @@ import { error as logError, log as logInfo } from 'console';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const TARGET_DIR = 'standalone_playwright';
 const PLAYWRIGHT_VERSION = '1.50.0';
+
+type MacArch = 'x64' | 'arm64';
+
+// Playwright host platform used to download browsers for a specific mac arch
+const MAC_HOST_PLATFORMS: Record<MacArch, string> = {
+  arm64: 'mac14-arm64',
+  x64: 'mac14',
+};
+
+// Mach-O header constants
+const MH_MAGIC_64 = 0xfeedfacf;
+const FAT_MAGIC = 0xcafebabe;
+const MACHO_CPU_TYPES: Record<MacArch, number> = {
+  arm64: 0x0100000c,
+  x64: 0x01000007,
+};
+
+const parseArch = (): MacArch | undefined => {
+  const archArg = process.argv.find(arg => arg.startsWith('--arch='));
+  if (!archArg) {
+    return undefined;
+  }
+  const arch = archArg.slice('--arch='.length);
+  if (arch !== 'x64' && arch !== 'arm64') {
+    throw new Error(`Unsupported --arch value: ${arch}. Expected x64 or arm64`);
+  }
+  if (process.platform !== 'darwin') {
+    throw new Error('--arch is only supported on mac');
+  }
+  return arch;
+};
+
+// Without --arch, prepare for the host arch in the root standalone_playwright (dev mode, Windows)
+const TARGET_ARCH = parseArch();
+const TARGET_DIR = TARGET_ARCH
+  ? path.join('standalone_playwright_arch', TARGET_ARCH, 'standalone_playwright')
+  : 'standalone_playwright';
+const EXPECTED_ARCH = TARGET_ARCH || process.arch;
 
 const main = async (): Promise<void> => {
   try {
-    logInfo('🎭 Preparing standalone Playwright...');
+    logInfo('🎭 Preparing standalone Playwright...', { EXPECTED_ARCH, TARGET_DIR });
 
     if (isAlreadyPrepared()) {
       logInfo('✅ standalone_playwright is already prepared and valid');
@@ -118,8 +155,83 @@ const verifyStructure = (): boolean => {
   }
   logInfo('Found browsers', { browserDirs });
 
+  if (!verifyMacBinariesArch(browsersPath, browserDirs)) {
+    return false;
+  }
+
   logInfo('✅ standalone_playwright structure verified successfully');
   return true;
+};
+
+/**
+ * Verifies the downloaded mac binaries were built for the expected arch.
+ * Playwright downloads for the host arch by default, so a cached copy may hold the wrong one.
+ */
+const verifyMacBinariesArch = (browsersPath: string, browserDirs: string[]): boolean => {
+  if (process.platform !== 'darwin') {
+    return true;
+  }
+  logInfo('Verifying mac binaries arch', { EXPECTED_ARCH });
+
+  const chromiumDir = browserDirs.find(dir => dir.startsWith('chromium-'));
+  const ffmpegDir = browserDirs.find(dir => dir.startsWith('ffmpeg'));
+  const binaries = [
+    path.join(browsersPath, chromiumDir, 'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium'),
+    path.join(browsersPath, ffmpegDir, 'ffmpeg-mac'),
+  ];
+
+  for (const binary of binaries) {
+    if (!fs.existsSync(binary)) {
+      logError('Missing mac binary', { binary });
+      return false;
+    }
+    if (!isMachOForArch(binary, EXPECTED_ARCH)) {
+      logError('Mac binary arch mismatch', { EXPECTED_ARCH, binary });
+      return false;
+    }
+  }
+
+  logInfo('Mac binaries match expected arch', { EXPECTED_ARCH });
+  return true;
+};
+
+const isMachOForArch = (binaryPath: string, arch: string): boolean => {
+  const expectedCpuType = MACHO_CPU_TYPES[arch as MacArch];
+  if (expectedCpuType === undefined) {
+    logError('Unsupported arch for Mach-O check', { arch });
+    return false;
+  }
+
+  const header = Buffer.alloc(4096);
+  const fd = fs.openSync(binaryPath, 'r');
+  let bytesRead: number;
+  try {
+    bytesRead = fs.readSync(fd, header, 0, header.length, 0);
+  } finally {
+    fs.closeSync(fd);
+  }
+  if (bytesRead < 8) {
+    return false;
+  }
+
+  // Thin 64-bit Mach-O is little-endian on both x86_64 and arm64
+  if (header.readUInt32LE(0) === MH_MAGIC_64) {
+    return header.readUInt32LE(4) === expectedCpuType;
+  }
+
+  // Universal binary: big-endian header followed by 20-byte fat_arch entries
+  if (header.readUInt32BE(0) === FAT_MAGIC) {
+    const archCount = header.readUInt32BE(4);
+    for (let i = 0; i < archCount && 8 + (i + 1) * 20 <= bytesRead; i++) {
+      if (header.readUInt32BE(8 + i * 20) === expectedCpuType) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  logError('Not a 64-bit Mach-O binary', { binaryPath });
+  return false;
 };
 
 const initializeStandalonePlaywrightProject = (): void => {
@@ -183,6 +295,7 @@ const installBrowsers = (): void => {
       env: {
         ...process.env,
         PLAYWRIGHT_BROWSERS_PATH: '0', // Install browsers in  node_modules/playwright-core/.local-browsers
+        ...(TARGET_ARCH && { PLAYWRIGHT_HOST_PLATFORM_OVERRIDE: MAC_HOST_PLATFORMS[TARGET_ARCH] }),
       },
       stdio: 'inherit',
     });
