@@ -108,7 +108,6 @@
     "pretty": "^2.0.0",
     "re-resizable": "^6.9.9",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "update-electron-app": "^2.0.1"
+    "react-dom": "^18.1.0"
   }
 }
