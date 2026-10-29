@@ -68,6 +68,7 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-typescript-sort-keys": "^2.1.0",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "events": "3.3.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^6.0.1",
     "husky": "^8.0.1",
@@ -78,7 +79,8 @@
     "ts-jest": "^28.0.7",
     "ts-loader": "^9.2.2",
     "tsx": "^4.19.4",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "webpack": "5.97.1"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
