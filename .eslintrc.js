@@ -59,7 +59,7 @@ module.exports = {
       },
     },
     {
-      files: 'forge.config.js',
+      files: ['forge.config.js', 'scripts/notarize-mac.js'],
       rules: {
         'no-console': 'off',
       },
