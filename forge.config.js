@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const isWindowsOS = process.platform === 'win32';
+const isMacOS = process.platform === 'darwin';
 
 const { name, version, productName } = require('./package.json');
 
@@ -46,6 +47,36 @@ module.exports = {
         console.log('Running afterCopyExtraResources hook...');
         console.log({ arch, buildPath, electronVersion, platform });
 
+        if (platform === 'darwin') {
+          const standaloneSrc = path.join(
+            __dirname,
+            'standalone_playwright_arch',
+            arch,
+            'standalone_playwright',
+          );
+          const standaloneDest = path.join(
+            buildPath,
+            'Loadmill.app',
+            'Contents',
+            'Resources',
+            'standalone_playwright',
+          );
+          if (!fs.existsSync(standaloneSrc)) {
+            callback(new Error(
+              `Missing ${standaloneSrc}. Run \`yarn prepare-standalones-mac\` before packaging for mac.`,
+            ));
+            return;
+          }
+          console.log(`Copying ${standaloneSrc} to ${standaloneDest}`);
+          try {
+            fs.cpSync(standaloneSrc, standaloneDest, { recursive: true, verbatimSymlinks: true });
+          } catch (err) {
+            callback(err);
+            return;
+          }
+          console.log('Copied arch-specific standalone_playwright successfully.');
+        }
+
         const chromiumDir = path.join(
           buildPath,
           'Loadmill.app',
@@ -78,7 +109,9 @@ module.exports = {
         callback();
       },
     ],
-    extraResource: [
+    // On mac, the arch-specific standalone_playwright is copied by the afterCopyExtraResources hook.
+    // Must stay an array (not undefined) so @electron/packager still runs that hook.
+    extraResource: isMacOS ? [] : [
       'standalone_playwright',
     ],
     icon: isWindowsOS ? './images/loadmill-icon-256-256' : './images/MyIcon',
