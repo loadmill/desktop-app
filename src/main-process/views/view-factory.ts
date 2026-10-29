@@ -20,7 +20,7 @@ export const createView = (
   });
   mainWindow.contentView.addChildView(view);
   setOpenLinksInBrowser(view.webContents);
-  const handleWindowResize = (_e: Electron.Event) => {
+  const handleWindowResize = () => {
     setBrowserViewSize(view, mainWindow.getBounds());
   };
   mainWindow.on(RESIZE, handleWindowResize);
