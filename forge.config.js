@@ -1,10 +1,22 @@
 require('dotenv').config();
 
 const isWindowsOS = process.platform === 'win32';
+const isMacOS = process.platform === 'darwin';
 
 const { name, version, productName } = require('./package.json');
 
 module.exports = {
+  hooks: {
+    // Notarization runs here instead of packagerConfig.osxNotarize so stapling can be retried with a
+    // longer backoff (see scripts/notarize-mac.js). Runs after signing, before make.
+    postPackage: async (forgeConfig, { platform, outputPaths }) => {
+      if (platform !== 'darwin') {
+        return;
+      }
+      const { notarizePackagedApps } = require('./scripts/notarize-mac');
+      await notarizePackagedApps(outputPaths);
+    },
+  },
   makers: [
     {
       config: {
@@ -21,7 +33,9 @@ module.exports = {
       platforms: ['darwin', 'win32'],
     },
     {
-      config: {
+      // A per-arch name makes maker-dmg write straight to the final file instead of a shared
+      // temp `${appName}.dmg`, which collides when x64 and arm64 are made concurrently.
+      config: (arch) => ({
         additionalDMGOptions: {
           window: {
             size: {
@@ -33,7 +47,9 @@ module.exports = {
         background: './images/dmg-background.png',
         format: 'ULFO',
         icon: './images/disk-icon.icns',
-      },
+        name: `${productName}-${version}-${arch}`,
+        title: productName,
+      }),
       name: '@electron-forge/maker-dmg',
     },
   ],
@@ -45,6 +61,36 @@ module.exports = {
         const glob = require('glob');
         console.log('Running afterCopyExtraResources hook...');
         console.log({ arch, buildPath, electronVersion, platform });
+
+        if (platform === 'darwin') {
+          const standaloneSrc = path.join(
+            __dirname,
+            'standalone_playwright_arch',
+            arch,
+            'standalone_playwright',
+          );
+          const standaloneDest = path.join(
+            buildPath,
+            'Loadmill.app',
+            'Contents',
+            'Resources',
+            'standalone_playwright',
+          );
+          if (!fs.existsSync(standaloneSrc)) {
+            callback(new Error(
+              `Missing ${standaloneSrc}. Run \`yarn prepare-standalones-mac\` before packaging for mac.`,
+            ));
+            return;
+          }
+          console.log(`Copying ${standaloneSrc} to ${standaloneDest}`);
+          try {
+            fs.cpSync(standaloneSrc, standaloneDest, { recursive: true, verbatimSymlinks: true });
+          } catch (err) {
+            callback(err);
+            return;
+          }
+          console.log('Copied arch-specific standalone_playwright successfully.');
+        }
 
         const chromiumDir = path.join(
           buildPath,
@@ -78,16 +124,12 @@ module.exports = {
         callback();
       },
     ],
-    extraResource: [
+    // On mac, the arch-specific standalone_playwright is copied by the afterCopyExtraResources hook.
+    // Must stay an array (not undefined) so @electron/packager still runs that hook.
+    extraResource: isMacOS ? [] : [
       'standalone_playwright',
     ],
     icon: isWindowsOS ? './images/loadmill-icon-256-256' : './images/MyIcon',
-    osxNotarize: {
-      appleId: process.env.APPLE_ID,
-      appleIdPassword: process.env.APPLE_APP_SPECIFIC_PASSWORD,
-      teamId: process.env.LOADMILL_KEY_CODE,
-      tool: 'notarytool',
-    },
     osxSign: {
       entitlements: 'entitlements.plist',
       'entitlements-inherit': 'entitlements.plist',

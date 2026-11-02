@@ -152,7 +152,7 @@ export const startChromiumNetLog = async (): Promise<void> => {
   try {
     await netLog.startLogging(logPath, {
       captureMode: 'includeSensitive', // Captures auth headers (be careful!)
-      maxFileSize: 50 * 1024 * 1024, // 50MB
+      // No maxFileSize: bounded mode fails with ERR_INSUFFICIENT_RESOURCES on Electron 45; the 60s timeout below limits size.
     });
 
     log.info('Net log started', { logPath });
